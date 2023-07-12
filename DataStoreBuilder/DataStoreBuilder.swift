@@ -8,7 +8,7 @@
 import Foundation
 import WordFramework
 
-func loadWordsFromJson(limit: Int = 0) -> [Word] {
+public func loadWordsFromJson() -> [[String: Word]] {
     guard let bundle = Bundle(identifier: "matthedm.DataStoreBuilder") else {
         fatalError("could't locate bundle")
     }
@@ -18,27 +18,17 @@ func loadWordsFromJson(limit: Int = 0) -> [Word] {
             let decoder = JSONDecoder()
 //            let words = try decoder.decode([Word].self, from: jsonData)
             
-            var words: [Word] = []
+            var words: [[String: Word]] = []
             let jsonEntries = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [[String: Any]] ?? []
-            
-            
             for jsonEntry in jsonEntries {
-                if (words.count >= limit){
-                    return words
-                }
                 do {
                     let wordData = try JSONSerialization.data(withJSONObject: jsonEntry, options: [])
                     let word = try decoder.decode(Word.self, from: wordData)
-                    words.append(word)
+                    words.append(["key": word])
                 } catch {
                     // Handle decoding error for individual word entry
                     print("Error decoding word: \(error)")
                 }
-            }
-            if limit > 0{
-                assert(limit < words.count)
-                let amountToDrop = words.count - limit
-                return words.dropLast(amountToDrop)
             }
             return words
             
@@ -50,7 +40,7 @@ func loadWordsFromJson(limit: Int = 0) -> [Word] {
             print("Error: \(error)")
         }
     } else {
-        print("JSON file not found.")
+        fatalError("JSON file not found.")
     }
     return []
 }

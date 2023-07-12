@@ -11,6 +11,12 @@
 		0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67062A5DC21400EAAD30 /* ContentView.swift */; };
 		0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D67082A5DC21500EAAD30 /* Assets.xcassets */; };
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
+		0C778DD52A5F188C007D2A8F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C778DD42A5F188C007D2A8F /* Constants.swift */; };
+		0C778DDF2A5F20DB007D2A8F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C778DDE2A5F20DB007D2A8F /* main.swift */; };
+		0C778DE32A5F20FC007D2A8F /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
+		0C778DE42A5F20FC007D2A8F /* DataStoreBuilder.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0C778DE82A5F2101007D2A8F /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
+		0C778DE92A5F2101007D2A8F /* WordFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0CD09E382A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
 		0CD09E3F2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */; };
 		0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -23,13 +29,27 @@
 		0CD09E692A5DCB3A005C97F1 /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
 		0CD09E6A2A5DCB3A005C97F1 /* WordFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0CD09E712A5DCB45005C97F1 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67122A5DC33A00EAAD30 /* Word+CoreDataClass.swift */; };
-		0CD09E732A5DCC5A005C97F1 /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; platformFilter = ios; };
+		0CD09E732A5DCC5A005C97F1 /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
 		0CD09E742A5DCC5A005C97F1 /* WordFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0CD09E782A5DD290005C97F1 /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
 		0CD09E7C2A5DD30C005C97F1 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E7A2A5DD30C005C97F1 /* Word+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0C778DE52A5F20FC007D2A8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0CD09E2F2A5DC7E1005C97F1;
+			remoteInfo = DataStoreBuilder;
+		};
+		0C778DEA2A5F2101007D2A8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0CD09E552A5DCB39005C97F1;
+			remoteInfo = WordFramework;
+		};
 		0CD09E392A5DC7E1005C97F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
@@ -82,6 +102,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		0C778DDA2A5F20DB007D2A8F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		0C778DE72A5F20FC007D2A8F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0C778DE42A5F20FC007D2A8F /* DataStoreBuilder.framework in Embed Frameworks */,
+				0C778DE92A5F2101007D2A8F /* WordFramework.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0CD09E482A5DC7E1005C97F1 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -114,6 +155,9 @@
 		0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0C1D67122A5DC33A00EAAD30 /* Word+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0C1D67142A5DC33A00EAAD30 /* WordModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WordModel.xcdatamodel; sourceTree = "<group>"; };
+		0C778DD42A5F188C007D2A8F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = StoreBuilderMain; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C778DDE2A5F20DB007D2A8F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStoreBuilder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataStoreBuilder.h; sourceTree = "<group>"; };
 		0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreBuilderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,6 +178,15 @@
 			files = (
 				0CD09E432A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */,
 				0CD09E692A5DCB3A005C97F1 /* WordFramework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0C778DD92A5F20DB007D2A8F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C778DE32A5F20FC007D2A8F /* DataStoreBuilder.framework in Frameworks */,
+				0C778DE82A5F2101007D2A8F /* WordFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +232,7 @@
 				0CD09E3D2A5DC7E1005C97F1 /* DataStoreBuilderTests */,
 				0CD09E572A5DCB39005C97F1 /* WordFramework */,
 				0CD09E632A5DCB3A005C97F1 /* WordFrameworkTests */,
+				0C778DDD2A5F20DB007D2A8F /* StoreBuilderMain */,
 				0C1D67022A5DC21400EAAD30 /* Products */,
 				0CD09E722A5DCC5A005C97F1 /* Frameworks */,
 			);
@@ -192,6 +246,7 @@
 				0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */,
 				0CD09E562A5DCB39005C97F1 /* WordFramework.framework */,
 				0CD09E5D2A5DCB3A005C97F1 /* WordFrameworkTests.xctest */,
+				0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -213,6 +268,14 @@
 				0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0C778DDD2A5F20DB007D2A8F /* StoreBuilderMain */ = {
+			isa = PBXGroup;
+			children = (
+				0C778DDE2A5F20DB007D2A8F /* main.swift */,
+			);
+			path = StoreBuilderMain;
 			sourceTree = "<group>";
 		};
 		0CD09E312A5DC7E1005C97F1 /* DataStoreBuilder */ = {
@@ -237,6 +300,7 @@
 			isa = PBXGroup;
 			children = (
 				0CD09E7A2A5DD30C005C97F1 /* Word+CoreDataProperties.swift */,
+				0C778DD42A5F188C007D2A8F /* Constants.swift */,
 				0C1D67122A5DC33A00EAAD30 /* Word+CoreDataClass.swift */,
 				0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */,
 				0CD09E582A5DCB39005C97F1 /* WordFramework.h */,
@@ -300,6 +364,26 @@
 			productName = ChineseWordOfTheDay;
 			productReference = 0C1D67012A5DC21400EAAD30 /* ChineseWordOfTheDay.app */;
 			productType = "com.apple.product-type.application";
+		};
+		0C778DDB2A5F20DB007D2A8F /* StoreBuilderMain */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C778DE02A5F20DB007D2A8F /* Build configuration list for PBXNativeTarget "StoreBuilderMain" */;
+			buildPhases = (
+				0C778DD82A5F20DB007D2A8F /* Sources */,
+				0C778DD92A5F20DB007D2A8F /* Frameworks */,
+				0C778DDA2A5F20DB007D2A8F /* CopyFiles */,
+				0C778DE72A5F20FC007D2A8F /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0C778DE62A5F20FC007D2A8F /* PBXTargetDependency */,
+				0C778DEB2A5F2101007D2A8F /* PBXTargetDependency */,
+			);
+			name = StoreBuilderMain;
+			productName = StoreBuilderMain;
+			productReference = 0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */;
+			productType = "com.apple.product-type.tool";
 		};
 		0CD09E2F2A5DC7E1005C97F1 /* DataStoreBuilder */ = {
 			isa = PBXNativeTarget;
@@ -390,6 +474,9 @@
 					0C1D67002A5DC21400EAAD30 = {
 						CreatedOnToolsVersion = 15.0;
 					};
+					0C778DDB2A5F20DB007D2A8F = {
+						CreatedOnToolsVersion = 15.0;
+					};
 					0CD09E2F2A5DC7E1005C97F1 = {
 						CreatedOnToolsVersion = 15.0;
 						LastSwiftMigration = 1500;
@@ -425,6 +512,7 @@
 				0CD09E362A5DC7E1005C97F1 /* DataStoreBuilderTests */,
 				0CD09E552A5DCB39005C97F1 /* WordFramework */,
 				0CD09E5C2A5DCB3A005C97F1 /* WordFrameworkTests */,
+				0C778DDB2A5F20DB007D2A8F /* StoreBuilderMain */,
 			);
 		};
 /* End PBXProject section */
@@ -480,6 +568,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0C778DD82A5F20DB007D2A8F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C778DDF2A5F20DB007D2A8F /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0CD09E2C2A5DC7E1005C97F1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -503,6 +599,7 @@
 				0CD09E712A5DCB45005C97F1 /* Word+CoreDataClass.swift in Sources */,
 				0CD09E782A5DD290005C97F1 /* WordModel.xcdatamodeld in Sources */,
 				0CD09E7C2A5DD30C005C97F1 /* Word+CoreDataProperties.swift in Sources */,
+				0C778DD52A5F188C007D2A8F /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -517,6 +614,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0C778DE62A5F20FC007D2A8F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0CD09E2F2A5DC7E1005C97F1 /* DataStoreBuilder */;
+			targetProxy = 0C778DE52A5F20FC007D2A8F /* PBXContainerItemProxy */;
+		};
+		0C778DEB2A5F2101007D2A8F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0CD09E552A5DCB39005C97F1 /* WordFramework */;
+			targetProxy = 0C778DEA2A5F2101007D2A8F /* PBXContainerItemProxy */;
+		};
 		0CD09E3A2A5DC7E1005C97F1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 0CD09E2F2A5DC7E1005C97F1 /* DataStoreBuilder */;
@@ -739,6 +846,32 @@
 			};
 			name = Release;
 		};
+		0C778DE12A5F20DB007D2A8F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SU6X47WC59;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		0C778DE22A5F20DB007D2A8F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SU6X47WC59;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		0CD09E462A5DC7E1005C97F1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -888,15 +1021,19 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
 				PRODUCT_BUNDLE_IDENTIFIER = matthedm.WordFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -922,15 +1059,19 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
 				PRODUCT_BUNDLE_IDENTIFIER = matthedm.WordFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -991,6 +1132,15 @@
 			buildConfigurations = (
 				0C1D67102A5DC21500EAAD30 /* Debug */,
 				0C1D67112A5DC21500EAAD30 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0C778DE02A5F20DB007D2A8F /* Build configuration list for PBXNativeTarget "StoreBuilderMain" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C778DE12A5F20DB007D2A8F /* Debug */,
+				0C778DE22A5F20DB007D2A8F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

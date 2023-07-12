@@ -18,11 +18,11 @@ public class Word: NSManagedObject, Codable {
         my_context
     }
 
-    var frequency: Int16 {
+    var frequency: Int64 {
         my_frequency
     }
 
-    var index: Int32 {
+    var index: Int64{
         my_index
     }
 
@@ -42,7 +42,7 @@ public class Word: NSManagedObject, Codable {
         my_simplified ?? ""
     }
 
-    var spokenFrequency: Int16 {
+    var spokenFrequency: Int64 {
         my_spokenFrequency
     }
 
@@ -50,7 +50,7 @@ public class Word: NSManagedObject, Codable {
         my_traditional
     }
 
-    var writtenFrequency: Int16 {
+    var writtenFrequency: Int64 {
         my_writtenFrequency
     }
 
@@ -83,16 +83,16 @@ public class Word: NSManagedObject, Codable {
         self.init(entity: entity, insertInto: nil)
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        my_index = try container.decode(Int32.self, forKey: .index)
-        my_spokenFrequency = try container.decode(Int16.self, forKey: .spokenFrequency)
-        my_writtenFrequency = try container.decode(Int16.self, forKey: .writtenFrequency)
+        my_index = try container.decode(Int64.self, forKey: .index)
+        my_spokenFrequency = try container.decode(Int64.self, forKey: .spokenFrequency)
+        my_writtenFrequency = try container.decode(Int64.self, forKey: .writtenFrequency)
         my_context = try container.decode(String.self, forKey: .context)
         my_meanings = try container.decode([String].self, forKey: .meanings)
         my_level = try container.decode(Double.self, forKey: .level)
         my_pinyin = try container.decodeIfPresent(String.self, forKey: .pinyin)
         my_simplified = try container.decodeIfPresent(String.self, forKey: .simplified)
         my_zhuyin = try container.decode(String.self, forKey: .zhuyin)
-        my_frequency = try container.decode(Int16.self, forKey: .frequency)
+        my_frequency = try container.decode(Int64.self, forKey: .frequency)
         my_traditional = try container.decode(String.self, forKey: .traditional)
     }
     public func encode(to encoder: Encoder) throws {

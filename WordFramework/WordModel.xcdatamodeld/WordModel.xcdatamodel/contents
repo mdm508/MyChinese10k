@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22158.8" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="WordModel">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22158.8" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Word" representedClassName=".Word" syncable="YES">
         <attribute name="my_context" attributeType="String"/>
-        <attribute name="my_frequency" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="my_index" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="my_frequency" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="my_index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="my_level" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="my_meanings" attributeType="Transformable" valueTransformerName="" customClassName="[String]"/>
         <attribute name="my_pinyin" optional="YES" attributeType="String"/>
         <attribute name="my_simplified" optional="YES" attributeType="String"/>
-        <attribute name="my_spokenFrequency" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="my_spokenFrequency" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="my_traditional" attributeType="String"/>
-        <attribute name="my_writtenFrequency" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="my_writtenFrequency" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="my_zhuyin" attributeType="String"/>
         <fetchIndex name="index">
             <fetchIndexElement property="my_index" type="Binary" order="ascending"/>

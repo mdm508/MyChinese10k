@@ -6,10 +6,13 @@
 //
 
 import XCTest
+import WordFramework
+import CoreData
 @testable import DataStoreBuilder
 
 class DataStoreBuilderTests: XCTestCase {
-    let totalWords = 14425
+    let totalWords = 13829
+
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -19,17 +22,11 @@ class DataStoreBuilderTests: XCTestCase {
     }
     
     func testLoadedAll() throws {
-        let words = loadWordsFromJson(limit: 10)
-        for x in words {
-            print(x)
-        }
-        XCTAssertEqual(words.count, 10)
+        let words = loadWordsFromJson()
+        XCTAssertEqual(words.count, totalWords)
         
     }
 
-    func testMain() throws {
-        print("hi")
-    }
 
 
 }
