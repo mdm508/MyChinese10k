@@ -17,6 +17,10 @@
 		0C778DE42A5F20FC007D2A8F /* DataStoreBuilder.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0C778DE82A5F2101007D2A8F /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
 		0C778DE92A5F2101007D2A8F /* WordFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0C778DED2A61A78D007D2A8F /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
+		0C778DEE2A61A78E007D2A8F /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
+		0C7C3F872A70519C00AE2E50 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */; };
+		0C7C3F882A70519C00AE2E50 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */; };
 		0CD09E382A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
 		0CD09E3F2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */; };
 		0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -28,11 +32,9 @@
 		0CD09E662A5DCB3A005C97F1 /* WordFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E582A5DCB39005C97F1 /* WordFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0CD09E692A5DCB3A005C97F1 /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
 		0CD09E6A2A5DCB3A005C97F1 /* WordFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		0CD09E712A5DCB45005C97F1 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67122A5DC33A00EAAD30 /* Word+CoreDataClass.swift */; };
 		0CD09E732A5DCC5A005C97F1 /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
 		0CD09E742A5DCC5A005C97F1 /* WordFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0CD09E782A5DD290005C97F1 /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
-		0CD09E7C2A5DD30C005C97F1 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E7A2A5DD30C005C97F1 /* Word+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -153,11 +155,12 @@
 		0C1D67062A5DC21400EAAD30 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0C1D67082A5DC21500EAAD30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0C1D67122A5DC33A00EAAD30 /* Word+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0C1D67142A5DC33A00EAAD30 /* WordModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WordModel.xcdatamodel; sourceTree = "<group>"; };
 		0C778DD42A5F188C007D2A8F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = StoreBuilderMain; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C778DDE2A5F20DB007D2A8F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataClass.swift"; sourceTree = "<group>"; };
+		0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStoreBuilder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataStoreBuilder.h; sourceTree = "<group>"; };
 		0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreBuilderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -168,7 +171,7 @@
 		0CD09E582A5DCB39005C97F1 /* WordFramework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WordFramework.h; sourceTree = "<group>"; };
 		0CD09E5D2A5DCB3A005C97F1 /* WordFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E642A5DCB3A005C97F1 /* WordFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordFrameworkTests.swift; sourceTree = "<group>"; };
-		0CD09E7A2A5DD30C005C97F1 /* Word+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0CEEEE652A70572600262651 /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,6 +257,7 @@
 		0C1D67032A5DC21400EAAD30 /* ChineseWordOfTheDay */ = {
 			isa = PBXGroup;
 			children = (
+				0CEEEE642A70571400262651 /* Resources */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
 				0C1D67082A5DC21500EAAD30 /* Assets.xcassets */,
@@ -299,9 +303,9 @@
 		0CD09E572A5DCB39005C97F1 /* WordFramework */ = {
 			isa = PBXGroup;
 			children = (
-				0CD09E7A2A5DD30C005C97F1 /* Word+CoreDataProperties.swift */,
+				0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */,
+				0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */,
 				0C778DD42A5F188C007D2A8F /* Constants.swift */,
-				0C1D67122A5DC33A00EAAD30 /* Word+CoreDataClass.swift */,
 				0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */,
 				0CD09E582A5DCB39005C97F1 /* WordFramework.h */,
 			);
@@ -321,6 +325,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0CEEEE642A70571400262651 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0CEEEE652A70572600262651 /* WordModel.sqlite */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -565,6 +577,7 @@
 			files = (
 				0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
+				0C778DEE2A61A78E007D2A8F /* WordModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,6 +586,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C778DDF2A5F20DB007D2A8F /* main.swift in Sources */,
+				0C778DED2A61A78D007D2A8F /* WordModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -596,10 +610,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CD09E712A5DCB45005C97F1 /* Word+CoreDataClass.swift in Sources */,
+				0C7C3F872A70519C00AE2E50 /* Word+CoreDataClass.swift in Sources */,
 				0CD09E782A5DD290005C97F1 /* WordModel.xcdatamodeld in Sources */,
-				0CD09E7C2A5DD30C005C97F1 /* Word+CoreDataProperties.swift in Sources */,
 				0C778DD52A5F188C007D2A8F /* Constants.swift in Sources */,
+				0C7C3F882A70519C00AE2E50 /* Word+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

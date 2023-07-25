@@ -11,24 +11,7 @@ import WordFramework
 import CoreData
 
 
-func main() {
-    // Setup Persistent Container
-    let container = NSPersistentContainer(name: STORE_NAME)
-    container.loadPersistentStores { (_, error) in
-        if let error = error as NSError? {
-            fatalError("Failed to load persistent stores: \(error), \(error.userInfo)")
-        }
-    }
-    // Load words from json then save to container
-    let words = loadWordsFromJson()
-    let request = NSBatchInsertRequest(entityName: "Word", objects: words)
-    request.resultType = .count
-    do {
-        try container.viewContext.execute(request)
-        try container.viewContext.save()
-    } catch {
-        fatalError(error.localizedDescription)
-    }
+func printStoreLocation(container:NSPersistentContainer){
     // Get the URL of the persistent store file
     guard let storeURL = container.persistentStoreCoordinator.persistentStores.first?.url else {
         fatalError("Unable to retrieve the persistent store URL")
@@ -38,20 +21,31 @@ func main() {
     path[0] = ""
     print("db files are at: ")
     print(path.joined(separator: "/"))
+}
 
-//        // Get what DB contains
-//        let fetchRequest: NSFetchRequest<Word> = Word.fetchRequest()
-//
-//        do {
-//            let word = try container.viewContext.fetch(fetchRequest)
-//
-//            for word in words {
-//                print(word)
-//                print("--------------")
-//            }
-//        } catch {
-//            print("Error fetching people: \(error.localizedDescription)")
-//        }
+func main() {
+    // Setup Persistent Container
+    let container = NSPersistentContainer(name: STORE_NAME)
+    container.loadPersistentStores { (_, error) in
+        if let error = error as NSError? {
+            fatalError("Failed to load persistent stores: \(error), \(error.userInfo)")
+        }
+        // Load words from json then save to container
+        let words = loadWordsFromJson()
+        let context = container.viewContext
+        let request = NSBatchInsertRequest(entityName: "Word", objects: words)
+        print(words[0].keys)
+        printStoreLocation(container: container)
+        try! context.execute(request)
+        try! context.save()
+    }
 }
 
 main()
+
+/*
+ turn off wal mode
+ cd /Users/m/Library/Application\ Support/setup/
+ sqlite3 PersonDemo.sqlite
+ PRAGMA journal_mode = DELETE;
+ */
