@@ -11,6 +11,13 @@
 		0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67062A5DC21400EAAD30 /* ContentView.swift */; };
 		0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D67082A5DC21500EAAD30 /* Assets.xcassets */; };
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
+		0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858BE2A7192BE00AF96C2 /* Persistence.swift */; };
+		0C4858C12A7192CC00AF96C2 /* Containers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C02A7192CC00AF96C2 /* Containers.swift */; };
+		0C4858C22A7194F500AF96C2 /* WordModel.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0CEEEE652A70572600262651 /* WordModel.sqlite */; };
+		0C4858C32A71983C00AF96C2 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */; };
+		0C4858C42A71984100AF96C2 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */; };
+		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
+		0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C72A71992E00AF96C2 /* WordView.swift */; };
 		0C778DD52A5F188C007D2A8F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C778DD42A5F188C007D2A8F /* Constants.swift */; };
 		0C778DDF2A5F20DB007D2A8F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C778DDE2A5F20DB007D2A8F /* main.swift */; };
 		0C778DE32A5F20FC007D2A8F /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
@@ -156,6 +163,10 @@
 		0C1D67082A5DC21500EAAD30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0C1D67142A5DC33A00EAAD30 /* WordModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WordModel.xcdatamodel; sourceTree = "<group>"; };
+		0C4858BE2A7192BE00AF96C2 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		0C4858C02A7192CC00AF96C2 /* Containers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Containers.swift; sourceTree = "<group>"; };
+		0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryReaderCentered.swift; sourceTree = "<group>"; };
+		0C4858C72A71992E00AF96C2 /* WordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
 		0C778DD42A5F188C007D2A8F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = StoreBuilderMain; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C778DDE2A5F20DB007D2A8F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -257,6 +268,10 @@
 		0C1D67032A5DC21400EAAD30 /* ChineseWordOfTheDay */ = {
 			isa = PBXGroup;
 			children = (
+				0C4858C72A71992E00AF96C2 /* WordView.swift */,
+				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
+				0C4858C02A7192CC00AF96C2 /* Containers.swift */,
+				0C4858BE2A7192BE00AF96C2 /* Persistence.swift */,
 				0CEEEE642A70571400262651 /* Resources */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
@@ -534,6 +549,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C4858C22A7194F500AF96C2 /* WordModel.sqlite in Resources */,
 				0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */,
 				0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */,
 			);
@@ -575,9 +591,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */,
+				0C4858C12A7192CC00AF96C2 /* Containers.swift in Sources */,
 				0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */,
+				0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */,
+				0C4858C42A71984100AF96C2 /* Word+CoreDataProperties.swift in Sources */,
+				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
 				0C778DEE2A61A78E007D2A8F /* WordModel.xcdatamodeld in Sources */,
+				0C4858C32A71983C00AF96C2 /* Word+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

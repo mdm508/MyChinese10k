@@ -8,20 +8,23 @@
 import SwiftUI
 import CoreData
 import WordFramework
+
+
 @main
 struct ChineseWordOfTheDayApp: App {
-    init(){
-        let container = NSPersistentContainer(name: STORE_NAME)
-        container.loadPersistentStores { (_, error) in
-            if let error = error as NSError? {
-                fatalError("Failed to load persistent stores: \(error), \(error.userInfo)")
-            }
-        }
+    
+    
 
+    let persistenceController: PersistenceController
+    init(){
+        PersistenceController.copyDatabaseIfNeeded()
+        persistenceController =  PersistenceController.shared
     }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+                ContentView()
+                .environment(\.managedObjectContext,
+                              persistenceController.container.viewContext)
         }
     }
 }

@@ -6,14 +6,23 @@
 //
 
 import SwiftUI
+import WordFramework
 
-struct ContentView: View {
+struct ContentView {
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @FetchRequest(
+        sortDescriptors: [
+            NSSortDescriptor(keyPath: \Word.my_frequency, ascending: false)
+        ]
+    ) var fetchedResults: FetchedResults<Word>
+
+}
+
+extension ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text(fetchedResults[0].my_traditional)
         }
         .padding()
     }

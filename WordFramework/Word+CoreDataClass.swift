@@ -12,47 +12,47 @@ import CoreData
 
 @objc(Word)
 public class Word: NSManagedObject {
-    var context: String {
+    public var context: String {
         my_context
     }
 
-    var frequency: Int64 {
+    public var frequency: Int64 {
         my_frequency
     }
 
-    var index: Int64{
+    public var index: Int64{
         my_index
     }
 
-    var level: Double {
+    public var level: Double {
         my_level
     }
 
-    var meanings: [String] {
+    private var meanings: [String] {
         my_meanings
     }
 
-    var pinyin: String {
+    public var pinyin: String {
         my_pinyin ?? ""
     }
 
-    var simplified: String {
+    public var simplified: String {
         my_simplified ?? ""
     }
 
-    var spokenFrequency: Int64 {
+    public var spokenFrequency: Int64 {
         my_spokenFrequency
     }
 
-    var traditional: String {
+    public var traditional: String {
         my_traditional
     }
 
-    var writtenFrequency: Int64 {
+    public var writtenFrequency: Int64 {
         my_writtenFrequency
     }
 
-    var zhuyin: String {
+    public var zhuyin: String {
         my_zhuyin
     }
 }
