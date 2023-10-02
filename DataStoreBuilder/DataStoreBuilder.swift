@@ -43,7 +43,8 @@ func renameKeysInJSONData(_ jsonEntries: [[String: Any]]) -> [[String: Any]] {
             "my_spokenFrequency": jsonEntry["spokenFrequency"]!,
             "my_traditional": jsonEntry["traditional"]!,
             "my_writtenFrequency": jsonEntry["writtenFrequency"]!,
-            "my_zhuyin": jsonEntry["zhuyin"]!
+            "my_zhuyin": jsonEntry["zhuyin"]!,
+            "my_synonyms": jsonEntry["synonyms"]!,
         ]
     }
 }

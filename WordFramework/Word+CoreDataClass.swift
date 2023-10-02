@@ -33,11 +33,11 @@ public class Word: NSManagedObject {
     }
 
     public var pinyin: String {
-        my_pinyin ?? ""
+        my_pinyin
     }
 
     public var simplified: String {
-        my_simplified ?? ""
+        my_simplified
     }
 
     public var spokenFrequency: Int64 {
@@ -54,6 +54,9 @@ public class Word: NSManagedObject {
 
     public var zhuyin: String {
         my_zhuyin
+    }
+    public var synonyms: [String] {
+        my_synonyms
     }
 }
 

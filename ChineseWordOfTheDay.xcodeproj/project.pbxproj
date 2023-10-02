@@ -13,7 +13,6 @@
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
 		0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858BE2A7192BE00AF96C2 /* Persistence.swift */; };
 		0C4858C12A7192CC00AF96C2 /* Containers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C02A7192CC00AF96C2 /* Containers.swift */; };
-		0C4858C22A7194F500AF96C2 /* WordModel.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0CEEEE652A70572600262651 /* WordModel.sqlite */; };
 		0C4858C32A71983C00AF96C2 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */; };
 		0C4858C42A71984100AF96C2 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */; };
 		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
@@ -33,7 +32,6 @@
 		0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0CD09E432A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
 		0CD09E4D2A5DC7FB005C97F1 /* DataStoreBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E4C2A5DC7FB005C97F1 /* DataStoreBuilder.swift */; };
-		0CD09E4F2A5DC81E005C97F1 /* output.json in Resources */ = {isa = PBXBuildFile; fileRef = 0CD09E4E2A5DC81E005C97F1 /* output.json */; };
 		0CD09E5E2A5DCB3A005C97F1 /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
 		0CD09E652A5DCB3A005C97F1 /* WordFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E642A5DCB3A005C97F1 /* WordFrameworkTests.swift */; };
 		0CD09E662A5DCB3A005C97F1 /* WordFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E582A5DCB39005C97F1 /* WordFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -42,6 +40,8 @@
 		0CD09E732A5DCC5A005C97F1 /* WordFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; };
 		0CD09E742A5DCC5A005C97F1 /* WordFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E562A5DCB39005C97F1 /* WordFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0CD09E782A5DD290005C97F1 /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
+		0CF1DF9B2ACB313D0093519B /* output.json in Resources */ = {isa = PBXBuildFile; fileRef = 0CF1DF9A2ACB313D0093519B /* output.json */; };
+		0CF1DF9D2ACB3D670093519B /* WordModel.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0CF1DF9C2ACB3D670093519B /* WordModel.sqlite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,12 +177,12 @@
 		0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreBuilderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStoreBuilderTests.swift; sourceTree = "<group>"; };
 		0CD09E4C2A5DC7FB005C97F1 /* DataStoreBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStoreBuilder.swift; sourceTree = "<group>"; };
-		0CD09E4E2A5DC81E005C97F1 /* output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = output.json; sourceTree = "<group>"; };
 		0CD09E562A5DCB39005C97F1 /* WordFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WordFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E582A5DCB39005C97F1 /* WordFramework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WordFramework.h; sourceTree = "<group>"; };
 		0CD09E5D2A5DCB3A005C97F1 /* WordFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E642A5DCB3A005C97F1 /* WordFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordFrameworkTests.swift; sourceTree = "<group>"; };
-		0CEEEE652A70572600262651 /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
+		0CF1DF9A2ACB313D0093519B /* output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = output.json; sourceTree = "<group>"; };
+		0CF1DF9C2ACB3D670093519B /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -300,7 +300,7 @@
 		0CD09E312A5DC7E1005C97F1 /* DataStoreBuilder */ = {
 			isa = PBXGroup;
 			children = (
-				0CD09E4E2A5DC81E005C97F1 /* output.json */,
+				0CF1DF9A2ACB313D0093519B /* output.json */,
 				0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */,
 				0CD09E4C2A5DC7FB005C97F1 /* DataStoreBuilder.swift */,
 			);
@@ -345,7 +345,7 @@
 		0CEEEE642A70571400262651 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0CEEEE652A70572600262651 /* WordModel.sqlite */,
+				0CF1DF9C2ACB3D670093519B /* WordModel.sqlite */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -549,8 +549,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C4858C22A7194F500AF96C2 /* WordModel.sqlite in Resources */,
 				0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */,
+				0CF1DF9D2ACB3D670093519B /* WordModel.sqlite in Resources */,
 				0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -559,7 +559,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CD09E4F2A5DC81E005C97F1 /* output.json in Resources */,
+				0CF1DF9B2ACB313D0093519B /* output.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

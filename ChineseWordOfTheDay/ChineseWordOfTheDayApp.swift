@@ -12,9 +12,6 @@ import WordFramework
 
 @main
 struct ChineseWordOfTheDayApp: App {
-    
-    
-
     let persistenceController: PersistenceController
     init(){
         PersistenceController.copyDatabaseIfNeeded()

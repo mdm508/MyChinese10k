@@ -46,6 +46,6 @@ main()
 /*
  turn off wal mode
  cd /Users/m/Library/Application\ Support/setup/
- sqlite3 PersonDemo.sqlite
+ sqlite3 WordModel.sqlite
  PRAGMA journal_mode = DELETE;
  */
