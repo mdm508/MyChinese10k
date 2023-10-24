@@ -16,18 +16,18 @@ extension Word {
         return NSFetchRequest<Word>(entityName: "Word")
     }
 
-    @NSManaged public var my_context: String
-    @NSManaged public var my_frequency: Int64
-    @NSManaged public var my_index: Int64
-    @NSManaged public var my_level: Double
-    @NSManaged public var my_meanings: [String]
-    @NSManaged public var my_pinyin: String
-    @NSManaged public var my_simplified: String
-    @NSManaged public var my_spokenFrequency: Int64
-    @NSManaged public var my_traditional: String
-    @NSManaged public var my_writtenFrequency: Int64
-    @NSManaged public var my_zhuyin: String
-    @NSManaged public var my_synonyms: [String]
+    @NSManaged public var context: String
+    @NSManaged public var frequency: Int64
+    @NSManaged public var index: Int64
+    @NSManaged public var level: Double
+    @NSManaged public var meanings: [String]
+    @NSManaged public var pinyin: String
+    @NSManaged public var simplified: String
+    @NSManaged public var spokenFrequency: Int64
+    @NSManaged public var traditional: String
+    @NSManaged public var writtenFrequency: Int64
+    @NSManaged public var zhuyin: String
+    @NSManaged public var synonyms: [String]
 
 }
 

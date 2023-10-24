@@ -33,18 +33,18 @@ public func loadWordsFromJson() -> [[String: Any]] {
 func renameKeysInJSONData(_ jsonEntries: [[String: Any]]) -> [[String: Any]] {
     return jsonEntries.map { jsonEntry in
         return [
-            "my_context": jsonEntry["context"]!,
-            "my_frequency": jsonEntry["frequency"]!,
-            "my_index": jsonEntry["index"]!,
-            "my_level": jsonEntry["level"]!,
-            "my_meanings": jsonEntry["meanings"]!,
-            "my_pinyin": jsonEntry["pinyin"]!,
-            "my_simplified": jsonEntry["simplified"]!,
-            "my_spokenFrequency": jsonEntry["spokenFrequency"]!,
-            "my_traditional": jsonEntry["traditional"]!,
-            "my_writtenFrequency": jsonEntry["writtenFrequency"]!,
-            "my_zhuyin": jsonEntry["zhuyin"]!,
-            "my_synonyms": jsonEntry["synonyms"]!,
+            "context": jsonEntry["context"]!,
+            "frequency": jsonEntry["frequency"]!,
+            "index": jsonEntry["index"]!,
+            "level": jsonEntry["level"]!,
+            "meanings": jsonEntry["meanings"]!,
+            "pinyin": jsonEntry["pinyin"]!,
+            "simplified": jsonEntry["simplified"]!,
+            "spokenFrequency": jsonEntry["spokenFrequency"]!,
+            "traditional": jsonEntry["traditional"]!,
+            "writtenFrequency": jsonEntry["writtenFrequency"]!,
+            "zhuyin": jsonEntry["zhuyin"]!,
+            "synonyms": jsonEntry["synonyms"]!,
         ]
     }
 }

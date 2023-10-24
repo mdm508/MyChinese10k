@@ -43,9 +43,33 @@ func main() {
 
 main()
 
-/*
- turn off wal mode
- cd /Users/m/Library/Application\ Support/setup/
- sqlite3 WordModel.sqlite
- PRAGMA journal_mode = DELETE;
+/**
+ Preloading the Core Data Store
+ 
+ Follow these steps to preload your store:
+ 
+ 1. Turn off Write-Ahead Logging (WAL) mode:
+    - Open a new terminal window.
+    - Navigate to the location of your SQLite database:
+      ```
+      cd /Users/m/Library/Developer/CoreSimulator/Devices/7E299733-C694-4075-A063-39A8E0565A16/data/Containers/Data/Application/0D1DE818-FF74-4798-ACDD-D5F5B9B0087A/Library/Application
+      ```
+    - Access the SQLite database using the command:
+      ```
+      sqlite3 WordModel.sqlite
+      ```
+    - Turn off WAL mode with the command:
+      ```
+      PRAGMA journal_mode = DELETE;
+      ```
+ 
+ 2. Copy the WordModel.sqlite file into the project's Resource folder.
+ 
+ 3. Delete the old SQLite files inside the Application Support directory:
+    - Navigate to the following location:
+      ```
+      /Users/m/Library/Developer/CoreSimulator/Devices/7E299733-C694-4075-A063-39A8E0565A16/data/Containers/Data/Application/6B452F81-979A-4CD1-80EA-113BF35355CB/Library/Application
+      ```
+ 
+ Make sure that WordModel.sqlite is included in the app target.
  */

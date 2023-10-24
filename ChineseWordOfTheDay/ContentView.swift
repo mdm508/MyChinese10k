@@ -16,7 +16,7 @@ struct ContentView {
     @State var offset = 0
     @FetchRequest(
         sortDescriptors: [
-            NSSortDescriptor(keyPath: \Word.my_frequency, ascending: false)
+            NSSortDescriptor(keyPath: \Word.frequency, ascending: false)
         ]
     ) var fetchedWords: FetchedResults<Word>
 
@@ -29,7 +29,7 @@ extension ContentView: View {
             VStack(alignment: .center){
                 WordView(word: currentWord.traditional, size: geo.size)
                 Text(currentWord.zhuyin)
-                List(currentWord.my_meanings, id: \.self){
+                List(currentWord.meanings, id: \.self){
                     Text($0)
                 }
                 Text(currentWord.index.description)
