@@ -11,8 +11,9 @@
 		0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67062A5DC21400EAAD30 /* ContentView.swift */; };
 		0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D67082A5DC21500EAAD30 /* Assets.xcassets */; };
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
+		0C22FF202AEDDA6B00913EC3 /* WordModel.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0C22FF1F2AEDDA6B00913EC3 /* WordModel.sqlite */; };
+		0C22FF242AEDDE7900913EC3 /* CurrentWordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C22FF232AEDDE7900913EC3 /* CurrentWordViewModel.swift */; };
 		0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858BE2A7192BE00AF96C2 /* Persistence.swift */; };
-		0C4858C12A7192CC00AF96C2 /* Containers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C02A7192CC00AF96C2 /* Containers.swift */; };
 		0C4858C32A71983C00AF96C2 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */; };
 		0C4858C42A71984100AF96C2 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */; };
 		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
@@ -27,7 +28,6 @@
 		0C778DEE2A61A78E007D2A8F /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
 		0C7C3F872A70519C00AE2E50 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */; };
 		0C7C3F882A70519C00AE2E50 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */; };
-		0C80DAC62AE749D9006EF91E /* WordModel.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0C80DAC42AE7419C006EF91E /* WordModel.sqlite */; };
 		0CD09E382A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
 		0CD09E3F2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */; };
 		0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -163,8 +163,9 @@
 		0C1D67082A5DC21500EAAD30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0C1D67142A5DC33A00EAAD30 /* WordModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WordModel.xcdatamodel; sourceTree = "<group>"; };
+		0C22FF1F2AEDDA6B00913EC3 /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
+		0C22FF232AEDDE7900913EC3 /* CurrentWordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWordViewModel.swift; sourceTree = "<group>"; };
 		0C4858BE2A7192BE00AF96C2 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		0C4858C02A7192CC00AF96C2 /* Containers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Containers.swift; sourceTree = "<group>"; };
 		0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryReaderCentered.swift; sourceTree = "<group>"; };
 		0C4858C72A71992E00AF96C2 /* WordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
 		0C778DD42A5F188C007D2A8F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -172,7 +173,6 @@
 		0C778DDE2A5F20DB007D2A8F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		0C80DAC42AE7419C006EF91E /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
 		0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStoreBuilder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataStoreBuilder.h; sourceTree = "<group>"; };
 		0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreBuilderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -270,8 +270,8 @@
 			children = (
 				0C4858C72A71992E00AF96C2 /* WordView.swift */,
 				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
-				0C4858C02A7192CC00AF96C2 /* Containers.swift */,
 				0C4858BE2A7192BE00AF96C2 /* Persistence.swift */,
+				0C22FF232AEDDE7900913EC3 /* CurrentWordViewModel.swift */,
 				0CEEEE642A70571400262651 /* Resources */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
@@ -345,7 +345,7 @@
 		0CEEEE642A70571400262651 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0C80DAC42AE7419C006EF91E /* WordModel.sqlite */,
+				0C22FF1F2AEDDA6B00913EC3 /* WordModel.sqlite */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -550,7 +550,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */,
-				0C80DAC62AE749D9006EF91E /* WordModel.sqlite in Resources */,
+				0C22FF202AEDDA6B00913EC3 /* WordModel.sqlite in Resources */,
 				0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -592,13 +592,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */,
-				0C4858C12A7192CC00AF96C2 /* Containers.swift in Sources */,
 				0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */,
 				0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */,
 				0C4858C42A71984100AF96C2 /* Word+CoreDataProperties.swift in Sources */,
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
 				0C778DEE2A61A78E007D2A8F /* WordModel.xcdatamodeld in Sources */,
+				0C22FF242AEDDE7900913EC3 /* CurrentWordViewModel.swift in Sources */,
 				0C4858C32A71983C00AF96C2 /* Word+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

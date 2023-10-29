@@ -14,17 +14,13 @@ import WordFramework
 struct ContentView {
     @Environment(\.managedObjectContext) private var viewContext
     @State var offset = 0
-    @FetchRequest(
-        sortDescriptors: [
-            NSSortDescriptor(keyPath: \Word.frequency, ascending: false)
-        ]
-    ) var fetchedWords: FetchedResults<Word>
+    @StateObject var viewModel: WordViewModel = WordViewModel()
 
 }
 
 extension ContentView: View {
     var body: some View {
-        let currentWord = fetchedWords[self.offset]
+        let currentWord = viewModel.currentWord
         GeometryReaderCentered { geo in
             VStack(alignment: .center){
                 WordView(word: currentWord.traditional, size: geo.size)
@@ -35,11 +31,9 @@ extension ContentView: View {
                 Text(currentWord.index.description)
                 Spacer()
                 Button("->"){
-                    self.offset += 10
+                    self.viewModel.updateCurrentWordStatus(newStatus: 1)
                 }
             }
-        }.onAppear{
-            print(currentWord)
         }
     }
 }

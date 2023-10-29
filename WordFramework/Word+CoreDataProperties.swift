@@ -28,6 +28,7 @@ extension Word {
     @NSManaged public var writtenFrequency: Int64
     @NSManaged public var zhuyin: String
     @NSManaged public var synonyms: [String]
+    @NSManaged public var status: Int64
 
 }
 
