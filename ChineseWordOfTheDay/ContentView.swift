@@ -8,16 +8,9 @@
 import SwiftUI
 import WordFramework
 
-
-
-
 struct ContentView {
-    @Environment(\.managedObjectContext) private var viewContext
-    @State var offset = 0
-    @StateObject var viewModel: WordViewModel = WordViewModel()
-
+    @StateObject var viewModel: WordViewModel
 }
-
 extension ContentView: View {
     var body: some View {
         let currentWord = viewModel.currentWord

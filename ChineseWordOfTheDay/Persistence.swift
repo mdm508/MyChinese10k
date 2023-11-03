@@ -26,7 +26,9 @@ struct PersistenceController {
     }()
 
     let container: NSPersistentContainer
-
+    var context: NSManagedObjectContext {
+        self.container.viewContext
+    }
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: STORE_NAME)
         if inMemory {

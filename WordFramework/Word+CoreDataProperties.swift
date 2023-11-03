@@ -35,14 +35,3 @@ extension Word {
 extension Word : Identifiable {
 
 }
-
-//extension Word {
-//    static func longestWordsFetchRequest() -> NSFetchRequest<Word> {
-//        let request: NSFetchRequest<Word> = Word.fetchRequest()
-//        let descriptor = NSSortDescriptor(keyPath: Word\.frequency, ascending: true){
-//            (w1, w2) in
-//            
-//        }
-//        request.sortDescriptors = []
-//    }
-//}

@@ -8,12 +8,12 @@
 import SwiftUI
 import CoreData
 
+
 class WordViewModel: ObservableObject {
     @Published var currentWord: Word = Word()
-    private let persistentController: PersistenceController
-    
-    init(persistentController: PersistenceController = PersistenceController.shared) {
-        self.persistentController = persistentController
+    let context: NSManagedObjectContext
+    init(viewContext: NSManagedObjectContext) {
+        self.context = viewContext
         self.setCurrentWord()
     }
 }
@@ -24,14 +24,13 @@ extension WordViewModel {
         saveChanges()
         setCurrentWord()
     }
-    
     func fetchWordWithStatus(status: Int64) -> Word? {
         let request: NSFetchRequest<Word> = Word.fetchRequest()
         request.predicate = NSPredicate(format: "status == %d", status)
         request.fetchLimit = 1
         
         do {
-            return try persistentController.container.viewContext.fetch(request).first
+            return try self.context.fetch(request).first
         } catch {
             print("Error fetching word: \(error)")
             return nil
@@ -44,7 +43,7 @@ extension WordViewModel {
     }
     func saveChanges() {
         do {
-            try persistentController.container.viewContext.save()
+            try context.save()
         } catch {
             print("Error saving changes: \(error)")
         }

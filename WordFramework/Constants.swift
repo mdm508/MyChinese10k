@@ -8,4 +8,4 @@
 import Foundation
 
 public let STORE_NAME = "WordModel"
-// iCloud.com.matthedm.ChineseWordOfTheDay
+public let ICLOUD_ID = "iCloud.com.matthedm.ChineseWordOfTheDay"
