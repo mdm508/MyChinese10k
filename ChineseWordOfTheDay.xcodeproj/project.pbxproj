@@ -268,13 +268,11 @@
 		0C1D67032A5DC21400EAAD30 /* ChineseWordOfTheDay */ = {
 			isa = PBXGroup;
 			children = (
-				0C4858C72A71992E00AF96C2 /* WordView.swift */,
-				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
+				0C22FF472AF56FDD00913EC3 /* Views */,
+				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C4858BE2A7192BE00AF96C2 /* Persistence.swift */,
 				0C22FF232AEDDE7900913EC3 /* CurrentWordViewModel.swift */,
 				0CEEEE642A70571400262651 /* Resources */,
-				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
-				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
 				0C1D67082A5DC21500EAAD30 /* Assets.xcassets */,
 				0C1D670A2A5DC21500EAAD30 /* Preview Content */,
 			);
@@ -287,6 +285,16 @@
 				0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0C22FF472AF56FDD00913EC3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
+				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
+				0C4858C72A71992E00AF96C2 /* WordView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		0C778DDD2A5F20DB007D2A8F /* StoreBuilderMain */ = {

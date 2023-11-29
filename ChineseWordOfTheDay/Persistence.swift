@@ -46,24 +46,31 @@ struct PersistenceController {
 }
 
 extension PersistenceController {
+    static let fm: FileManager = {
+        FileManager.default
+    }()
+    static let appSupport: URL = {
+        fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+    }()
+    static let localStoreURL: URL = {
+        appSupport.appendingPathComponent(STORE_NAME + ".sqlite")
+    }()
+}
+
+extension PersistenceController {
     /// Ensures that when application is first run, a preloaded database will be copied into the Sandbox.
     /// For this function to work correctly, it must be that the store was previously set to journal mode.
     /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
     static func copyDatabaseIfNeeded() {
-        let fileManager = FileManager.default
         guard let bundlePath = Bundle.main.path(forResource: STORE_NAME, ofType: "sqlite") else {
             print("Database file not found in the app bundle.")
             return
         }
-        guard let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
-            print("Unable to access the documents directory.")
-            return
-        }
-        let destinationURL = appSupport.appendingPathComponent(STORE_NAME + ".sqlite")
+        let destinationURL = localStoreURL
         // is the store already in documents? if so we dont need to copy it
-        if !fileManager.fileExists(atPath: destinationURL.path) {
+        if !fm.fileExists(atPath: destinationURL.path) {
             do {
-                try fileManager.copyItem(atPath: bundlePath, toPath: destinationURL.path)
+                try fm.copyItem(atPath: bundlePath, toPath: destinationURL.path)
                 print("Database file copied to documents directory.")
             } catch {
                 print("Error copying database file: \(error)")
