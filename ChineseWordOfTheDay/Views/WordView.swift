@@ -20,6 +20,7 @@ extension WordView: View {
 
     }
 }
+
 extension WordView {
     static let scalingFactor: CGFloat = 0.5
     func fontSize() -> CGFloat {
@@ -28,6 +29,7 @@ extension WordView {
         return sizePerCharacter
     }
 }
+
 struct ChineseCharacter_Previews: PreviewProvider {
     static var previews: some View {
         GeometryReaderCentered { geo in
@@ -35,8 +37,6 @@ struct ChineseCharacter_Previews: PreviewProvider {
         }
     }
 }
-
-
 /*
  Testing data
  Traditional: 一發不可收拾, Frequency: 7 6

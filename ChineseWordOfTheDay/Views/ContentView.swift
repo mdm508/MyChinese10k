@@ -27,7 +27,8 @@ extension ContentView: View {
                     self.viewModel.updateCurrentWordStatus(newStatus: 1)
                 }
             }
+        }.task {
+      
         }
     }
 }
-

@@ -9,13 +9,10 @@
 import Foundation
 import CoreData
 
-
-extension Word {
-
+extension Word: Identifiable {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Word> {
         return NSFetchRequest<Word>(entityName: "Word")
     }
-
     @NSManaged public var context: String
     @NSManaged public var frequency: Int64
     @NSManaged public var index: Int64
@@ -29,9 +26,4 @@ extension Word {
     @NSManaged public var zhuyin: String
     @NSManaged public var synonyms: [String]
     @NSManaged public var status: Int64
-
-}
-
-extension Word : Identifiable {
-
 }

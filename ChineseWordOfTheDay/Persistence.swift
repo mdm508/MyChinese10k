@@ -1,4 +1,4 @@
-//
+
 //  Persistence.swift
 //  ChineseWordOfTheDay
 //
@@ -12,7 +12,6 @@ import Combine
 
 struct PersistenceController {
     static let shared = PersistenceController()
-
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
@@ -24,19 +23,28 @@ struct PersistenceController {
         }
         return result
     }()
-
-    let container: NSPersistentContainer
+    let container: NSPersistentCloudKitContainer
     var context: NSManagedObjectContext {
         self.container.viewContext
     }
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: STORE_NAME)
+        container = NSPersistentCloudKitContainer(name: STORE_NAME)
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
             container.persistentStoreDescriptions.first!.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         }
+        let cloudURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                      .appendingPathComponent("cloud.sqlite")
+        let localURL = Self.localStoreURL
+        let cloudDesc = NSPersistentStoreDescription(url: cloudURL)
+        cloudDesc.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
+        cloudDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        cloudDesc.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        cloudDesc.configuration = "cloud"
+        let localDesc = NSPersistentStoreDescription(url: localURL)
+        localDesc.configuration = "local"
+        container.persistentStoreDescriptions = [cloudDesc, localDesc]
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            print(storeDescription.url)
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
@@ -50,7 +58,8 @@ extension PersistenceController {
         FileManager.default
     }()
     static let appSupport: URL = {
-        fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        /// will create the appSupportDirectory if it doesn't exist already
+        try! fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
     }()
     static let localStoreURL: URL = {
         appSupport.appendingPathComponent(STORE_NAME + ".sqlite")
@@ -67,27 +76,17 @@ extension PersistenceController {
             return
         }
         let destinationURL = localStoreURL
-        // is the store already in documents? if so we dont need to copy it
         if !fm.fileExists(atPath: destinationURL.path) {
             do {
                 try fm.copyItem(atPath: bundlePath, toPath: destinationURL.path)
-                print("Database file copied to documents directory.")
+                print("Database file copied to Application Suppor director")
             } catch {
                 print("Error copying database file: \(error)")
+                fatalError()
             }
         } else {
             print("Database file already exists in the documents directory at: ")
             print(destinationURL)
         }
     }
-    
 }
-
-extension PersistenceController {
-//    func longestWord() -> Word {
-//        
-//        
-//    }
-}
-
-

@@ -28,6 +28,7 @@
 		0C778DEE2A61A78E007D2A8F /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
 		0C7C3F872A70519C00AE2E50 /* Word+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */; };
 		0C7C3F882A70519C00AE2E50 /* Word+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */; };
+		0CCB25372B1FB4DD001FAF94 /* CloudKitNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCB25362B1FB4DD001FAF94 /* CloudKitNotification.swift */; };
 		0CD09E382A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
 		0CD09E3F2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */; };
 		0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -165,6 +166,7 @@
 		0C778DDE2A5F20DB007D2A8F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0CCB25362B1FB4DD001FAF94 /* CloudKitNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitNotification.swift; sourceTree = "<group>"; };
 		0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStoreBuilder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataStoreBuilder.h; sourceTree = "<group>"; };
 		0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreBuilderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -265,6 +267,7 @@
 				0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */,
 				0C22FF472AF56FDD00913EC3 /* Views */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
+				0CCB25362B1FB4DD001FAF94 /* CloudKitNotification.swift */,
 				0C4858BE2A7192BE00AF96C2 /* Persistence.swift */,
 				0C22FF232AEDDE7900913EC3 /* CurrentWordViewModel.swift */,
 				0CEEEE642A70571400262651 /* Resources */,
@@ -594,6 +597,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */,
+				0CCB25372B1FB4DD001FAF94 /* CloudKitNotification.swift in Sources */,
 				0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */,
 				0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */,
 				0C4858C42A71984100AF96C2 /* Word+CoreDataProperties.swift in Sources */,

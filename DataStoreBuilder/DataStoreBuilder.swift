@@ -30,6 +30,7 @@ public func loadWordsFromJson() -> [[String: Any]] {
     }
     return []
 }
+
 func renameKeysInJSONData(_ jsonEntries: [[String: Any]]) -> [[String: Any]] {
     return jsonEntries.map { jsonEntry in
         return [

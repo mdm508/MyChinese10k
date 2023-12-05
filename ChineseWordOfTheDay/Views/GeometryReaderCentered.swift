@@ -9,7 +9,8 @@ import SwiftUI
 
 struct GeometryReaderCentered<Content: View>: View {
     var content: (GeometryProxy) -> Content
-
+}
+extension GeometryReaderCentered{
     var body: some View {
         GeometryReader { geometry in
             Group {
