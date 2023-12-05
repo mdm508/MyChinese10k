@@ -21,4 +21,14 @@
             <fetchIndexElement property="traditional" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
+    <entity name="WordStatus" representedClassName="WordStatus" syncable="YES" codeGenerationType="class">
+        <attribute name="status" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="traditional" optional="YES" attributeType="String"/>
+    </entity>
+    <configuration name="cloud" usedWithCloudKit="YES">
+        <memberEntity name="WordStatus"/>
+    </configuration>
+    <configuration name="local">
+        <memberEntity name="Word"/>
+    </configuration>
 </model>
