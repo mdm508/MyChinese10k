@@ -42,24 +42,37 @@ extension AppDelegate {
     }
 }
 
+/// A collection of related CloudKit contsants
+struct Cloud{
+    static let ck = CKContainer(identifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
+    static var db: CKDatabase {
+        ck.privateCloudDatabase
+    }
+    static let subID = "wordStatus"
+}
+extension Cloud {
+    static let wordStatusRecordType = "CD_WordStatus"
+    static let wordStatusKeyTraditional = "CD_traditional"
+    static let wordStatusKeyStatus = "CD_status"
+    static let wordStatusAllKeys = [Self.wordStatusKeyTraditional, Self.wordStatusKeyStatus]
+}
 /// If a cloud kit subscription does not exist then set one up
 func setupCloudSub() {
     /// Must setup container like this because `CKContainer.default` has a different identifier
-    let ck = CKContainer(identifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
-    let db = ck.privateCloudDatabase
-    db.fetch(withSubscriptionID: "wordStatus"){ sub, error in
+    let db = Cloud.db
+    db.fetch(withSubscriptionID: Cloud.subID){ sub, error in
         if let error = error  {
             print(error.localizedDescription)
         }
         if sub == nil {
-            let sub = CKQuerySubscription(recordType: "CD_WordStatus",
+            let sub = CKQuerySubscription(recordType: Cloud.wordStatusRecordType,
                                 predicate: NSPredicate(value: true),
-                                subscriptionID: "wordStatus",
+                                          subscriptionID: Cloud.subID,
                                           options: .firesOnRecordCreation)
             let notification = CKSubscription.NotificationInfo()
             notification.shouldSendContentAvailable = true
             ///ensure fields included in the payload
-            notification.desiredKeys = ["CD_traditional", "CD_status",]
+            notification.desiredKeys = Cloud.wordStatusAllKeys
             sub.notificationInfo = notification
             db.save(sub) { (subscription, error) in
                  if let error = error {
@@ -75,8 +88,8 @@ func extractCloudKitInfo(from notificationPayload: [AnyHashable: Any]) -> CloudK
         let ckInfo = notificationPayload[AnyHashable("ck")] as? [AnyHashable: Any],
         let qry = ckInfo["qry"] as? [AnyHashable: Any],
         let af = qry["af"] as? [String: Any],
-        let cdStatus = af["CD_status"] as? Int64,
-        let cdTraditional = af["CD_traditional"] as? String
+        let cdStatus = af[Cloud.wordStatusKeyStatus] as? Int64,
+        let cdTraditional = af[Cloud.wordStatusKeyTraditional] as? String
     else {
         // Return nil if any required field is missing or has the wrong type
         return nil
@@ -102,4 +115,9 @@ func updateLocalStatus(with new: CloudKitNotificationInfo){
     } catch {
         print("Error fetching or updating words: \(error.localizedDescription)")
     }
+}
+
+/// updates all the local records with the statuses found in the cloud
+func updateAllLocalStatus(){
+    
 }
