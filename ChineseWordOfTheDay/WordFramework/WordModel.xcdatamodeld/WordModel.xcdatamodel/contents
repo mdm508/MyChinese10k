@@ -21,7 +21,7 @@
             <fetchIndexElement property="traditional" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="WordStatus" representedClassName="WordStatus" syncable="YES" codeGenerationType="class">
+    <entity name="WordStatus" representedClassName="WordStatus" syncable="YES">
         <attribute name="status" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="traditional" optional="YES" attributeType="String"/>
     </entity>

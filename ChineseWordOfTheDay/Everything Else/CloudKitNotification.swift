@@ -15,7 +15,11 @@ protocol CurrentWordRefreshDelegate {
     func refresh() -> ()
 }
 
-typealias CloudKitNotificationInfo = (cdTraditional: String, cdStatus: Int64)
+
+struct CloudKitNotificationInfo {
+    let cdTraditional: String
+    let cdStatus: Int64
+}
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     let gcmMessageIDKey = "gcm.message_id"
@@ -49,6 +53,7 @@ struct Cloud{
         ck.privateCloudDatabase
     }
     static let subID = "wordStatus"
+    static let wordStatusRecordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
 }
 extension Cloud {
     static let wordStatusRecordType = "CD_WordStatus"
@@ -79,6 +84,8 @@ func setupCloudSub() {
                      print(error.localizedDescription)
                  }
             }
+        } else {
+            print("sub is all good")
         }
     }
 }
@@ -94,7 +101,7 @@ func extractCloudKitInfo(from notificationPayload: [AnyHashable: Any]) -> CloudK
         // Return nil if any required field is missing or has the wrong type
         return nil
     }
-    return (cdTraditional: cdTraditional, cdStatus: cdStatus)
+    return CloudKitNotificationInfo(cdTraditional: cdTraditional, cdStatus: cdStatus)
 }
 
 /// Updates matching local entity with the new status
@@ -117,7 +124,32 @@ func updateLocalStatus(with new: CloudKitNotificationInfo){
     }
 }
 
+
 /// updates all the local records with the statuses found in the cloud
-func updateAllLocalStatus(){
-    
+func updateAllLocalStatus() async {
+    let db = Cloud.db
+    let query = CKQuery(recordType: Cloud.wordStatusRecordType, predicate: NSPredicate(value: true))
+    // Create a query object. Assuming 'WordStatus' is your record type.
+    // Perform the query
+    do {
+        let records = try await db.records(matching: query, inZoneWith: Cloud.wordStatusRecordZone.zoneID, desiredKeys: Cloud.wordStatusAllKeys)
+        let matchResults: [(CKRecord.ID, Result<CKRecord, Error>)] = records.matchResults
+        print("will update \(matchResults.count) records from icloud")
+        for (id, result) in matchResults {
+            switch (result){
+            case .success(let record):
+                let word = record[Cloud.wordStatusKeyTraditional]! as! String
+                let status = record[Cloud.wordStatusKeyStatus]! as! Int64
+                updateLocalStatus(with: CloudKitNotificationInfo(cdTraditional: word, cdStatus: status))
+            case .failure(let error):
+                print("Record \(id) unable unable to be fetched.")
+                print(error.localizedDescription)
+            }
+        }
+        
+    } catch {
+        print(error.localizedDescription)
+    }
+
 }
+

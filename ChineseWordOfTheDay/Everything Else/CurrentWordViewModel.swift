@@ -10,17 +10,33 @@ import CoreData
 import CloudKit
 
 class WordViewModel: ObservableObject {
-    @Published var currentWord: Word = Word()
+    @Published private(set) var currentWord: Word = Word()
+    @Published private(set) var icloudSyncIsInProgress: Bool = false
     let context: NSManagedObjectContext
     init(viewContext: NSManagedObjectContext) {
         self.context = viewContext
         self.setCurrentWord()
+//        self.resetAllStatus()
     }
 }
-
+/// public interface
+extension WordViewModel {
+    func updateCurrentWordStatusToSeen(){
+        self.updateCurrentWordStatus(newStatus: LearnStatus.seen.rawValue)
+    }
+    func startedIcloudSync(){
+        self.icloudSyncIsInProgress = true
+    }
+    // After Icloud Sync is complete set current word
+    func finishedIcloudSync(){
+        self.icloudSyncIsInProgress = false
+        self.setCurrentWord()
+    }
+}
+/// private interface
 extension WordViewModel {
     /// Called whenever you want to push a new word to the cloud database
-    func addNewWordStatusToICloud(withStatus newStatus: Int64){
+    private func addNewWordStatusToICloud(withStatus newStatus: Int64){
         let wordStatus = WordStatus(context: context)
         wordStatus.traditional = self.currentWord.traditional
         wordStatus.status = newStatus
@@ -28,32 +44,20 @@ extension WordViewModel {
     }
     /// the current word is added to icloud with the given status. also updates local word status
     /// TODO: Better name and maybe separate out into a different function
-    func updateCurrentWordStatus(newStatus: Int64) {
+    private func updateCurrentWordStatus(newStatus: Int64) {
         addNewWordStatusToICloud(withStatus: newStatus)
         self.currentWord.status = newStatus
         saveChanges()
         setCurrentWord()
     }
-    /// Retrieve a single word with `status` and with higest `Word.spokenFrequency`
-    func fetchWordWithStatus(status: Int64) -> Word? {
-        let request: NSFetchRequest<Word> = Word.fetchRequest()
-        request.predicate = NSPredicate(format: "status == %d", status)
-        request.fetchLimit = 1
-        do {
-            return try self.context.fetch(request).first
-        } catch {
-            print("Error fetching word: \(error)")
-            return nil
-        }
-    }
     /// Fetches current word and publishes changes via `self.currentWord`
-    func setCurrentWord() {
-        if let word = fetchWordWithStatus(status: 0) {
+    private func setCurrentWord() {
+        if let word = Word.fetchWordWithStatus(context: self.context, status: LearnStatus.unseen.rawValue) {
             self.currentWord = word
         }
     }
     /// conveinence function for saving changes
-    func saveChanges() {
+    private func saveChanges() {
         do {
             try context.save()
         } catch {
@@ -70,18 +74,4 @@ extension WordViewModel: CurrentWordRefreshDelegate {
 }
     
 extension WordViewModel {
-    /// - Warning: Will reset all local statuses in the database with status 1 back to zero
-    /// Only used for testing
-    func resetAllStatus(){
-        let request: NSFetchRequest<Word> = Word.fetchRequest()
-        request.predicate = NSPredicate(format: "status == %d", 1)
-        let words = try? self.context.fetch(request)
-        if let words = words {
-            for w in words {
-                w.status = 0
-            }
-            saveChanges()
-            setCurrentWord()
-        }
-    }
 }

@@ -7,7 +7,6 @@
 
 import Foundation
 import CoreData
-import WordFramework
 import Combine
 
 struct PersistenceController {
@@ -54,19 +53,28 @@ struct PersistenceController {
 }
 
 extension PersistenceController {
-    static let fm: FileManager = {
+    private static let fm: FileManager = {
         FileManager.default
     }()
-    static let appSupport: URL = {
+    private static let appSupport: URL = {
         /// will create the appSupportDirectory if it doesn't exist already
         try! fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
     }()
-    static let localStoreURL: URL = {
+    private static let localStoreURL: URL = {
         appSupport.appendingPathComponent(STORE_NAME + ".sqlite")
     }()
+    private static let userDefaultsKeyHasRunBefore = "hasRunBefore"
 }
 
 extension PersistenceController {
+    /// Returns true if this is the first time the application has been run.
+    static func isFirstRunOfApplication() -> Bool {
+        return !UserDefaults.standard.bool(forKey: Self.userDefaultsKeyHasRunBefore)
+    }
+    /// Sets user defaults value so on the next run `isFirstRunOfApplication` will return false
+    static func updateUserDefaultsToHasRunBefore(){
+        UserDefaults.setValue(true, forKey: Self.userDefaultsKeyHasRunBefore)
+    }
     /// Ensures that when application is first run, a preloaded database will be copied into the Sandbox.
     /// For this function to work correctly, it must be that the store was previously set to journal mode.
     /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
@@ -79,9 +87,10 @@ extension PersistenceController {
         if !fm.fileExists(atPath: destinationURL.path) {
             do {
                 try fm.copyItem(atPath: bundlePath, toPath: destinationURL.path)
-                print("Database file copied to Application Suppor director")
+                print("Database file copied to Application Support directory")
             } catch {
                 print("Error copying database file: \(error)")
+                print(Word())
                 fatalError()
             }
         } else {
