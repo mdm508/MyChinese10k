@@ -18,6 +18,7 @@ extension WordStatus {
 
     @NSManaged public var status: Int64
     @NSManaged public var traditional: String?
+    @NSManaged public var lastModified: Date?
 
 }
 

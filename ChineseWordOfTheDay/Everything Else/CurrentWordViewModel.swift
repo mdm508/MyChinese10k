@@ -40,6 +40,7 @@ extension WordViewModel {
         let wordStatus = WordStatus(context: context)
         wordStatus.traditional = self.currentWord.traditional
         wordStatus.status = newStatus
+        wordStatus.lastModified = Date()
         saveChanges()
     }
     /// the current word is added to icloud with the given status. also updates local word status

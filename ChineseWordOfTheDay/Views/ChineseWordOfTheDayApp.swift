@@ -15,11 +15,11 @@ struct ChineseWordOfTheDayApp: App {
     let wordVM: WordViewModel
     init(){
         PersistenceController.copyDatabaseIfNeeded()
-        resetAllLocalStatus()
-        Task(priority: .high){
+//        resetAllLocalStatus()
+//        Task(priority: .high){
 //            await  deletAllCloudWordStatus()
 //            print("Reset complete")
-        }
+//        }
         wordVM = WordViewModel(viewContext: PersistenceController.shared.context)
 
         if PersistenceController.isFirstRunOfApplication(){

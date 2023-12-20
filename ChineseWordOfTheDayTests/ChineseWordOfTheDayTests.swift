@@ -6,11 +6,20 @@
 //
 
 import XCTest
+import ChineseWordOfTheDay
+
 
 final class ChineseWordOfTheDayTests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        PersistenceController.copyDatabaseIfNeeded()
+        resetAllLocalStatus()
+        Task(priority: .high){
+            await  deletAllCloudWordStatus()
+            print("Reset complete")
+        }
+        wordVM = WordViewModel(viewContext: PersistenceController.shared.context)
+
     }
 
     override func tearDownWithError() throws {

@@ -7,7 +7,6 @@
 
 import XCTest
 import CoreData
-@testable import WordFramework
 
 final class WordFrameworkTests: XCTestCase {
     var persistentContainer: NSPersistentContainer!

@@ -14,11 +14,11 @@ import CloudKit
 protocol CurrentWordRefreshDelegate {
     func refresh() -> ()
 }
-
-
+/// Lightweight struct to store information from remote notifactions in
 struct CloudKitNotificationInfo {
     let cdTraditional: String
     let cdStatus: Int64
+    let cdLastModified: Date
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -36,34 +36,61 @@ extension AppDelegate {
     /// - SeeAlso: [UIapplicationDelegate documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623013-application)
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        let notifaction = CKNotification(fromRemoteNotificationDictionary: userInfo)
+        print(notifaction.debugDescription)
         if let info = extractCloudKitInfo(from: userInfo){
-            updateLocalStatus(with: info)
+            
+            updateLocalStatus(with: deduplicate(cloudNotifactionInfo: info))
             self.delegate?.refresh()
             completionHandler(.newData)
             return
+        } else {
+            print(userInfo.debugDescription)
+            completionHandler(.failed)
         }
-        completionHandler(.failed)
     }
+    /// If this WordStatus exists twice on the cloud and delete the older one
+    func deduplicate(cloudNotifactionInfo: CloudKitNotificationInfo) -> CloudKitNotificationInfo {
+        return cloudNotifactionInfo
+    }
+    func extractCloudKitInfo(from notificationPayload: [AnyHashable: Any]) -> CloudKitNotificationInfo? {
+        guard
+            let ckInfo = notificationPayload[AnyHashable("ck")] as? [AnyHashable: Any],
+            let qry = ckInfo["qry"] as? [AnyHashable: Any],
+            let af = qry["af"] as? [String: Any],
+            let cdStatus = af[Cloud.wordStatusKeyStatus] as? Int64,
+            let cdTraditional = af[Cloud.wordStatusKeyTraditional] as? String,
+            let cdLastModified = af[Cloud.wordStatusKeyLastModified] as? Date
+        else {
+            // Return nil if any required field is missing or has the wrong type
+            // This will occur everytime for the default subscription
+            return nil
+        }
+        return CloudKitNotificationInfo(cdTraditional: cdTraditional, cdStatus: cdStatus, cdLastModified: cdLastModified)
+    }
+
 }
 
 /// A collection of related CloudKit contsants
 struct Cloud{
+    /// Must setup container like this because `CKContainer.default` has a different identifier
     static let ck = CKContainer(identifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
     static var db: CKDatabase {
         ck.privateCloudDatabase
     }
-    static let subID = "wordStatus"
+    /// Default subrciption that is setup for you by the CloudKit Container
+    static let subID = "wordStatusSubscription"
     static let wordStatusRecordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
 }
 extension Cloud {
     static let wordStatusRecordType = "CD_WordStatus"
     static let wordStatusKeyTraditional = "CD_traditional"
     static let wordStatusKeyStatus = "CD_status"
-    static let wordStatusAllKeys = [Self.wordStatusKeyTraditional, Self.wordStatusKeyStatus]
+    static let wordStatusKeyLastModified = "CD_lastModified"
+    static let wordStatusAllKeys = [Self.wordStatusKeyTraditional, Self.wordStatusKeyStatus, Self.wordStatusKeyLastModified]
 }
 /// If a cloud kit subscription does not exist then set one up
 func setupCloudSub() {
-    /// Must setup container like this because `CKContainer.default` has a different identifier
     let db = Cloud.db
     db.fetch(withSubscriptionID: Cloud.subID){ sub, error in
         if let error = error  {
@@ -84,25 +111,10 @@ func setupCloudSub() {
                      print(error.localizedDescription)
                  }
             }
-        } else {
-            print("sub is all good")
         }
     }
 }
 
-func extractCloudKitInfo(from notificationPayload: [AnyHashable: Any]) -> CloudKitNotificationInfo? {
-    guard
-        let ckInfo = notificationPayload[AnyHashable("ck")] as? [AnyHashable: Any],
-        let qry = ckInfo["qry"] as? [AnyHashable: Any],
-        let af = qry["af"] as? [String: Any],
-        let cdStatus = af[Cloud.wordStatusKeyStatus] as? Int64,
-        let cdTraditional = af[Cloud.wordStatusKeyTraditional] as? String
-    else {
-        // Return nil if any required field is missing or has the wrong type
-        return nil
-    }
-    return CloudKitNotificationInfo(cdTraditional: cdTraditional, cdStatus: cdStatus)
-}
 
 /// Updates matching local entity with the new status
 func updateLocalStatus(with new: CloudKitNotificationInfo){
@@ -113,6 +125,8 @@ func updateLocalStatus(with new: CloudKitNotificationInfo){
     do {
         // Fetch the words matching the predicate
         if let localWord = try managedObjectContext.fetch(request).first {
+            print(localWord.status)
+            print(localWord.traditional)
             localWord.status = new.cdStatus
         } else {
             print("unable to update \(new)")
@@ -140,7 +154,8 @@ func updateAllLocalStatus() async {
             case .success(let record):
                 let word = record[Cloud.wordStatusKeyTraditional]! as! String
                 let status = record[Cloud.wordStatusKeyStatus]! as! Int64
-                updateLocalStatus(with: CloudKitNotificationInfo(cdTraditional: word, cdStatus: status))
+                let modified = record[Cloud.wordStatusKeyLastModified]! as! Date
+                updateLocalStatus(with: CloudKitNotificationInfo(cdTraditional: word, cdStatus: status, cdLastModified: modified))
             case .failure(let error):
                 print("Record \(id) unable unable to be fetched.")
                 print(error.localizedDescription)

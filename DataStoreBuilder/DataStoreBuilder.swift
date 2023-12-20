@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import WordFramework
 
 ///: Load Json and  output array that will be able to be batch inserted from StoreBuilderMain
 public func loadWordsFromJson() -> [[String: Any]] {

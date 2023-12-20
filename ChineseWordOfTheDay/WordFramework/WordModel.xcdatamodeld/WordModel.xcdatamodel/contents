@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23B74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Word" representedClassName=".Word" syncable="YES">
+    <entity name="Word" representedClassName="Word" syncable="YES">
         <attribute name="context" attributeType="String"/>
         <attribute name="frequency" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -22,6 +22,7 @@
         </fetchIndex>
     </entity>
     <entity name="WordStatus" representedClassName="WordStatus" syncable="YES">
+        <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="status" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="traditional" optional="YES" attributeType="String"/>
     </entity>
