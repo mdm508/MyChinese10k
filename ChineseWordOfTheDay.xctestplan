@@ -1,0 +1,62 @@
+{
+  "configurations" : [
+    {
+      "id" : "F9EEEE99-BEFF-4500-9659-7F8D3B836DA9",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "commandLineArgumentEntries" : [
+      {
+        "argument" : "-com.apple.CoreData.CloudKitDebug 1"
+      },
+      {
+        "argument" : "-com.apple.CoreData.Logging.stderr 0 "
+      },
+      {
+        "argument" : "com.apple.CoreData.ConcurrencyDebug  ",
+        "enabled" : false
+      },
+      {
+        "argument" : "-com.apple.CoreData.Logging.stderr 0 "
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ChineseWordOfTheDay.xcodeproj",
+      "identifier" : "0C1D67002A5DC21400EAAD30",
+      "name" : "ChineseWordOfTheDay"
+    }
+  },
+  "testTargets" : [
+    {
+      "enabled" : false,
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ChineseWordOfTheDay.xcodeproj",
+        "identifier" : "0CD09E362A5DC7E1005C97F1",
+        "name" : "DataStoreBuilderTests"
+      }
+    },
+    {
+      "enabled" : false,
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ChineseWordOfTheDay.xcodeproj",
+        "identifier" : "0CD09E5C2A5DCB3A005C97F1",
+        "name" : "WordFrameworkTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ChineseWordOfTheDay.xcodeproj",
+        "identifier" : "0C7E2DA92B32830C0005224E",
+        "name" : "ChineseWordOfTheDayTests"
+      }
+    }
+  ],
+  "version" : 1
+}

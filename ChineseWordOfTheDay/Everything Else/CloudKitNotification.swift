@@ -11,7 +11,7 @@ import UIKit
 import CloudKit
 
 /// This delegate's refresh method is invoked upon successful local status update triggered by an iCloud notification.
-protocol CurrentWordRefreshDelegate {
+protocol CurrentWordRefreshDelegate: AnyObject {
     func refresh() -> ()
 }
 /// Lightweight struct to store information from remote notifactions in
@@ -36,18 +36,28 @@ extension AppDelegate {
     /// - SeeAlso: [UIapplicationDelegate documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623013-application)
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        let notifaction = CKNotification(fromRemoteNotificationDictionary: userInfo)
-        print(notifaction.debugDescription)
-        if let info = extractCloudKitInfo(from: userInfo){
-            
-            updateLocalStatus(with: deduplicate(cloudNotifactionInfo: info))
-            self.delegate?.refresh()
-            completionHandler(.newData)
-            return
-        } else {
-            print(userInfo.debugDescription)
-            completionHandler(.failed)
-        }
+        /*
+         the device is lagguing 1 behind for some reason.
+         */
+//        let notifaction = CKNotification(fromRemoteNotificationDictionary: userInfo)
+//        print(notifaction.debugDescription)
+//        if let del = self.delegate {
+//            print("refreshing")
+//            del.refresh()
+//            completionHandler(.newData)
+//        } else {
+//            completionHandler(.failed)
+//        }
+//        if let info = extractCloudKitInfo(from: userInfo){
+//            
+////            updateLocalStatus(with: deduplicate(cloudNotifactionInfo: info))
+//            self.delegate?.refresh()
+//            completionHandler(.newData)
+//            return
+//        } else {
+//            print(userInfo.debugDescription)
+//            completionHandler(.failed)
+//        }
     }
     /// If this WordStatus exists twice on the cloud and delete the older one
     func deduplicate(cloudNotifactionInfo: CloudKitNotificationInfo) -> CloudKitNotificationInfo {

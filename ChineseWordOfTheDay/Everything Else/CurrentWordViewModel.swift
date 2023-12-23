@@ -8,54 +8,46 @@
 import SwiftUI
 import CoreData
 import CloudKit
+import NotificationCenter
 
 class WordViewModel: ObservableObject {
-    @Published private(set) var currentWord: Word = Word()
-    @Published private(set) var icloudSyncIsInProgress: Bool = false
+    @Published private(set) var currentWord: Word?
+//    private var fetcher: WordFetcher
     let context: NSManagedObjectContext
     init(viewContext: NSManagedObjectContext) {
         self.context = viewContext
+//        self.fetcher = WordFetcher(context: self.context)
         self.setCurrentWord()
 //        self.resetAllStatus()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(fetchChanges),
+            name: NSNotification.Name(
+                rawValue: "NSPersistentStoreRemoteChangeNotification"),
+                object: PersistenceController.shared.container.persistentStoreCoordinator
+        )
     }
 }
 /// public interface
 extension WordViewModel {
+    /// Called whenever you want to push a new word to the cloud database
     func updateCurrentWordStatusToSeen(){
-        self.updateCurrentWordStatus(newStatus: LearnStatus.seen.rawValue)
-    }
-    func startedIcloudSync(){
-        self.icloudSyncIsInProgress = true
-    }
-    // After Icloud Sync is complete set current word
-    func finishedIcloudSync(){
-        self.icloudSyncIsInProgress = false
-        self.setCurrentWord()
+        let wordStatus = WordStatus(context: context)
+        if let cur = self.currentWord {
+            wordStatus.traditional = cur.traditional
+            wordStatus.status =  LearnStatus.seen.rawValue
+            wordStatus.lastModified = Date()
+        }
+        saveChanges()
+        setCurrentWord()
     }
 }
 /// private interface
 extension WordViewModel {
-    /// Called whenever you want to push a new word to the cloud database
-    private func addNewWordStatusToICloud(withStatus newStatus: Int64){
-        let wordStatus = WordStatus(context: context)
-        wordStatus.traditional = self.currentWord.traditional
-        wordStatus.status = newStatus
-        wordStatus.lastModified = Date()
-        saveChanges()
-    }
-    /// the current word is added to icloud with the given status. also updates local word status
-    /// TODO: Better name and maybe separate out into a different function
-    private func updateCurrentWordStatus(newStatus: Int64) {
-        addNewWordStatusToICloud(withStatus: newStatus)
-        self.currentWord.status = newStatus
-        saveChanges()
-        setCurrentWord()
-    }
     /// Fetches current word and publishes changes via `self.currentWord`
     private func setCurrentWord() {
-        if let word = Word.fetchWordWithStatus(context: self.context, status: LearnStatus.unseen.rawValue) {
-            self.currentWord = word
-        }
+        self.currentWord = Word.fetchHigestPriorityUnseenWord(context: self.context)
+        print(currentWord?.traditional)
     }
     /// conveinence function for saving changes
     private func saveChanges() {
@@ -64,6 +56,9 @@ extension WordViewModel {
         } catch {
             print("Error saving changes: \(error)")
         }
+    }
+    @objc func fetchChanges(){
+//        print("changes")
     }
 }
 
@@ -74,5 +69,3 @@ extension WordViewModel: CurrentWordRefreshDelegate {
     }
 }
     
-extension WordViewModel {
-}

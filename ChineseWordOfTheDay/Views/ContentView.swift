@@ -9,23 +9,10 @@ import SwiftUI
 
 struct ContentView {
     @StateObject var viewModel: WordViewModel
-    @State private var isSyncingToCloud = true
-    @State private var message: String = ""
 }
 extension ContentView: View {
     var body: some View {
-        if self.isSyncingToCloud {
-            Text("iCloud is syncing").task(priority: .low){
-                print("started icloud sync")
-                self.isSyncingToCloud = true
-                await updateAllLocalStatus()
-                print("icloud sync completed")
-                self.isSyncingToCloud = false
-                self.viewModel.refresh()
-            }
-        }
-        else {
-            let currentWord = viewModel.currentWord
+        if let currentWord = viewModel.currentWord {
             GeometryReaderCentered { geo in
                 VStack(alignment: .center){
                     WordView(word: currentWord.traditional, size: geo.size)
@@ -38,9 +25,10 @@ extension ContentView: View {
                     Button("->"){
                         self.viewModel.updateCurrentWordStatusToSeen()
                     }
-                    Text(message)
                 }
             }
+        } else {
+            Text("Congrats you learned all the words!")
         }
     }
 }
