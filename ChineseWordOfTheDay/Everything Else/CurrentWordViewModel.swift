@@ -8,24 +8,19 @@
 import SwiftUI
 import CoreData
 import CloudKit
-import NotificationCenter
+import Combine
 
 class WordViewModel: ObservableObject {
     @Published private(set) var currentWord: Word?
-//    private var fetcher: WordFetcher
     let context: NSManagedObjectContext
+    private var cancellables = Set<AnyCancellable>()
     init(viewContext: NSManagedObjectContext) {
         self.context = viewContext
-//        self.fetcher = WordFetcher(context: self.context)
         self.setCurrentWord()
-//        self.resetAllStatus()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(fetchChanges),
-            name: NSNotification.Name(
-                rawValue: "NSPersistentStoreRemoteChangeNotification"),
-                object: PersistenceController.shared.container.persistentStoreCoordinator
-        )
+        NotificationCenter.default.storeDidChangePublisher
+            .sink{[weak self] notification in
+                self?.refresh()
+            }.store(in: &cancellables)
     }
 }
 /// public interface
@@ -57,9 +52,7 @@ extension WordViewModel {
             print("Error saving changes: \(error)")
         }
     }
-    @objc func fetchChanges(){
-//        print("changes")
-    }
+
 }
 
 extension WordViewModel: CurrentWordRefreshDelegate {

@@ -16,11 +16,11 @@ struct ChineseWordOfTheDayApp: App {
     init(){
 
         PersistenceController.copyDatabaseIfNeeded()
-        resetAllLocalStatus()
-        Task(priority: .high){
-            await  deletAllCloudWordStatus()
-            print("Reset complete")
-        }
+//        resetAllLocalStatus()
+//        Task(priority: .high){
+//            await  deletAllCloudWordStatus()
+//            print("Reset complete")
+//        }
 //        //TESTING
 //        // put testing stuff here
 //        if let words = WordStatus.fetchSeenAndKnown(context: PersistenceController.shared.context){

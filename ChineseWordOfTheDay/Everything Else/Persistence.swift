@@ -9,6 +9,28 @@ import Foundation
 import CoreData
 import Combine
 
+public enum StorageActor: String, CaseIterable {
+    case swiftuiApp, uikitApp
+}
+/**
+ This app doesn't necessarily post notifications from the main queue.
+ */
+extension Notification.Name {
+    static let cdcksStoreDidChange = Notification.Name("cdcksStoreDidChange")
+}
+
+extension NotificationCenter {
+    var storeDidChangePublisher: Publishers.ReceiveOn<NotificationCenter.Publisher, DispatchQueue> {
+        return publisher(for: .cdcksStoreDidChange).receive(on: DispatchQueue.main)
+    }
+}
+
+struct UserInfoKey {
+    static let storeUUID = "storeUUID"
+    static let transactions = "transactions"
+}
+
+
 class PersistenceController {
     static let shared = PersistenceController(actor: .swiftuiApp)
     weak var delegate: CurrentWordRefreshDelegate?
@@ -35,6 +57,14 @@ class PersistenceController {
     var context: NSManagedObjectContext {
         self.container.viewContext
     }
+    /**
+     An operation queue for handling history processing tasks: watching changes, deduplicating tags, and triggering UI updates if needed.
+     */
+    lazy var historyQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
     init(inMemory: Bool = false, actor: StorageActor) {
         container = NSPersistentCloudKitContainer(name: STORE_NAME)
         if inMemory {
@@ -69,7 +99,7 @@ class PersistenceController {
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.name = "viewContext"
-        NotificationCenter.default.addObserver(self, selector: #selector(processRemoteChanges(_:)),
+        NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
                                                name: .NSPersistentStoreRemoteChange,
                                                object: container.persistentStoreCoordinator)
     }
@@ -132,106 +162,63 @@ extension NSPersistentCloudKitContainer {
     }
 
 }
-
-extension PersistenceController{
-    /**
-     Track the last history tokens for the stores.
-     The historyQueue reads the token when executing operations, and updates it after completing the processing.
-     Access this user default from the history queue.
-     */
-    private func historyToken(with storeUUID: String) -> NSPersistentHistoryToken? {
-        let key = "HistoryToken" + storeUUID
-        if let data = UserDefaults.standard.data(forKey: key) {
-            return  try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSPersistentHistoryToken.self, from: data)
-        }
-        return nil
-    }
-    
-    private func updateHistoryToken(with storeUUID: String, newToken: NSPersistentHistoryToken) {
-        let key = "HistoryToken" + storeUUID
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: newToken, requiringSecureCoding: true)
-        UserDefaults.standard.set(data, forKey: key)
-    }
-    //
-    //    func lastUpdated() -> Date? {
-    //        return UserDefaults.standard.object(forKey: "PersistentHistoryTracker.lastUpdate.\(actor.rawValue)") as? Date
-    //    }
-    //
-    //    func persistLastUpdated(_ date: Date) {
-    //        return UserDefaults.standard.set(date, forKey: "PersistentHistoryTracker.lastUpdate.\(actor.rawValue)")
-    //    }
-    //
-    //    func leastRecentUpdate() -> Date? {
-    //        return StorageActor.allCases.reduce(nil) { currentLeastRecent, actor in
-    //            guard let updateDate = UserDefaults.standard.object(forKey: "PersistentHistoryTracker.lastUpdate.\(actor.rawValue)") as? Date else {
-    //                return currentLeastRecent
-    //            }
-    //
-    //            if let oldDate = currentLeastRecent {
-    //                return min(oldDate, updateDate)
-    //            }
-    //
-    //            return updateDate
-    //        }
-    //    }
-}
-
 // MARK: - Notification handlers that trigger history processing.
 extension PersistenceController {
+    /**
+     Handle .NSPersistentStoreRemoteChange notifications.
+     Process persistent history to merge relevant changes to the context, and deduplicate the tags if necessary.
+     */
     @objc
-    public func processRemoteChanges(_ notification: Notification) {
+    func storeRemoteChange(_ notification: Notification) {
         guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
               self.cloudPersistentStore.identifier == storeUUID
         else {
             print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
-            
             return
         }
-        let context = self.container.newTaskContext()
-        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        let lastHistoryToken = historyToken(with: storeUUID)
-        
-//        let lastDate = self.lastUpdted() ?? .distantPast
-        
-        let request = NSPersistentHistoryChangeRequest.fetchHistory(after: lastHistoryToken)
-        request.affectedStores =  [self.cloudPersistentStore]
-        
-        context.perform { [unowned self] in
-            do {
-                let result = (try? context.execute(request)) as? NSPersistentHistoryResult
-                guard let transactions = result?.result as? [NSPersistentHistoryTransaction] else {
-                    return
-                }
-
-                if let newToken = transactions.last?.token {
-                    updateHistoryToken(with: storeUUID, newToken: newToken)
-                }
-                
-                if let del = self.delegate {
-                    DispatchQueue.main.async{
-                        del.refresh()
-                    }
-                }
-            
-                
-//                for transaction in history {
-//                    let notification = transaction.objectIDNotification()
-//                    context.mergeChanges(fromContextDidSave: notification)
-//                    self.persistLastUpdated(transaction.timestamp)
-//                }
-
-//                if let lastTimestamp = leastRecentUpdate() {
-//                    let deleteRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: lastTimestamp)
-//                    try context.execute(deleteRequest)
-//                }
-            } catch {
-                print(error)
-            }
-        }
+        processHistoryAsynchronously()
     }
-}
-
-public enum StorageActor: String, CaseIterable {
-    case swiftuiApp, uikitApp
+    
+    
+//    @objc
+//    public func processRemoteChanges(_ notification: Notification) {
+//        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
+//              self.cloudPersistentStore.identifier == storeUUID
+//        else {
+//            print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
+//            
+//            return
+//        }
+//        let context = self.container.newTaskContext()
+//        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+//        let lastHistoryToken = historyToken()
+//        
+////        let lastDate = self.lastUpdted() ?? .distantPast
+//        
+//        let request = NSPersistentHistoryChangeRequest.fetchHistory(after: lastHistoryToken)
+//        request.affectedStores =  [self.cloudPersistentStore]
+//        
+//        context.perform { [unowned self] in
+//            do {
+//                let result = (try? context.execute(request)) as? NSPersistentHistoryResult
+//                guard let transactions = result?.result as? [NSPersistentHistoryTransaction] else {
+//                    return
+//                }
+//
+//                if let newToken = transactions.last?.token {
+//                    updateHistoryToken(newToken: newToken)
+//                }
+//                
+//                if let del = self.delegate {
+//                    DispatchQueue.main.async{
+//                        del.refresh()
+//                    }
+//                }
+//            
+//            } catch {
+//                print(error)
+//            }
+//        }
+//    }
 }
 
