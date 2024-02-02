@@ -120,7 +120,6 @@ extension PersistenceController {
     /// For this function to work correctly, it must be that the store was previously set to journal mode.
     /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
     static func copyDatabaseIfNeeded() {
-        try! FileManager.default.removeItem(at: PersistenceController.appGroupURL)
         guard let bundlePath = Bundle.main.path(forResource: STORE_NAME, ofType: "sqlite") else {
             print("Database file not found in the app bundle.")
             return

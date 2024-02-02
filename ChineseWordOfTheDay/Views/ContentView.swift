@@ -17,14 +17,16 @@ extension ContentView: View {
                 VStack(alignment: .center){
                     WordView(word: currentWord.traditional, size: geo.size)
                     Text(currentWord.zhuyin)
-                    List(currentWord.meanings, id: \.self){
-                        Text($0)
+                    ZStack(alignment: .bottomTrailing){
+                        List(currentWord.meanings, id: \.self){
+                            Text($0)
+                        }
+                        HStack{
+                            Spacer()
+                            BigGreenButton(size: geo.size, action: self.viewModel.updateCurrentWordStatusToSeen)
+                        }.background(Color.clear)
                     }
-                    Text(currentWord.index.description)
-                    Spacer()
-                    Button("->"){
-                        self.viewModel.updateCurrentWordStatusToSeen()
-                    }
+         
                 }
             }
         } else {

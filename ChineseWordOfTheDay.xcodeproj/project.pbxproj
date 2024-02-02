@@ -56,6 +56,7 @@
 		0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0CD09E4D2A5DC7FB005C97F1 /* DataStoreBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E4C2A5DC7FB005C97F1 /* DataStoreBuilder.swift */; };
 		0CD09E652A5DCB3A005C97F1 /* WordFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E642A5DCB3A005C97F1 /* WordFrameworkTests.swift */; };
+		0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */; };
 		0CF1DF9B2ACB313D0093519B /* output.json in Resources */ = {isa = PBXBuildFile; fileRef = 0CF1DF9A2ACB313D0093519B /* output.json */; };
 /* End PBXBuildFile section */
 
@@ -167,6 +168,7 @@
 		0CD09E642A5DCB3A005C97F1 /* WordFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordFrameworkTests.swift; sourceTree = "<group>"; };
 		0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChineseWordOfTheDay.entitlements; sourceTree = "<group>"; };
 		0CEBE9C32B17C21500650626 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownButton.swift; sourceTree = "<group>"; };
 		0CF1DF9A2ACB313D0093519B /* output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = output.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -263,6 +265,7 @@
 		0C22FF472AF56FDD00913EC3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
 				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
@@ -554,6 +557,7 @@
 				0C7E2DBB2B40A3DE0005224E /* Persistence+History.swift in Sources */,
 				0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */,
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
+				0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
 				0C7E2DBD2B40AAA10005224E /* Persistence+De-Duplication.swift in Sources */,
 				0CCB25412B27905F001FAF94 /* Constants.swift in Sources */,
