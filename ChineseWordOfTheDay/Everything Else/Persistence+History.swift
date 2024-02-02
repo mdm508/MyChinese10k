@@ -9,10 +9,7 @@ import CoreData
 import CloudKit
 
 // MARK: - Notification handlers that trigger history processing.
-//
 extension PersistenceController {
-   
-
     /**
      Handle the container's event changed notifications (NSPersistentCloudKitContainer.eventChangedNotification).
      */
@@ -44,7 +41,6 @@ extension PersistenceController {
             }
         }
     }
-    
     /**
      Fetch history received from outside the app since the last timestamp
     */
@@ -92,9 +88,7 @@ extension PersistenceController {
             deduplicateWordStatusesAndWait(statusObjectIDs: newWordStatusObjectIDs)
         }
     }
-    
 }
-
 extension PersistenceController{
     /**
      Track the last history tokens for the stores.
@@ -108,7 +102,6 @@ extension PersistenceController{
         }
         return nil
     }
-    
     func updateHistoryToken(newToken: NSPersistentHistoryToken) {
         let key = "HistoryToken" + self.cloudPersistentStore.identifier
         let data = try? NSKeyedArchiver.archivedData(withRootObject: newToken, requiringSecureCoding: true)

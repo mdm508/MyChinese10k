@@ -37,12 +37,10 @@ extension WordViewModel {
         setCurrentWord()
     }
 }
-/// private interface
 extension WordViewModel {
     /// Fetches current word and publishes changes via `self.currentWord`
     private func setCurrentWord() {
         self.currentWord = Word.fetchHigestPriorityUnseenWord(context: self.context)
-        print(currentWord?.traditional)
     }
     /// conveinence function for saving changes
     private func saveChanges() {
@@ -54,7 +52,6 @@ extension WordViewModel {
     }
 
 }
-
 extension WordViewModel: CurrentWordRefreshDelegate {
     /// Called whenever a local status update occured. Current word may have changed so this re-fetches the lowest status.
     func refresh() {

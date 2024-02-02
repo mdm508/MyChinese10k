@@ -12,12 +12,10 @@ extension PersistenceController {
     func deduplicateWordStatusesAndWait(statusObjectIDs: [NSManagedObjectID]) {
         let taskContext = self.container.newTaskContext()
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-
         taskContext.performAndWait {
             statusObjectIDs.forEach { statusObjectID in
                 deduplicateWordStatus(statusObjectID: statusObjectID, performingContext: taskContext)
             }
-
             do {
                 try taskContext.save()
             } catch {
@@ -25,41 +23,31 @@ extension PersistenceController {
             }
         }
     }
-
     private func deduplicateWordStatus(statusObjectID: NSManagedObjectID, performingContext: NSManagedObjectContext) {
         guard let wordStatus = performingContext.object(with: statusObjectID) as? WordStatus,
               let traditional = wordStatus.traditional else {
             print("\(#function): Unable to fetch WordStatus for ID: \(statusObjectID)")
             return
         }
-
         let fetchRequest: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "traditional == %@", traditional)
-
-        do {
-            let duplicatedWordStatuses = try performingContext.fetch(fetchRequest)
-
-            guard var duplicatedWordStatuses = try? performingContext.fetch(fetchRequest), !duplicatedWordStatuses.isEmpty else {
-                return
-            }
-//            var filteredDuplicates = duplicatedWordStatuses.filter({ $0 != wordStatus })
-//            guard filteredDuplicates.count > 1  else { return }
-            let latestEntry = duplicatedWordStatuses.max(by: { ($0.lastModified ?? Date()) < ($1.lastModified ?? Date()) })
-            if let latestEntry = latestEntry {
-                //kick out latest entry
-                duplicatedWordStatuses.removeAll(where: { $0 == latestEntry })
-                remove(duplicatedWordStatuses: duplicatedWordStatuses, winner: latestEntry, performingContext: performingContext)
-            }
-        } catch {
-            print("Error fetching duplicate WordStatuses: \(error)")
+        
+        guard var duplicatedWordStatuses = try? performingContext.fetch(fetchRequest), !duplicatedWordStatuses.isEmpty else {
+            return
+        }
+        let latestEntry = duplicatedWordStatuses.max(by: { ($0.lastModified ?? Date()) < ($1.lastModified ?? Date()) })
+        if let latestEntry = latestEntry {
+            //kick out latest entry
+            duplicatedWordStatuses.removeAll(where: { $0 == latestEntry })
+            remove(duplicatedWordStatuses: duplicatedWordStatuses, winner: latestEntry, performingContext: performingContext)
         }
     }
+}
 
-    private func remove(duplicatedWordStatuses: [WordStatus], winner: WordStatus, performingContext: NSManagedObjectContext) {
-        duplicatedWordStatuses.forEach { wordStatus in
-            performingContext.delete(wordStatus)
-            // Perform other actions if needed, such as handling cloud deletions
-        }
+private func remove(duplicatedWordStatuses: [WordStatus], winner: WordStatus, performingContext: NSManagedObjectContext) {
+    duplicatedWordStatuses.forEach { wordStatus in
+        performingContext.delete(wordStatus)
+        // Perform other actions if needed, such as handling cloud deletions
     }
 }
 

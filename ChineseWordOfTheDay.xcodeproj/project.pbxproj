@@ -22,7 +22,6 @@
 		0C778DED2A61A78D007D2A8F /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
 		0C778DEE2A61A78E007D2A8F /* WordModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67132A5DC33A00EAAD30 /* WordModel.xcdatamodeld */; };
 		0C7E2DB42B3285340005224E /* LearnStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB6B3362B28DC850008DC54 /* LearnStatus.swift */; };
-		0C7E2DB92B3F589F0005224E /* Persistence+WordStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E2DB82B3F589F0005224E /* Persistence+WordStatus.swift */; };
 		0C7E2DBB2B40A3DE0005224E /* Persistence+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E2DBA2B40A3DE0005224E /* Persistence+History.swift */; };
 		0C7E2DBD2B40AAA10005224E /* Persistence+De-Duplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E2DBC2B40AAA10005224E /* Persistence+De-Duplication.swift */; };
 		0CB6B3372B28DC850008DC54 /* LearnStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB6B3362B28DC850008DC54 /* LearnStatus.swift */; };
@@ -152,7 +151,6 @@
 		0C7C3F852A70519C00AE2E50 /* Word+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0C7C3F862A70519C00AE2E50 /* Word+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0C7E2DB32B3283690005224E /* ChineseWordOfTheDay.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChineseWordOfTheDay.xctestplan; sourceTree = "<group>"; };
-		0C7E2DB82B3F589F0005224E /* Persistence+WordStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+WordStatus.swift"; sourceTree = "<group>"; };
 		0C7E2DBA2B40A3DE0005224E /* Persistence+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+History.swift"; sourceTree = "<group>"; };
 		0C7E2DBC2B40AAA10005224E /* Persistence+De-Duplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+De-Duplication.swift"; sourceTree = "<group>"; };
 		0CB6B3362B28DC850008DC54 /* LearnStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnStatus.swift; sourceTree = "<group>"; };
@@ -289,7 +287,6 @@
 				0C4858BE2A7192BE00AF96C2 /* Persistence.swift */,
 				0C7E2DBA2B40A3DE0005224E /* Persistence+History.swift */,
 				0C7E2DBC2B40AAA10005224E /* Persistence+De-Duplication.swift */,
-				0C7E2DB82B3F589F0005224E /* Persistence+WordStatus.swift */,
 				0C22FF232AEDDE7900913EC3 /* CurrentWordViewModel.swift */,
 			);
 			path = "Everything Else";
@@ -557,7 +554,6 @@
 				0C7E2DBB2B40A3DE0005224E /* Persistence+History.swift in Sources */,
 				0C4858BF2A7192BE00AF96C2 /* Persistence.swift in Sources */,
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
-				0C7E2DB92B3F589F0005224E /* Persistence+WordStatus.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
 				0C7E2DBD2B40AAA10005224E /* Persistence+De-Duplication.swift in Sources */,
 				0CCB25412B27905F001FAF94 /* Constants.swift in Sources */,
