@@ -23,7 +23,7 @@ extension ContentView: View {
                         }
                         HStack{
                             Spacer()
-                            BigGreenButton(size: geo.size, action: self.viewModel.updateCurrentWordStatusToSeen)
+                            BigGreenButton(parentSize: geo.size, action: self.viewModel.updateCurrentWordStatusToSeen)
                         }.background(Color.clear)
                     }
          

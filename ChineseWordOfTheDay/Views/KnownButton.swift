@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct BigGreenButton: View {
-    let size: CGSize
+    let parentSize: CGSize
     let action: () -> Void
 }
 extension BigGreenButton{
@@ -17,14 +17,23 @@ extension BigGreenButton{
         Button(action: {
             self.action()
         }, label: {
-            Image(systemName: "k")
+            Image(systemName: "checkmark")
                 .resizable()
                 .scaledToFit()
                 .foregroundStyle(.white)
-                .padding(EdgeInsets(top: dynamicPadding, leading: dynamicPadding, bottom: dynamicPadding, trailing: dynamicPadding))
-                .frame(width: self.buttonWidth, height: self.buttonHeight, alignment: .center)
+                
+                .padding(dynamicPadding)
+                .frame(width: self.buttonSize, height: self.buttonSize, alignment: .center)
                 .background(Circle()
-                    .fill(Color.green))
+                    .fill(LinearGradient(
+                        gradient: Gradient(colors: [Color.green, Color.green.opacity(0.7)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white, lineWidth: 2) // Border around the button
+                    ))
         })
         .shadow(color: .gray, radius: 4, x: -2, y: -1) // Add a drop shadow
         .padding()
@@ -32,15 +41,12 @@ extension BigGreenButton{
     }
 }
 extension BigGreenButton {
-    static let percentage: CGFloat = 20/100
-    static let paddingAmount = 0.2
+    static let percentageOfScreen: CGFloat = 16/100
+    static let paddingAmount = 0.15
     var dynamicPadding: CGFloat {
-        return min(self.buttonHeight, self.buttonWidth) * Self.paddingAmount
+        return self.buttonSize * Self.paddingAmount
     }
-    var buttonWidth: CGFloat {
-        return self.size.width * Self.percentage
-    }
-    var buttonHeight: CGFloat {
-        return self.size.width * Self.percentage
+    var buttonSize: CGFloat {
+        return min(self.parentSize.width, self.parentSize.height) * Self.percentageOfScreen
     }
 }
