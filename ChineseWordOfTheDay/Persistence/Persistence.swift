@@ -36,7 +36,7 @@ struct UserInfoKey {
 class PersistenceController {
     static var shared = PersistenceController(actor: .swiftuiApp)
     weak var delegate: CurrentWordRefreshDelegate?
-    var cloudPersistentStore: NSPersistentStore?
+    var cloudPersistentStore: NSPersistentStore!
     var localPersistentStore: NSPersistentStore?
     static var widget: PersistenceController {
         let con = PersistenceController(actor: .widget)
@@ -98,7 +98,6 @@ class PersistenceController {
             }
             if storeDescription.cloudKitContainerOptions != nil {
                 self.cloudPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
-                self.localPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
             } else {
                 print("set local store")
                 self.localPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
@@ -168,26 +167,14 @@ extension NSPersistentCloudKitContainer {
 extension PersistenceController {
     @objc
     func storeRemoteChange(_ notification: Notification) {
-        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String else {
-                print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
-                return
-            }
-            
-            // Determine whether the notification is for the cloud store or the local store
-            if let cloudStore = self.cloudPersistentStore, cloudStore.identifier == storeUUID {
-                print("\(#function): Received remote change notification for Cloud store.")
-                processHistoryAsynchronously(for: cloudStore)
-                
-            } else if let localStore = self.localPersistentStore, localStore.identifier == storeUUID {
-                print("\(#function): Received remote change notification for Local store.")
-                processHistoryAsynchronously(for: localStore)
-                
-            } else {
-                print("\(#function): Ignore a store remote Change notification because no matching store UUID was found.")
-                return
-            }
+        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
+              self.cloudPersistentStore.identifier == storeUUID
+        else {
+            print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
+            return
+        }
+        processHistoryAsynchronously()
     }
-
 }
 
 

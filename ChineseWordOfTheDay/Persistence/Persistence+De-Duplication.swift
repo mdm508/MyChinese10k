@@ -50,4 +50,3 @@ private func remove(duplicatedWordStatuses: [WordStatus], winner: WordStatus, pe
         // Perform other actions if needed, such as handling cloud deletions
     }
 }
-
