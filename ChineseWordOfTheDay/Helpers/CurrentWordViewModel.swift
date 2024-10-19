@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 import CloudKit
 import Combine
+import WidgetKit
 
 class WordViewModel: ObservableObject {
     @Published private(set) var currentWord: Word?
@@ -23,7 +24,6 @@ class WordViewModel: ObservableObject {
             }.store(in: &cancellables)
     }
 }
-/// public interface
 extension WordViewModel {
     /// Called whenever you want to push a new word to the cloud database
     func updateCurrentWordStatusToSeen(){
@@ -35,6 +35,7 @@ extension WordViewModel {
         }
         saveChanges()
         setCurrentWord()
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
 extension WordViewModel {

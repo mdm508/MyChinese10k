@@ -9,9 +9,12 @@ import Foundation
 import CoreData
 import Combine
 
+import UIKit
+
 public enum StorageActor: String, CaseIterable {
     case swiftuiApp, widget
 }
+
 /**
     We might post notifications from a background queueue.
  */
@@ -33,14 +36,12 @@ struct UserInfoKey {
 class PersistenceController {
     static var shared = PersistenceController(actor: .swiftuiApp)
     weak var delegate: CurrentWordRefreshDelegate?
-     private var _cloudPersistentStore: NSPersistentStore?
-        var cloudPersistentStore: NSPersistentStore {
-            return _cloudPersistentStore!
-        }
-        private var _localPersistentStore: NSPersistentStore?
-        var localPersistentStore: NSPersistentStore {
-            return _localPersistentStore!
-        }
+    var cloudPersistentStore: NSPersistentStore?
+    var localPersistentStore: NSPersistentStore?
+    static var widget: PersistenceController {
+        let con = PersistenceController(actor: .widget)
+        return con
+    }
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true, actor: .swiftuiApp)
         let viewContext = result.container.viewContext
@@ -68,27 +69,39 @@ class PersistenceController {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
             container.persistentStoreDescriptions.first!.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         }
-        // MARK: - Cloud Configuration
-        let cloudURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                      .appendingPathComponent("cloud.sqlite")
-        let cloudDesc = NSPersistentStoreDescription(url: cloudURL)
-        cloudDesc.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
-        cloudDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-        cloudDesc.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-        cloudDesc.cloudKitContainerOptions!.databaseScope = .private
-        cloudDesc.configuration = "cloud"
+        container.persistentStoreDescriptions = []
+        if actor == .swiftuiApp{
+            // MARK: - Cloud Configuration
+            let cloudURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                          .appendingPathComponent("cloud.sqlite")
+            let cloudDesc = NSPersistentStoreDescription(url: cloudURL)
+            cloudDesc.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
+            cloudDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+            cloudDesc.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+            cloudDesc.cloudKitContainerOptions!.databaseScope = .private
+            cloudDesc.configuration = "cloud"
+            container.persistentStoreDescriptions = [cloudDesc]
+            
+        }
+        if actor == .widget {
+            print("hi im widget")
+        }
         // MARK: - Local Configuration
         let localDesc = NSPersistentStoreDescription(url: Self.appGroupURL)
+        localDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        localDesc.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         localDesc.configuration = "local"
-        container.persistentStoreDescriptions = [cloudDesc, localDesc]
+        container.persistentStoreDescriptions.append(localDesc)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
             if storeDescription.cloudKitContainerOptions != nil {
-                self._cloudPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
+                self.cloudPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
+                self.localPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
             } else {
-                self._localPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
+                print("set local store")
+                self.localPersistentStore = self.container.persistentStoreCoordinator.persistentStore(for: storeDescription.url!)
             }
 
         })
@@ -155,14 +168,26 @@ extension NSPersistentCloudKitContainer {
 extension PersistenceController {
     @objc
     func storeRemoteChange(_ notification: Notification) {
-        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
-              self.cloudPersistentStore.identifier == storeUUID
-        else {
-            print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
-            return
-        }
-        processHistoryAsynchronously()
+        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String else {
+                print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
+                return
+            }
+            
+            // Determine whether the notification is for the cloud store or the local store
+            if let cloudStore = self.cloudPersistentStore, cloudStore.identifier == storeUUID {
+                print("\(#function): Received remote change notification for Cloud store.")
+                processHistoryAsynchronously(for: cloudStore)
+                
+            } else if let localStore = self.localPersistentStore, localStore.identifier == storeUUID {
+                print("\(#function): Received remote change notification for Local store.")
+                processHistoryAsynchronously(for: localStore)
+                
+            } else {
+                print("\(#function): Ignore a store remote Change notification because no matching store UUID was found.")
+                return
+            }
     }
+
 }
 
 

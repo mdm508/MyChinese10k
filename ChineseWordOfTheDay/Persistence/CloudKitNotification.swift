@@ -32,33 +32,6 @@ extension AppDelegate {
         application.registerForRemoteNotifications()
         return true
     }
-    /// Method to receive remote notifications from a cloudKit publisher
-    /// - SeeAlso: [UIapplicationDelegate documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623013-application)
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
-                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        /*
-         the device is lagguing 1 behind for some reason.
-         */
-//        let notifaction = CKNotification(fromRemoteNotificationDictionary: userInfo)
-//        print(notifaction.debugDescription)
-//        if let del = self.delegate {
-//            print("refreshing")
-//            del.refresh()
-//            completionHandler(.newData)
-//        } else {
-//            completionHandler(.failed)
-//        }
-//        if let info = extractCloudKitInfo(from: userInfo){
-//            
-////            updateLocalStatus(with: deduplicate(cloudNotifactionInfo: info))
-//            self.delegate?.refresh()
-//            completionHandler(.newData)
-//            return
-//        } else {
-//            print(userInfo.debugDescription)
-//            completionHandler(.failed)
-//        }
-    }
     /// If this WordStatus exists twice on the cloud and delete the older one
     func deduplicate(cloudNotifactionInfo: CloudKitNotificationInfo) -> CloudKitNotificationInfo {
         return cloudNotifactionInfo
