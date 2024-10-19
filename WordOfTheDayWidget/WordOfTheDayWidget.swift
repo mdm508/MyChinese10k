@@ -47,8 +47,18 @@ struct WordOfTheDayWidgetEntryView : View {
     var entry: WordOfTheDayProvider.Entry
     var body: some View {
         VStack {
-            Text("Time:")
-            Text(entry.word.traditional)
+            Text("\(entry.date.formatted(date: .abbreviated, time: .omitted))").font(.footnote).fontWeight(Font.Weight.light)
+            GeometryReader { geo in
+                // Calculate the font size based on the smallest dimension of the geometry reader's space
+                let fontSize = min(geo.size.width, geo.size.height) * 0.85
+                Text(entry.word.traditional)
+                    .font(.system(size: fontSize, weight: .bold, design: .default)) // Use custom size with dynamic adjustments
+                    .lineLimit(1) // Ensure the text stays on one line
+                    .minimumScaleFactor(0.5) // Allow text to scale down if needed to fit
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) // Center the text
+            }
+
+            Text(entry.word.zhuyin).font(.subheadline)
         }
     }
 }
