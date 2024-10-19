@@ -41,3 +41,16 @@ struct MockWord: Identifiable, WordRepresentable{
         status: 1
     )
 }
+
+extension MockWord: Encodable, Decodable {
+    // Static method to decode MockWord from UserDefaults
+        static func readFromUserDefaults() -> MockWord? {
+            let sharedDefaults = Constants.Defaults.sharedDefaults
+            if let savedData = sharedDefaults?.data(forKey: Constants.Defaults.mockWordKey),
+               let decodedWord = try? JSONDecoder().decode(MockWord.self, from: savedData) {
+                return decodedWord
+            }
+            return nil
+        }
+}
+

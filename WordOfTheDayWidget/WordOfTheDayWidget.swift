@@ -25,11 +25,12 @@ struct WordOfTheDayProvider: TimelineProvider {
     // Generates the timeline of entries that dictate the widget's content over time.
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         let currentDate = Date()
-        guard let currentWord = Word.fetchHigestPriorityUnseenWord(context: PersistenceController.shared.context) else {
-            completion(Timeline(entries: [], policy: .never))
-            return
+        let entry: WordEntry
+        if let currentWord = MockWord.readFromUserDefaults(){
+            entry = WordEntry(date: currentDate, word: currentWord)
+        } else {
+            entry = WordEntry(date: currentDate, word: MockWord.placeholder)
         }
-        let entry = WordEntry(date: currentDate, word: currentWord)
         let timeline = Timeline(entries: [entry], policy: .never)
         completion(timeline)
     }

@@ -35,6 +35,7 @@ extension WordViewModel {
         }
         saveChanges()
         setCurrentWord()
+        self.currentWord?.writeToUserDefaults()
         WidgetCenter.shared.reloadAllTimelines()
     }
 }

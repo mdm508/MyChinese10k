@@ -115,9 +115,8 @@ class PersistenceController {
 
 // MARK: - Conveinent URLS
 extension PersistenceController {
-    private static var appGroupURL: URL {
-      let appGroupId = "group.com.matthedm.ChineseWordOfTheDay.AppGroup"
-      let groupContainer = fm.containerURL(forSecurityApplicationGroupIdentifier: appGroupId)!
+    public static var appGroupURL: URL {
+      let groupContainer = fm.containerURL(forSecurityApplicationGroupIdentifier: Constants.appGroupId)!
       let url = groupContainer.appendingPathComponent(STORE_NAME + ".sqlite")
       return url
     }
