@@ -10,6 +10,7 @@ import CoreData
 import CloudKit
 import Combine
 import WidgetKit
+import WordModels
 
 class WordViewModel: ObservableObject {
     @Published private(set) var currentWord: Word?
@@ -35,7 +36,7 @@ extension WordViewModel {
         }
         saveChanges()
         setCurrentWord()
-        self.currentWord?.writeToUserDefaults()
+        self.currentWord?.writeToUserDefaults(appGroupId: Constants.appGroupId, mockWordKey: Constants.mockWordKey)
         WidgetCenter.shared.reloadAllTimelines()
     }
 }
@@ -61,3 +62,4 @@ extension WordViewModel: CurrentWordRefreshDelegate {
     }
 }
     
+

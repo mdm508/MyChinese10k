@@ -8,6 +8,7 @@
 import CoreData
 import CloudKit
 
+/*
 // MARK: - Notification handlers that trigger history processing.
 extension PersistenceController {
     /**
@@ -27,6 +28,7 @@ extension PersistenceController {
 }
 
 // MARK: - Process persistent historty asynchronously
+@MainActor
 extension PersistenceController {
     /**
      Process persistent history, posting any relevant transactions to the current view.
@@ -109,3 +111,4 @@ extension PersistenceController{
         UserDefaults.standard.set(data, forKey: key)
     }
 }
+*/

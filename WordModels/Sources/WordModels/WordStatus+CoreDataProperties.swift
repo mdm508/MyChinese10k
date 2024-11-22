@@ -10,20 +10,19 @@ import Foundation
 import CoreData
 
 
-extension WordStatus {
-
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<WordStatus> {
+public extension WordStatus {
+    @nonobjc class func fetchRequest() -> NSFetchRequest<WordStatus> {
         return NSFetchRequest<WordStatus>(entityName: "WordStatus")
     }
-    @NSManaged public var status: Int64
-    @NSManaged public var traditional: String?
-    @NSManaged public var lastModified: Date?
+    @NSManaged var status: Int64
+    @NSManaged var traditional: String?
+    @NSManaged var lastModified: Date?
 }
 
 extension WordStatus : Identifiable {
 
 }
-extension Word {
+public extension Word {
     func toMockWord() -> MockWord {
         return MockWord(
             context: self.context,
@@ -41,11 +40,15 @@ extension Word {
             status: self.status
         )
     }
-    func writeToUserDefaults() {
+    /// Writes self to user defaults.
+    /// - Parameters:
+    ///   - appGroupId:
+    ///   - mockWordKey:
+    func writeToUserDefaults(appGroupId: String, mockWordKey: String) {
         let mockWord = self.toMockWord()
         if let encodedWord = try? JSONEncoder().encode(mockWord) {
-            let sharedDefaults = UserDefaults(suiteName: Constants.appGroupId)
-            sharedDefaults?.set(encodedWord, forKey: Constants.Defaults.mockWordKey)
+            let sharedDefaults = UserDefaults(suiteName: appGroupId)
+            sharedDefaults?.set(encodedWord, forKey: mockWordKey)
         }
     }
 }

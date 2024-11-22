@@ -12,8 +12,11 @@ import CoreData
 
 @objc(Word)
 public class Word: NSManagedObject {
-    /// Retrieve a single word with `status` and with higest `Word.spokenFrequency`
-    static func fetchWordWithStatus(context: NSManagedObjectContext, status: Int64) -> Word? {
+    /// - Parameters:
+    ///   - context:
+    ///   - status:
+    /// - Returns: The highest frequency `Word` with the given `status`
+    public static func fetchWordWithStatus(context: NSManagedObjectContext, status: Int64) -> Word? {
         let request: NSFetchRequest<Word> = Word.fetchRequest()
         request.predicate = NSPredicate(format: "status == %d", status)
         request.fetchLimit = 1
@@ -24,11 +27,15 @@ public class Word: NSManagedObject {
             return nil
         }
     }
-    static func fetchHigestPriorityUnseenWord(context: NSManagedObjectContext) -> Word? {
-        ///Constructs a compound predicate that filters out all the words on the iCloud
-        ///Return value of nil indicates there are no word statuses that we need to filter
+    ///  Determines the highest priority `Word` by filtering out any `Word` with a
+    ///  `WordStatus` entry in iCloud. Just the fact of a `WordStatus` existing on the cloud.
+    ///   indicates that the `Word` has already been seen.
+    /// - Parameter context:
+    /// - Returns: Highest priority unseen `Word`.
+    public static func fetchHigestPriorityUnseenWord(context: NSManagedObjectContext) -> Word? {
+        /// Constructs a compound predicate that filters out all the words on the iCloud.
+        /// - Note: Return value of `nil` indicates there are no word statuses that we need to filter
         func constructPredicate() -> NSCompoundPredicate? {
-            //get all the words from icloud != to status 1
             if let s = WordStatus.fetchSeenAndKnown(context: context){
                 let traditionalArray = s.compactMap{wordStatus in wordStatus.traditional}
                 let orPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: traditionalArray.map{NSPredicate(format: "traditional == %@", $0)})

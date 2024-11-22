@@ -10,10 +10,7 @@ import Foundation
 import UIKit
 import CloudKit
 
-/// This delegate's refresh method is invoked upon successful local status update triggered by an iCloud notification.
-protocol CurrentWordRefreshDelegate: AnyObject {
-    func refresh() -> ()
-}
+
 /// Lightweight struct to store information from remote notifactions in
 struct CloudKitNotificationInfo {
     let cdTraditional: String
@@ -21,56 +18,28 @@ struct CloudKitNotificationInfo {
     let cdLastModified: Date
 }
 
-class AppDelegate: NSObject, UIApplicationDelegate {
-    let gcmMessageIDKey = "gcm.message_id"
-    var delegate: CurrentWordRefreshDelegate?
-    
-}
-
-extension AppDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        application.registerForRemoteNotifications()
-        return true
-    }
-    /// If this WordStatus exists twice on the cloud and delete the older one
-    func deduplicate(cloudNotifactionInfo: CloudKitNotificationInfo) -> CloudKitNotificationInfo {
-        return cloudNotifactionInfo
-    }
-    func extractCloudKitInfo(from notificationPayload: [AnyHashable: Any]) -> CloudKitNotificationInfo? {
-        guard
-            let ckInfo = notificationPayload[AnyHashable("ck")] as? [AnyHashable: Any],
-            let qry = ckInfo["qry"] as? [AnyHashable: Any],
-            let af = qry["af"] as? [String: Any],
-            let cdStatus = af[Cloud.wordStatusKeyStatus] as? Int64,
-            let cdTraditional = af[Cloud.wordStatusKeyTraditional] as? String,
-            let cdLastModified = af[Cloud.wordStatusKeyLastModified] as? Date
-        else {
-            // Return nil if any required field is missing or has the wrong type
-            // This will occur everytime for the default subscription
-            return nil
-        }
-        return CloudKitNotificationInfo(cdTraditional: cdTraditional, cdStatus: cdStatus, cdLastModified: cdLastModified)
-    }
-
+/// This delegate's refresh method is invoked upon successful local status update triggered by an iCloud notification.
+public protocol CurrentWordRefreshDelegate: AnyObject {
+    func refresh() -> ()
 }
 
 /// A collection of related CloudKit contsants
-struct Cloud{
+public struct Cloud{
     /// Must setup container like this because `CKContainer.default` has a different identifier
-    static let ck = CKContainer(identifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
-    static var db: CKDatabase {
+    public static let ck = CKContainer(identifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
+    public static var db: CKDatabase {
         ck.privateCloudDatabase
     }
     /// Default subrciption that is setup for you by the CloudKit Container
     static let subID = "wordStatusSubscription"
-    static let wordStatusRecordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
+    public static let wordStatusRecordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
 }
 extension Cloud {
-    static let wordStatusRecordType = "CD_WordStatus"
-    static let wordStatusKeyTraditional = "CD_traditional"
-    static let wordStatusKeyStatus = "CD_status"
-    static let wordStatusKeyLastModified = "CD_lastModified"
-    static let wordStatusAllKeys = [Self.wordStatusKeyTraditional, Self.wordStatusKeyStatus, Self.wordStatusKeyLastModified]
+    public static let wordStatusRecordType = "CD_WordStatus"
+    public static let wordStatusKeyTraditional = "CD_traditional"
+    public static let wordStatusKeyStatus = "CD_status"
+    public static let wordStatusKeyLastModified = "CD_lastModified"
+    public static let wordStatusAllKeys = [Self.wordStatusKeyTraditional, Self.wordStatusKeyStatus, Self.wordStatusKeyLastModified]
 }
 /// If a cloud kit subscription does not exist then set one up
 func setupCloudSub() {
@@ -100,6 +69,7 @@ func setupCloudSub() {
 
 
 /// Updates matching local entity with the new status
+@MainActor
 func updateLocalStatus(with new: CloudKitNotificationInfo){
     let request = Word.fetchRequest()
     request.predicate = NSPredicate(format: "traditional == %@", argumentArray: [new.cdTraditional])
@@ -123,6 +93,7 @@ func updateLocalStatus(with new: CloudKitNotificationInfo){
 
 
 /// updates all the local records with the statuses found in the cloud
+@MainActor
 func updateAllLocalStatus() async {
     let db = Cloud.db
     let query = CKQuery(recordType: Cloud.wordStatusRecordType, predicate: NSPredicate(value: true))

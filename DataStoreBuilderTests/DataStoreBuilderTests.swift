@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import WordFramework
+import WordModels
 import CoreData
 @testable import DataStoreBuilder
 

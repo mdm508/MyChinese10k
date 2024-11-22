@@ -1,23 +1,25 @@
 //
-//  WordFrameworkTests.swift
-//  WordFrameworkTests
+//  WordModelTests.swift
+//  WordModelTests
 //
-//  Created by m on 7/11/23.
+//  Created by m on 11/22/24.
 //
 
 import XCTest
+import WordModels
 import CoreData
 
-final class WordFrameworkTests: XCTestCase {
+final class WordModelTests: XCTestCase {
+
     var persistentContainer: NSPersistentContainer!
 
     override func setUpWithError() throws {
         super.setUp()
-        persistentContainer = NSPersistentContainer(name: "WordModel") // Replace with your actual Core Data model name
-        let description = NSPersistentStoreDescription()
-        
-        description.type = NSInMemoryStoreType
-        persistentContainer.persistentStoreDescriptions = [description]
+        persistentContainer = NSPersistentContainer(name: Constants.STORE_NAME) // Replace with your actual Core Data model name
+//        let description = NSPersistentStoreDescription()
+//
+//        description.type = NSInMemoryStoreType
+//        persistentContainer.persistentStoreDescriptions = [description]
         persistentContainer.loadPersistentStores { _, error in
             XCTAssertNil(error, "Failed to load the persistent store: \(error!)")
         }

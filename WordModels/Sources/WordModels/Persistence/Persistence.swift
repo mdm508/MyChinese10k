@@ -8,7 +8,6 @@
 import Foundation
 import CoreData
 import Combine
-
 import UIKit
 
 public enum StorageActor: String, CaseIterable {
@@ -23,7 +22,7 @@ extension Notification.Name {
 }
 
 extension NotificationCenter {
-    var storeDidChangePublisher: Publishers.ReceiveOn<NotificationCenter.Publisher, DispatchQueue> {
+    public var storeDidChangePublisher: Publishers.ReceiveOn<NotificationCenter.Publisher, DispatchQueue> {
         return publisher(for: .cdcksStoreDidChange).receive(on: DispatchQueue.main)
     }
 }
@@ -33,9 +32,10 @@ struct UserInfoKey {
     static let transactions = "transactions"
 }
 
-class PersistenceController {
-    static var shared = PersistenceController(actor: .swiftuiApp)
-    weak var delegate: CurrentWordRefreshDelegate?
+@MainActor
+public class PersistenceController {
+    public static var shared = PersistenceController(actor: .swiftuiApp)
+    public weak var delegate: CurrentWordRefreshDelegate?
     var cloudPersistentStore: NSPersistentStore!
     var localPersistentStore: NSPersistentStore?
     static var widget: PersistenceController {
@@ -54,7 +54,7 @@ class PersistenceController {
         return result
     }()
     let container: NSPersistentCloudKitContainer
-    var context: NSManagedObjectContext {
+    public var context: NSManagedObjectContext {
         self.container.viewContext
     }
     // An operation queue for handling history processing tasks: watching changes, deduplicating tags, and triggering UI updates if needed.
@@ -63,8 +63,10 @@ class PersistenceController {
         queue.maxConcurrentOperationCount = 1
         return queue
     }()
-    init(inMemory: Bool = false, actor: StorageActor) {
-        container = NSPersistentCloudKitContainer(name: STORE_NAME)
+    public init(inMemory: Bool = false, actor: StorageActor) {
+        let modelURL = Bundle.module.url(forResource: Constants.STORE_NAME, withExtension: "mom")!
+        let model = NSManagedObjectModel(contentsOf: modelURL)!
+        container = NSPersistentCloudKitContainer(name: Constants.STORE_NAME, managedObjectModel: model)
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
             container.persistentStoreDescriptions.first!.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
@@ -117,7 +119,7 @@ class PersistenceController {
 extension PersistenceController {
     public static var appGroupURL: URL {
       let groupContainer = fm.containerURL(forSecurityApplicationGroupIdentifier: Constants.appGroupId)!
-      let url = groupContainer.appendingPathComponent(STORE_NAME + ".sqlite")
+        let url = groupContainer.appendingPathComponent(Constants.STORE_NAME + ".sqlite")
       return url
     }
     private static let fm: FileManager = {
@@ -130,8 +132,8 @@ extension PersistenceController {
     /// Ensures that when application is first run, a preloaded database will be copied into the Sandbox.
     /// For this function to work correctly, it must be that the store was previously set to journal mode.
     /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
-    static func copyDatabaseIfNeeded() {
-        guard let bundlePath = Bundle.main.path(forResource: STORE_NAME, ofType: "sqlite") else {
+    public static func copyDatabaseIfNeeded() {
+        guard let bundlePath = Bundle.main.path(forResource: Constants.STORE_NAME, ofType: "sqlite") else {
             print("Database file not found in the app bundle.")
             return
         }
@@ -172,7 +174,7 @@ extension PersistenceController {
             print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
             return
         }
-        processHistoryAsynchronously()
+//        processHistoryAsynchronously()
     }
 }
 

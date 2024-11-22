@@ -6,11 +6,11 @@
 //
 
 import WidgetKit
+import WordModels
 import SwiftUI
 
 // Supplies the widget with timeline entries and handles updating the widget's content.
 struct WordOfTheDayProvider: TimelineProvider {
-    var con = PersistenceController.shared
 
     // Provides a placeholder view displayed in the widget gallery before the actual data is available.
     func placeholder(in context: Context) -> WordEntry {
@@ -26,7 +26,7 @@ struct WordOfTheDayProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         let currentDate = Date()
         let entry: WordEntry
-        if let currentWord = MockWord.readFromUserDefaults(){
+        if let currentWord = MockWord.readFromUserDefaults(appGroupId: Constants.appGroupId, mockWordKey: Constants.mockWordKey){
             entry = WordEntry(date: currentDate, word: currentWord)
         } else {
             entry = WordEntry(date: currentDate, word: MockWord.placeholder)

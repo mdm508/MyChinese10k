@@ -8,10 +8,11 @@
 import Foundation
 import CloudKit
 import CoreData
+import WordModels
 
 /// - Warning: Will reset all local statuses in the database with status 1 back to zero
 /// Only used for testing
-func resetAllLocalStatus(){
+@MainActor func resetAllLocalStatus(){
     let context = PersistenceController.shared.context
     let request: NSFetchRequest<Word> = Word.fetchRequest()
     request.predicate = NSPredicate(value: true)

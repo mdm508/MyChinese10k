@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol WordRepresentable {
+public protocol WordRepresentable {
     var context: String { get }
     var frequency: Int64 { get }
     var index: Int64 { get }
@@ -22,7 +22,4 @@ protocol WordRepresentable {
     var synonyms: [String] { get }
     var status: Int64 { get }
 }
-
-extension Word: WordRepresentable {
-    
-}
+extension Word: WordRepresentable {}

@@ -8,10 +8,11 @@
 import Foundation
 import CoreData
 
+/*
 extension PersistenceController {
     func deduplicateWordStatusesAndWait(statusObjectIDs: [NSManagedObjectID]) {
         let taskContext = self.container.newTaskContext()
-        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+//        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         taskContext.performAndWait {
             statusObjectIDs.forEach { statusObjectID in
                 deduplicateWordStatus(statusObjectID: statusObjectID, performingContext: taskContext)
@@ -50,3 +51,4 @@ private func remove(duplicatedWordStatuses: [WordStatus], winner: WordStatus, pe
         // Perform other actions if needed, such as handling cloud deletions
     }
 }
+*/
