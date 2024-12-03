@@ -10,11 +10,15 @@ import CoreData
 import WordModels
 import UIKit
 
+
+
 @main
 struct ChineseWordOfTheDayApp: App {
     let wordVM: WordViewModel
     /// On first run will bring the local database into the application.
     init(){
+
+
         PersistenceController.copyDatabaseIfNeeded()
         wordVM = WordViewModel(viewContext: PersistenceController.shared.context)
         PersistenceController.shared.delegate = wordVM

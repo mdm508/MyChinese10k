@@ -5,12 +5,12 @@
         <attribute name="frequency" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="level" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="meanings" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <attribute name="meanings" optional="YES" attributeType="Transformable" valueTransformerName="StringArrayTransformer"/>
         <attribute name="pinyin" optional="YES" attributeType="String"/>
         <attribute name="simplified" optional="YES" attributeType="String"/>
         <attribute name="spokenFrequency" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="status" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="synonyms" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
+        <attribute name="synonyms" optional="YES" attributeType="Transformable" valueTransformerName="StringArrayTransformer"/>
         <attribute name="traditional" optional="YES" attributeType="String"/>
         <attribute name="writtenFrequency" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="zhuyin" optional="YES" attributeType="String"/>

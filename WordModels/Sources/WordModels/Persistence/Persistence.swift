@@ -64,6 +64,10 @@ public class PersistenceController {
         return queue
     }()
     public init(inMemory: Bool = false, actor: StorageActor) {
+        ValueTransformer.setValueTransformer(
+            StringArrayTransformer(),
+            forName: NSValueTransformerName("StringArrayTransformer")
+        )
         let modelURL = Bundle.module.url(forResource: Constants.STORE_NAME, withExtension: "mom")!
         let model = NSManagedObjectModel(contentsOf: modelURL)!
         container = NSPersistentCloudKitContainer(name: Constants.STORE_NAME, managedObjectModel: model)
@@ -108,9 +112,9 @@ public class PersistenceController {
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.name = "viewContext"
-        NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
-                                               name: .NSPersistentStoreRemoteChange,
-                                               object: container.persistentStoreCoordinator)
+//        NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
+//                                               name: .NSPersistentStoreRemoteChange,
+//                                               object: container.persistentStoreCoordinator)
       }
     }
 
@@ -165,17 +169,17 @@ extension NSPersistentCloudKitContainer {
  Handle .NSPersistentStoreRemoteChange notifications.
  Process persistent history to merge relevant changes to the context, and deduplicate the tags if necessary.
  */
-extension PersistenceController {
-    @objc
-    func storeRemoteChange(_ notification: Notification) {
-        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
-              self.cloudPersistentStore.identifier == storeUUID
-        else {
-            print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
-            return
-        }
-//        processHistoryAsynchronously()
-    }
-}
+//extension PersistenceController {
+//    @objc
+//    func storeRemoteChange(_ notification: Notification) {
+//        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
+//              self.cloudPersistentStore.identifier == storeUUID
+//        else {
+//            print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
+//            return
+//        }
+////        processHistoryAsynchronously()
+//    }
+//}
 
 
