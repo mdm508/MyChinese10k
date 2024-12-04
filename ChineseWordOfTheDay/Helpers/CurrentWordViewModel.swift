@@ -12,6 +12,9 @@ import Combine
 import WidgetKit
 import WordModels
 
+
+
+
 class WordViewModel: ObservableObject {
     @Published private(set) var currentWord: Word?
     let context: NSManagedObjectContext
@@ -26,17 +29,28 @@ class WordViewModel: ObservableObject {
     }
 }
 extension WordViewModel {
+
     /// Called whenever you want to push a new word to the cloud database
     func updateCurrentWordStatusToSeen(){
-        let wordStatus = WordStatus(context: context)
-        if let cur = self.currentWord {
-            wordStatus.traditional = cur.traditional
-            wordStatus.status =  LearnStatus.seen.rawValue
-            wordStatus.lastModified = Date()
+
+        if let word = self.currentWord {
+            createCloudKitRecord(for: word){
+                setCurrentWord()
+                
+            }
         }
-        saveChanges()
-        setCurrentWord()
-        self.currentWord?.writeToUserDefaults(appGroupId: Constants.appGroupId, mockWordKey: Constants.mockWordKey)
+
+        
+
+//        let wordStatus = WordStatus(context: context)
+//        if let cur = self.currentWord {
+//            wordStatus.traditional = cur.traditional
+//            wordStatus.status =  LearnStatus.seen.rawValue
+//            wordStatus.lastModified = Date()
+//        }
+//        saveChanges()
+//        setCurrentWord()
+//        self.currentWord?.writeToUserDefaults(appGroupId: Constants.appGroupId, mockWordKey: Constants.mockWordKey)
         WidgetCenter.shared.reloadAllTimelines()
     }
 }

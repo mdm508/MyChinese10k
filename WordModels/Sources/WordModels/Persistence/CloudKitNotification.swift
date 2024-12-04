@@ -39,8 +39,33 @@ extension Cloud {
     public static let wordStatusKeyTraditional = "CD_traditional"
     public static let wordStatusKeyStatus = "CD_status"
     public static let wordStatusKeyLastModified = "CD_lastModified"
+    
     public static let wordStatusAllKeys = [Self.wordStatusKeyTraditional, Self.wordStatusKeyStatus, Self.wordStatusKeyLastModified]
 }
+public func createCloudKitRecord(for word: Word, completion: () -> ()) {
+    let hexString = convertChineseToHex(chineseCharacter: word.traditional)
+//    let ckID = CKRecord.ID(recordName: hexString)
+    let ckID = CKRecord.ID(recordName: hexString, zoneID: Cloud.wordStatusRecordZone.zoneID)
+
+    let newRecord = CKRecord(recordType: Cloud.wordStatusRecordType, recordID: ckID)
+    newRecord["CD_entityName"] = "WordStatus" //TODO: make into a constant
+    // Set the appropriate fields for the new record based on your WordStatus entity
+    newRecord[Cloud.wordStatusKeyTraditional] = word.traditional as CKRecordValue
+    newRecord[Cloud.wordStatusKeyStatus] = LearnStatus.seen.rawValue as CKRecordValue
+    newRecord[Cloud.wordStatusKeyLastModified] = Date() as CKRecordValue
+    // Save the record to the public CloudKit database
+    let db = Cloud.db
+    db.save( newRecord) { savedRecord, error in
+        if let error = error {
+            print("Error saving record: \(error.localizedDescription)")
+        } else {
+            print("Successfully saved record with ID: \(savedRecord?.recordID.recordName ?? "")")
+        }
+    }
+}
+
+
+
 /// If a cloud kit subscription does not exist then set one up
 func setupCloudSub() {
     let db = Cloud.db
@@ -67,6 +92,10 @@ func setupCloudSub() {
     }
 }
 
+func convertChineseToHex(chineseCharacter: String) -> String {
+    let utf8Data = chineseCharacter.data(using: .utf8)!
+    return utf8Data.map { String(format: "%02x", $0) }.joined()
+}
 
 /// Updates matching local entity with the new status
 @MainActor

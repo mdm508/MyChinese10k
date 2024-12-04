@@ -12,7 +12,7 @@
 		<key>DataStoreBuilder.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>5</integer>
 		</dict>
 		<key>MyPlayground (Playground) 1.xcscheme</key>
 		<dict>
@@ -38,7 +38,7 @@
 		<key>StoreBuilderMain.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>5</integer>
+			<integer>4</integer>
 		</dict>
 		<key>WordFramework.xcscheme_^#shared#^_</key>
 		<dict>
