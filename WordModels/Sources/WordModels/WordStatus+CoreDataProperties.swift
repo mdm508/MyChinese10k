@@ -44,7 +44,8 @@ public extension Word {
     /// - Parameters:
     ///   - appGroupId:
     ///   - mockWordKey:
-    func writeToUserDefaults(appGroupId: String, mockWordKey: String) {
+    func writeToUserDefaults(appGroupId: String=Constants.appGroupId,
+                             mockWordKey: String=Constants.mockWordKey) {
         let mockWord = self.toMockWord()
         if let encodedWord = try? JSONEncoder().encode(mockWord) {
             let sharedDefaults = UserDefaults(suiteName: appGroupId)

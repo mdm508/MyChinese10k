@@ -21,15 +21,19 @@
             <fetchIndexElement property="traditional" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
+    <entity name="WordIndex" representedClassName="WordIndex" syncable="YES">
+        <attribute name="current" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
     <entity name="WordStatus" representedClassName="WordStatus" syncable="YES">
         <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="status" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="traditional" optional="YES" attributeType="String"/>
     </entity>
     <configuration name="cloud" usedWithCloudKit="YES">
-        <memberEntity name="WordStatus"/>
+        <memberEntity name="WordIndex"/>
     </configuration>
     <configuration name="local">
         <memberEntity name="Word"/>
+        <memberEntity name="WordStatus"/>
     </configuration>
 </model>

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Constants {
+public struct Constants {
     // MARK: User defaults
     public static let appGroupId = "group.com.matthedm.ChineseWordOfTheDay.AppGroup"
     public static let mockWordKey = "mockWordKey"

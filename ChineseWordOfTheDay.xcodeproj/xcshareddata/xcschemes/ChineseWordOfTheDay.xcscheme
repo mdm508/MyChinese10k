@@ -102,7 +102,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-com.apple.CoreData.CloudKitDebug 0"
+            argument = "-com.apple.CoreData.CloudKitDebug 1"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

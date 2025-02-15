@@ -9,9 +9,30 @@
 import Foundation
 import CoreData
 
-
 @objc(Word)
-public class Word: NSManagedObject {
+public class Word: NSManagedObject, @unchecked Sendable {
+    public static func fetchWord(at index: Int64, context: NSManagedObjectContext) -> Word? {
+        let fetchRequest: NSFetchRequest<Word> = Word.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "index == %d", index)
+        fetchRequest.fetchLimit = 1 // Ensure only one result is returned
+        do {
+            return try context.fetch(fetchRequest).first
+        } catch {
+            print("Failed to fetch Word at index \(index): \(error)")
+            return nil
+        }
+    }
+    public static func fetchSeenAndKnown(context: NSManagedObjectContext) -> [Word]? {
+        let request: NSFetchRequest<Word> = Word.fetchRequest()
+        request.predicate = NSPredicate(format: "status IN %@", [LearnStatus.seen.rawValue, LearnStatus.known.rawValue])
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("Error fetching WordStatus: \(error)")
+            return nil
+        }
+    }
+    
     /// - Parameters:
     ///   - context:
     ///   - status:
@@ -32,11 +53,12 @@ public class Word: NSManagedObject {
     ///   indicates that the `Word` has already been seen.
     /// - Parameter context:
     /// - Returns: Highest priority unseen `Word`.
-    public static func fetchHigestPriorityUnseenWord(context: NSManagedObjectContext) -> Word? {
+    @MainActor public static func fetchHigestPriorityUnseenWord() -> Word? {
         /// Constructs a compound predicate that filters out all the words on the iCloud.
         /// - Note: Return value of `nil` indicates there are no word statuses that we need to filter
+        let context = PersistenceController.shared.context
         func constructPredicate() -> NSCompoundPredicate? {
-            if let s = WordStatus.fetchSeenAndKnown(context: context){
+            if let s = Word.fetchSeenAndKnown(context: context){
                 let traditionalArray = s.compactMap{wordStatus in wordStatus.traditional}
                 let orPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: traditionalArray.map{NSPredicate(format: "traditional == %@", $0)})
                 return NSCompoundPredicate(notPredicateWithSubpredicate: orPredicate)
@@ -45,7 +67,12 @@ public class Word: NSManagedObject {
         }
         let request: NSFetchRequest<Word> = Word.fetchRequest()
         request.predicate = constructPredicate()
-        request.sortDescriptors = [NSSortDescriptor(key: #keyPath(WordStatus.status), ascending: false)]
+        //request.sortDescriptors = [NSSortDescriptor(key: #keyPath(WordStatus.status), ascending: false)]
+        request.sortDescriptors = [
+            NSSortDescriptor(key: #keyPath(Word.status), ascending: false),  // Primary sort (descending order)
+            NSSortDescriptor(key: #keyPath(Word.index), ascending: true)    // Secondary sort (ascending order)
+        ]
+
         request.fetchLimit = 1
         do {
             return try context.fetch(request).first
@@ -55,3 +82,5 @@ public class Word: NSManagedObject {
         }
     }
 }
+
+

@@ -1,8 +1,8 @@
-//
-//  File.swift
-//  WordModels
-//
-//  Created by m on 2/14/25.
-//
+import CoreData
 
-import Foundation
+extension WordIndex {
+    @NSManaged public var current: Int64
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<WordIndex> {
+        return NSFetchRequest<WordIndex>(entityName: "WordIndex")
+    }
+}

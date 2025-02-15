@@ -10,40 +10,51 @@ import CloudKit
 import CoreData
 import WordModels
 
-/// - Warning: Will reset all local statuses in the database with status 1 back to zero
-/// Only used for testing
-@MainActor func resetAllLocalStatus(){
-    let context = PersistenceController.shared.context
-    let request: NSFetchRequest<Word> = Word.fetchRequest()
-    request.predicate = NSPredicate(value: true)
-    let words = try? context.fetch(request)
-    if let words = words {
-        for w in words {
-            w.status = LearnStatus.unseen.rawValue
-        }
-        try! context.save()
+
+/// - Warning: Will delete everything in local and cloud
+@MainActor
+public func deleteAll() {
+    Task {
+        await deletAllCloudWordStatus()
     }
+    deleteAllLocalWordStatus()
+    PersistenceController.deleteDatabase()
 }
 
 /// - Warning: Will delete everything in iCloud
-func deletAllCloudWordStatus() async {
+public func deletAllCloudWordStatus() async {
     let db = Cloud.db
-    let records = try! await db.records(matching: CKQuery(recordType: Cloud.wordStatusRecordType, predicate: NSPredicate(value: true)), inZoneWith: Cloud.wordStatusRecordZone.zoneID, desiredKeys: nil)
+    let records = try! await db.records(
+        matching: CKQuery(recordType: Cloud.wordStatusRecordType, predicate: NSPredicate(value: true)),
+        inZoneWith: Cloud.wordStatusRecordZone.zoneID,
+        desiredKeys: nil
+    )
     let matches = records.matchResults
-    let recordIds = matches.map{recordTuple in recordTuple.0}
-    print(recordIds.count)
-    print(recordIds)
+    let recordIds = matches.map { $0.0 }
+
     let operation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: recordIds)
-    operation.modifyRecordsResultBlock = { (result: Result<Void, Error>) in
+    operation.modifyRecordsResultBlock = { result in
         switch result {
         case .success:
-            // Handle success
-            print("deleted recorcds")
+            print("Deleted records (this callback may not be on the main thread)")
         case .failure(let error):
-            // Handle failure
             print("Error modifying records: \(error)")
         }
     }
-        db.add(operation)
+
+    db.add(operation)
 }
 
+@MainActor
+fileprivate func deleteAllLocalWordStatus() {
+    let context = PersistenceController.shared.context
+    let request: NSFetchRequest<NSFetchRequestResult> = WordStatus.fetchRequest()
+    let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+    do {
+        try context.execute(deleteRequest)
+        // No need to call save() after a batch delete
+    } catch {
+        print("Error executing batch delete: \(error)")
+    }
+}
