@@ -6,14 +6,14 @@
 ////
 //
 
-import WordModels
+import CoreDataModels
 import CoreData
+import Persistence
 
 func updateCurrentWordStatusToSeen(word: Word, context: NSManagedObjectContext) async {
     Task{
         try await createCloudKitRecord(for: word)
     }
-    word.status = LearnStatus.seen.rawValue
     do {
         try context.save()
         

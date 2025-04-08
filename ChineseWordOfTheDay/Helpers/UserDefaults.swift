@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import WordModels //PersistenceConstants
+import CoreDataModels
 
 struct Constants {
     // MARK: User defaults

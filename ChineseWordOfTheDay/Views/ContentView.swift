@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import WordModels
+import CoreDataModels
 import CoreData
 
 struct ContentView {

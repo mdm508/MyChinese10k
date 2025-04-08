@@ -8,7 +8,8 @@
 import Foundation
 import CloudKit
 import CoreData
-import WordModels
+import CoreDataModels
+import Persistence
 
 
 /// - Warning: Will delete everything in local and cloud

@@ -1,0 +1,28 @@
+//
+//  Word+CoreDataProperties.swift
+//  WordFramework
+//
+//  Created by m on 7/11/23.
+//
+//
+
+import Foundation
+import CoreData
+
+extension Word: Identifiable {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Word> {
+        return NSFetchRequest<Word>(entityName: "Word")
+    }
+    @NSManaged public var context: [String]
+    @NSManaged public var index: Int64
+    @NSManaged public var meanings: [String]
+    @NSManaged public var pinyin: String
+    @NSManaged public var simplified: String
+    @NSManaged public var traditional: String
+    @NSManaged public var zhuyin: String
+}
+
+extension Word: WordRepresentable {}
+
+
+

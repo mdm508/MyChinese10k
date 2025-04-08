@@ -6,7 +6,7 @@
 //
 
 import WidgetKit
-import WordModels
+import CoreDataModels
 import SwiftUI
 
 // Supplies the widget with timeline entries and handles updating the widget's content.

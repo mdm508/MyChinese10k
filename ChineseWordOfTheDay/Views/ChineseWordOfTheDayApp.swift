@@ -7,15 +7,16 @@
 
 import SwiftUI
 import CoreData
-import WordModels
+import CoreDataModels
 import UIKit
 import CloudKit
-
+import Persistence
 
 @main
 struct ChineseWordOfTheDayApp: App {
 //    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     init(){
+//        deleteAll()
         PersistenceController.copyDatabaseIfNeeded()
 //        appDelegate.delegate = wordVM
     }

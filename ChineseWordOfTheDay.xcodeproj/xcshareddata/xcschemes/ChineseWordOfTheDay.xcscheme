@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1600"
+   LastUpgradeVersion = "1620"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -35,28 +35,6 @@
       </TestPlans>
       <Testables>
          <TestableReference
-            skipped = "YES"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0CD09E362A5DC7E1005C97F1"
-               BuildableName = "DataStoreBuilderTests.xctest"
-               BlueprintName = "DataStoreBuilderTests"
-               ReferencedContainer = "container:ChineseWordOfTheDay.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "YES"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0CD09E5C2A5DCB3A005C97F1"
-               BuildableName = "WordFrameworkTests.xctest"
-               BlueprintName = "WordFrameworkTests"
-               ReferencedContainer = "container:ChineseWordOfTheDay.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
             skipped = "NO"
             parallelizable = "YES">
             <BuildableReference
@@ -75,6 +53,17 @@
                BlueprintIdentifier = "0C28001A2CF0E45F00A4BC70"
                BuildableName = "WordModelTests.xctest"
                BlueprintName = "WordModelTests"
+               ReferencedContainer = "container:ChineseWordOfTheDay.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "0CBAF4952D95ED8D00488D5A"
+               BuildableName = "PersistenceTests.xctest"
+               BlueprintName = "PersistenceTests"
                ReferencedContainer = "container:ChineseWordOfTheDay.xcodeproj">
             </BuildableReference>
          </TestableReference>

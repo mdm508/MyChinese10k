@@ -17,26 +17,21 @@
 		0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67062A5DC21400EAAD30 /* ContentView.swift */; };
 		0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D67082A5DC21500EAAD30 /* Assets.xcassets */; };
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
-		0C22FF202AEDDA6B00913EC3 /* WordModel.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0C22FF1F2AEDDA6B00913EC3 /* WordModel.sqlite */; };
 		0C22FF242AEDDE7900913EC3 /* CurrentWordHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C22FF232AEDDE7900913EC3 /* CurrentWordHelpers.swift */; };
-		0C2800252CF0E49B00A4BC70 /* WordModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0C2800242CF0E49B00A4BC70 /* WordModels */; };
 		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
 		0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C72A71992E00AF96C2 /* WordView.swift */; };
-		0C778DDF2A5F20DB007D2A8F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C778DDE2A5F20DB007D2A8F /* main.swift */; };
-		0C778DE32A5F20FC007D2A8F /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
-		0C778DE42A5F20FC007D2A8F /* DataStoreBuilder.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		0C8783442CF0DF270039E51A /* WordModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0C8783432CF0DF270039E51A /* WordModels */; };
-		0CAA2EED2CCACD360046F6AC /* WordModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0CAA2EEC2CCACD360046F6AC /* WordModels */; };
 		0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */; };
-		0CD09E382A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */; };
-		0CD09E3F2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */; };
-		0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		0CD09E4D2A5DC7FB005C97F1 /* DataStoreBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD09E4C2A5DC7FB005C97F1 /* DataStoreBuilder.swift */; };
-		0CD8C5202CF0D7C00053B9BA /* WordModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0CD8C51F2CF0D7C00053B9BA /* WordModels */; };
+		0CBAF4A22D95ED8D00488D5A /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; };
+		0CBAF4A32D95ED8D00488D5A /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0CBF393D2DA59E5100E6C867 /* CoreDataModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; };
+		0CBF393E2DA59E5100E6C867 /* CoreDataModels.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0CBF395E2DA59FAC00E6C867 /* CoreDataModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; };
+		0CBF395F2DA59FAC00E6C867 /* CoreDataModels.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0CBF39632DA5A17B00E6C867 /* CoreDataModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; };
+		0CBF39642DA5A17B00E6C867 /* CoreDataModels.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */; };
-		0CF1DF9B2ACB313D0093519B /* output.json in Resources */ = {isa = PBXBuildFile; fileRef = 0CF1DF9A2ACB313D0093519B /* output.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,40 +42,33 @@
 			remoteGlobalIDString = 0C15E8632C8BDA6300D7B51B;
 			remoteInfo = WordOfTheDayWidgetExtension;
 		};
-		0C28001F2CF0E45F00A4BC70 /* PBXContainerItemProxy */ = {
+		0CBAF4A02D95ED8D00488D5A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 0C1D67002A5DC21400EAAD30;
-			remoteInfo = ChineseWordOfTheDay;
+			remoteGlobalIDString = 0CBAF48E2D95ED8D00488D5A;
+			remoteInfo = Persistence;
 		};
-		0C778DE52A5F20FC007D2A8F /* PBXContainerItemProxy */ = {
+		0CBF393B2DA59E5100E6C867 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 0CD09E2F2A5DC7E1005C97F1;
-			remoteInfo = DataStoreBuilder;
+			remoteGlobalIDString = 0CBF39362DA59E5100E6C867;
+			remoteInfo = CoreDataModels;
 		};
-		0CD09E392A5DC7E1005C97F1 /* PBXContainerItemProxy */ = {
+		0CBF39602DA59FAC00E6C867 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 0CD09E2F2A5DC7E1005C97F1;
-			remoteInfo = DataStoreBuilder;
+			remoteGlobalIDString = 0CBF39362DA59E5100E6C867;
+			remoteInfo = CoreDataModels;
 		};
-		0CD09E3B2A5DC7E1005C97F1 /* PBXContainerItemProxy */ = {
+		0CBF39652DA5A17B00E6C867 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 0C1D67002A5DC21400EAAD30;
-			remoteInfo = ChineseWordOfTheDay;
-		};
-		0CD09E612A5DCB3A005C97F1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0C1D67002A5DC21400EAAD30;
-			remoteInfo = ChineseWordOfTheDay;
+			remoteGlobalIDString = 0CBF39362DA59E5100E6C867;
+			remoteInfo = CoreDataModels;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -96,22 +84,24 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0C778DDA2A5F20DB007D2A8F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-		0C778DE72A5F20FC007D2A8F /* Embed Frameworks */ = {
+		0CBF39622DA59FAC00E6C867 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				0C778DE42A5F20FC007D2A8F /* DataStoreBuilder.framework in Embed Frameworks */,
+				0CBF395F2DA59FAC00E6C867 /* CoreDataModels.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CBF39672DA5A17B00E6C867 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0CBF39642DA5A17B00E6C867 /* CoreDataModels.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,16 +112,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E772A5DCC5A005C97F1 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
+				0CBAF4A32D95ED8D00488D5A /* Persistence.framework in Embed Frameworks */,
+				0CBF393E2DA59E5100E6C867 /* CoreDataModels.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -151,33 +133,51 @@
 		0C1D67062A5DC21400EAAD30 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0C1D67082A5DC21500EAAD30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0C22FF1F2AEDDA6B00913EC3 /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
 		0C22FF232AEDDE7900913EC3 /* CurrentWordHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWordHelpers.swift; sourceTree = "<group>"; };
-		0C28001B2CF0E45F00A4BC70 /* WordModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C4726702CAF1DB90014E288 /* WordOfTheDayWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordOfTheDayWidgetExtension.entitlements; sourceTree = "<group>"; };
 		0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryReaderCentered.swift; sourceTree = "<group>"; };
 		0C4858C72A71992E00AF96C2 /* WordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
-		0C5BF6D52CC9777400A84B12 /* WordModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = WordModels; sourceTree = "<group>"; };
-		0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = StoreBuilderMain; sourceTree = BUILT_PRODUCTS_DIR; };
-		0C778DDE2A5F20DB007D2A8F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		0C7914132DA58E3E00C4883D /* CoreDataModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CoreDataModels; path = Packages/CoreDataModels; sourceTree = "<group>"; };
 		0C7E2DB32B3283690005224E /* ChineseWordOfTheDay.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChineseWordOfTheDay.xctestplan; sourceTree = "<group>"; };
 		0CAE8D152CC426A9008954BB /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UserDefaults.swift; path = ../Helpers/UserDefaults.swift; sourceTree = "<group>"; };
 		0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentFunctions.swift; sourceTree = "<group>"; };
-		0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStoreBuilder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataStoreBuilder.h; sourceTree = "<group>"; };
-		0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreBuilderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStoreBuilderTests.swift; sourceTree = "<group>"; };
-		0CD09E4C2A5DC7FB005C97F1 /* DataStoreBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStoreBuilder.swift; sourceTree = "<group>"; };
-		0CD09E5D2A5DCB3A005C97F1 /* WordFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WordFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0CD09E642A5DCB3A005C97F1 /* WordModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordModelsTests.swift; sourceTree = "<group>"; };
+		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataModels.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChineseWordOfTheDay.entitlements; sourceTree = "<group>"; };
 		0CEBE9C32B17C21500650626 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownButton.swift; sourceTree = "<group>"; };
-		0CF1DF9A2ACB313D0093519B /* output.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = output.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0CBAF4A42D95ED8D00488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WordModel.sqlite,
+			);
+			publicHeaders = (
+				Persistence.h,
+			);
+			target = 0CBAF48E2D95ED8D00488D5A /* Persistence */;
+		};
+		0CBAF4F12DA56B9600488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WordModel.sqlite,
+			);
+			target = 0C1D67002A5DC21400EAAD30 /* ChineseWordOfTheDay */;
+		};
+		0CBF39422DA59E5100E6C867 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				CoreDataModels.h,
+			);
+			target = 0CBF39362DA59E5100E6C867 /* CoreDataModels */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0C28001C2CF0E45F00A4BC70 /* WordModelTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = WordModelTests; sourceTree = "<group>"; };
+		0CBAF4902D95ED8D00488D5A /* Persistence */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0CBAF4F12DA56B9600488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 0CBAF4A42D95ED8D00488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Persistence; sourceTree = "<group>"; };
+		0CBF39382DA59E5100E6C867 /* CoreDataModels */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0CBF39422DA59E5100E6C867 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CoreDataModels; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,8 +186,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C15E8682C8BDA6400D7B51B /* SwiftUI.framework in Frameworks */,
+				0CBF39632DA5A17B00E6C867 /* CoreDataModels.framework in Frameworks */,
 				0C15E8662C8BDA6400D7B51B /* WidgetKit.framework in Frameworks */,
-				0CAA2EED2CCACD360046F6AC /* WordModels in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,46 +195,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CD8C5202CF0D7C00053B9BA /* WordModels in Frameworks */,
+				0CBAF4A22D95ED8D00488D5A /* Persistence.framework in Frameworks */,
+				0CBF393D2DA59E5100E6C867 /* CoreDataModels.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0C2800182CF0E45F00A4BC70 /* Frameworks */ = {
+		0CBAF48C2D95ED8D00488D5A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C2800252CF0E49B00A4BC70 /* WordModels in Frameworks */,
+				0CBF395E2DA59FAC00E6C867 /* CoreDataModels.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0C778DD92A5F20DB007D2A8F /* Frameworks */ = {
+		0CBF39342DA59E5100E6C867 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C778DE32A5F20FC007D2A8F /* DataStoreBuilder.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E2D2A5DC7E1005C97F1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E342A5DC7E1005C97F1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0CD09E382A5DC7E1005C97F1 /* DataStoreBuilder.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E5A2A5DCB3A005C97F1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0C8783442CF0DF270039E51A /* WordModels in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,18 +232,13 @@
 		0C1D66F82A5DC21300EAAD30 = {
 			isa = PBXGroup;
 			children = (
-				0C5BF6D52CC9777400A84B12 /* WordModels */,
 				0C4726702CAF1DB90014E288 /* WordOfTheDayWidgetExtension.entitlements */,
 				0C7E2DB32B3283690005224E /* ChineseWordOfTheDay.xctestplan */,
 				0C1D67032A5DC21400EAAD30 /* ChineseWordOfTheDay */,
-				0CD09E312A5DC7E1005C97F1 /* DataStoreBuilder */,
-				0CD09E3D2A5DC7E1005C97F1 /* DataStoreBuilderTests */,
-				0CD09E632A5DCB3A005C97F1 /* WordFrameworkTests */,
-				0C778DDD2A5F20DB007D2A8F /* StoreBuilderMain */,
 				0C15E8692C8BDA6400D7B51B /* WordOfTheDayWidget */,
-				0C28001C2CF0E45F00A4BC70 /* WordModelTests */,
 				0C1D67022A5DC21400EAAD30 /* Products */,
 				0CD09E722A5DCC5A005C97F1 /* Frameworks */,
+				0CBF39432DA59E5700E6C867 /* MYFrameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -274,12 +246,9 @@
 			isa = PBXGroup;
 			children = (
 				0C1D67012A5DC21400EAAD30 /* ChineseWordOfTheDay.app */,
-				0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */,
-				0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */,
-				0CD09E5D2A5DCB3A005C97F1 /* WordFrameworkTests.xctest */,
-				0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */,
 				0C15E8642C8BDA6300D7B51B /* WordOfTheDayWidgetExtension.appex */,
-				0C28001B2CF0E45F00A4BC70 /* WordModelTests.xctest */,
+				0CBAF48F2D95ED8D00488D5A /* Persistence.framework */,
+				0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -289,11 +258,11 @@
 			children = (
 				0CEBE9C32B17C21500650626 /* Info.plist */,
 				0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */,
+				0C1D670A2A5DC21500EAAD30 /* Preview Content */,
 				0C22FF472AF56FDD00913EC3 /* Views */,
 				0CB6B3732B2BCE060008DC54 /* Helpers */,
 				0CEEEE642A70571400262651 /* Resources */,
 				0C1D67082A5DC21500EAAD30 /* Assets.xcassets */,
-				0C1D670A2A5DC21500EAAD30 /* Preview Content */,
 			);
 			path = ChineseWordOfTheDay;
 			sourceTree = "<group>";
@@ -319,14 +288,6 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		0C778DDD2A5F20DB007D2A8F /* StoreBuilderMain */ = {
-			isa = PBXGroup;
-			children = (
-				0C778DDE2A5F20DB007D2A8F /* main.swift */,
-			);
-			path = StoreBuilderMain;
-			sourceTree = "<group>";
-		};
 		0CB6B3732B2BCE060008DC54 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -336,35 +297,19 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		0CD09E312A5DC7E1005C97F1 /* DataStoreBuilder */ = {
+		0CBF39432DA59E5700E6C867 /* MYFrameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0CF1DF9A2ACB313D0093519B /* output.json */,
-				0CD09E322A5DC7E1005C97F1 /* DataStoreBuilder.h */,
-				0CD09E4C2A5DC7FB005C97F1 /* DataStoreBuilder.swift */,
+				0CBAF4902D95ED8D00488D5A /* Persistence */,
+				0CBF39382DA59E5100E6C867 /* CoreDataModels */,
 			);
-			path = DataStoreBuilder;
-			sourceTree = "<group>";
-		};
-		0CD09E3D2A5DC7E1005C97F1 /* DataStoreBuilderTests */ = {
-			isa = PBXGroup;
-			children = (
-				0CD09E3E2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift */,
-			);
-			path = DataStoreBuilderTests;
-			sourceTree = "<group>";
-		};
-		0CD09E632A5DCB3A005C97F1 /* WordFrameworkTests */ = {
-			isa = PBXGroup;
-			children = (
-				0CD09E642A5DCB3A005C97F1 /* WordModelsTests.swift */,
-			);
-			path = WordFrameworkTests;
+			path = MYFrameworks;
 			sourceTree = "<group>";
 		};
 		0CD09E722A5DCC5A005C97F1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0C7914132DA58E3E00C4883D /* CoreDataModels */,
 				0C15E8652C8BDA6300D7B51B /* WidgetKit.framework */,
 				0C15E8672C8BDA6400D7B51B /* SwiftUI.framework */,
 			);
@@ -374,7 +319,6 @@
 		0CEEEE642A70571400262651 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0C22FF1F2AEDDA6B00913EC3 /* WordModel.sqlite */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -382,11 +326,17 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		0CD09E2B2A5DC7E1005C97F1 /* Headers */ = {
+		0CBAF48A2D95ED8D00488D5A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CD09E402A5DC7E1005C97F1 /* DataStoreBuilder.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CBF39322DA59E5100E6C867 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,10 +350,12 @@
 				0C15E8602C8BDA6300D7B51B /* Sources */,
 				0C15E8612C8BDA6300D7B51B /* Frameworks */,
 				0C15E8622C8BDA6300D7B51B /* Resources */,
+				0CBF39672DA5A17B00E6C867 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				0CBF39662DA5A17B00E6C867 /* PBXTargetDependency */,
 			);
 			name = WordOfTheDayWidgetExtension;
 			productName = WordOfTheDayWidgetExtension;
@@ -424,110 +376,61 @@
 			);
 			dependencies = (
 				0C15E8722C8BDA6500D7B51B /* PBXTargetDependency */,
+				0CBAF4A12D95ED8D00488D5A /* PBXTargetDependency */,
+				0CBF393C2DA59E5100E6C867 /* PBXTargetDependency */,
 			);
 			name = ChineseWordOfTheDay;
 			productName = ChineseWordOfTheDay;
 			productReference = 0C1D67012A5DC21400EAAD30 /* ChineseWordOfTheDay.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0C28001A2CF0E45F00A4BC70 /* WordModelTests */ = {
+		0CBAF48E2D95ED8D00488D5A /* Persistence */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0C2800232CF0E45F00A4BC70 /* Build configuration list for PBXNativeTarget "WordModelTests" */;
+			buildConfigurationList = 0CBAF4A52D95ED8D00488D5A /* Build configuration list for PBXNativeTarget "Persistence" */;
 			buildPhases = (
-				0C2800172CF0E45F00A4BC70 /* Sources */,
-				0C2800182CF0E45F00A4BC70 /* Frameworks */,
-				0C2800192CF0E45F00A4BC70 /* Resources */,
+				0CBAF48A2D95ED8D00488D5A /* Headers */,
+				0CBAF48B2D95ED8D00488D5A /* Sources */,
+				0CBAF48C2D95ED8D00488D5A /* Frameworks */,
+				0CBAF48D2D95ED8D00488D5A /* Resources */,
+				0CBF39622DA59FAC00E6C867 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0C2800202CF0E45F00A4BC70 /* PBXTargetDependency */,
+				0CBF39612DA59FAC00E6C867 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				0C28001C2CF0E45F00A4BC70 /* WordModelTests */,
+				0CBAF4902D95ED8D00488D5A /* Persistence */,
 			);
-			name = WordModelTests;
+			name = Persistence;
 			packageProductDependencies = (
-				0C2800242CF0E49B00A4BC70 /* WordModels */,
 			);
-			productName = WordModelTests;
-			productReference = 0C28001B2CF0E45F00A4BC70 /* WordModelTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		0C778DDB2A5F20DB007D2A8F /* StoreBuilderMain */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0C778DE02A5F20DB007D2A8F /* Build configuration list for PBXNativeTarget "StoreBuilderMain" */;
-			buildPhases = (
-				0C778DD82A5F20DB007D2A8F /* Sources */,
-				0C778DD92A5F20DB007D2A8F /* Frameworks */,
-				0C778DDA2A5F20DB007D2A8F /* CopyFiles */,
-				0C778DE72A5F20FC007D2A8F /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				0C778DE62A5F20FC007D2A8F /* PBXTargetDependency */,
-			);
-			name = StoreBuilderMain;
-			productName = StoreBuilderMain;
-			productReference = 0C778DDC2A5F20DB007D2A8F /* StoreBuilderMain */;
-			productType = "com.apple.product-type.tool";
-		};
-		0CD09E2F2A5DC7E1005C97F1 /* DataStoreBuilder */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0CD09E452A5DC7E1005C97F1 /* Build configuration list for PBXNativeTarget "DataStoreBuilder" */;
-			buildPhases = (
-				0CD09E2B2A5DC7E1005C97F1 /* Headers */,
-				0CD09E2C2A5DC7E1005C97F1 /* Sources */,
-				0CD09E2D2A5DC7E1005C97F1 /* Frameworks */,
-				0CD09E2E2A5DC7E1005C97F1 /* Resources */,
-				0CD09E772A5DCC5A005C97F1 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = DataStoreBuilder;
-			productName = DataStoreBuilder;
-			productReference = 0CD09E302A5DC7E1005C97F1 /* DataStoreBuilder.framework */;
+			productName = Persistence;
+			productReference = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		0CD09E362A5DC7E1005C97F1 /* DataStoreBuilderTests */ = {
+		0CBF39362DA59E5100E6C867 /* CoreDataModels */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0CD09E492A5DC7E1005C97F1 /* Build configuration list for PBXNativeTarget "DataStoreBuilderTests" */;
+			buildConfigurationList = 0CBF393F2DA59E5100E6C867 /* Build configuration list for PBXNativeTarget "CoreDataModels" */;
 			buildPhases = (
-				0CD09E332A5DC7E1005C97F1 /* Sources */,
-				0CD09E342A5DC7E1005C97F1 /* Frameworks */,
-				0CD09E352A5DC7E1005C97F1 /* Resources */,
+				0CBF39322DA59E5100E6C867 /* Headers */,
+				0CBF39332DA59E5100E6C867 /* Sources */,
+				0CBF39342DA59E5100E6C867 /* Frameworks */,
+				0CBF39352DA59E5100E6C867 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0CD09E3A2A5DC7E1005C97F1 /* PBXTargetDependency */,
-				0CD09E3C2A5DC7E1005C97F1 /* PBXTargetDependency */,
 			);
-			name = DataStoreBuilderTests;
-			productName = DataStoreBuilderTests;
-			productReference = 0CD09E372A5DC7E1005C97F1 /* DataStoreBuilderTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		0CD09E5C2A5DCB3A005C97F1 /* WordFrameworkTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0CD09E6E2A5DCB3A005C97F1 /* Build configuration list for PBXNativeTarget "WordFrameworkTests" */;
-			buildPhases = (
-				0CD09E592A5DCB3A005C97F1 /* Sources */,
-				0CD09E5A2A5DCB3A005C97F1 /* Frameworks */,
-				0CD09E5B2A5DCB3A005C97F1 /* Resources */,
+			fileSystemSynchronizedGroups = (
+				0CBF39382DA59E5100E6C867 /* CoreDataModels */,
 			);
-			buildRules = (
+			name = CoreDataModels;
+			packageProductDependencies = (
 			);
-			dependencies = (
-				0CD09E622A5DCB3A005C97F1 /* PBXTargetDependency */,
-			);
-			name = WordFrameworkTests;
-			productName = WordFrameworkTests;
-			productReference = 0CD09E5D2A5DCB3A005C97F1 /* WordFrameworkTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
+			productName = CoreDataModels;
+			productReference = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -536,8 +439,8 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					0C15E8632C8BDA6300D7B51B = {
 						CreatedOnToolsVersion = 15.0.1;
@@ -545,24 +448,12 @@
 					0C1D67002A5DC21400EAAD30 = {
 						CreatedOnToolsVersion = 15.0;
 					};
-					0C28001A2CF0E45F00A4BC70 = {
-						CreatedOnToolsVersion = 16.0;
-						TestTargetID = 0C1D67002A5DC21400EAAD30;
+					0CBAF48E2D95ED8D00488D5A = {
+						CreatedOnToolsVersion = 16.2;
 					};
-					0C778DDB2A5F20DB007D2A8F = {
-						CreatedOnToolsVersion = 15.0;
-					};
-					0CD09E2F2A5DC7E1005C97F1 = {
-						CreatedOnToolsVersion = 15.0;
-						LastSwiftMigration = 1500;
-					};
-					0CD09E362A5DC7E1005C97F1 = {
-						CreatedOnToolsVersion = 15.0;
-						TestTargetID = 0C1D67002A5DC21400EAAD30;
-					};
-					0CD09E5C2A5DCB3A005C97F1 = {
-						CreatedOnToolsVersion = 15.0;
-						TestTargetID = 0C1D67002A5DC21400EAAD30;
+					0CBF39362DA59E5100E6C867 = {
+						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
@@ -575,17 +466,19 @@
 				Base,
 			);
 			mainGroup = 0C1D66F82A5DC21300EAAD30;
+			packageReferences = (
+				0C7850DE2D8CB0CF00741F38 /* XCLocalSwiftPackageReference "Packages/WordBuilder" */,
+				0C7850E02D8CB10F00741F38 /* XCLocalSwiftPackageReference "Packages/MYPersistence" */,
+				0CBF392F2DA59B1A00E6C867 /* XCLocalSwiftPackageReference "Packages/CoreDataModels" */,
+			);
 			productRefGroup = 0C1D67022A5DC21400EAAD30 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				0C1D67002A5DC21400EAAD30 /* ChineseWordOfTheDay */,
-				0CD09E2F2A5DC7E1005C97F1 /* DataStoreBuilder */,
-				0CD09E362A5DC7E1005C97F1 /* DataStoreBuilderTests */,
-				0CD09E5C2A5DCB3A005C97F1 /* WordFrameworkTests */,
-				0C778DDB2A5F20DB007D2A8F /* StoreBuilderMain */,
 				0C15E8632C8BDA6300D7B51B /* WordOfTheDayWidgetExtension */,
-				0C28001A2CF0E45F00A4BC70 /* WordModelTests */,
+				0CBAF48E2D95ED8D00488D5A /* Persistence */,
+				0CBF39362DA59E5100E6C867 /* CoreDataModels */,
 			);
 		};
 /* End PBXProject section */
@@ -604,34 +497,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */,
-				0C22FF202AEDDA6B00913EC3 /* WordModel.sqlite in Resources */,
 				0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0C2800192CF0E45F00A4BC70 /* Resources */ = {
+		0CBAF48D2D95ED8D00488D5A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0CD09E2E2A5DC7E1005C97F1 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0CF1DF9B2ACB313D0093519B /* output.json in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E352A5DC7E1005C97F1 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E5B2A5DCB3A005C97F1 /* Resources */ = {
+		0CBF39352DA59E5100E6C867 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -666,38 +543,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0C2800172CF0E45F00A4BC70 /* Sources */ = {
+		0CBAF48B2D95ED8D00488D5A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0C778DD82A5F20DB007D2A8F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0C778DDF2A5F20DB007D2A8F /* main.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E2C2A5DC7E1005C97F1 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0CD09E4D2A5DC7FB005C97F1 /* DataStoreBuilder.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E332A5DC7E1005C97F1 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0CD09E3F2A5DC7E1005C97F1 /* DataStoreBuilderTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CD09E592A5DCB3A005C97F1 /* Sources */ = {
+		0CBF39332DA59E5100E6C867 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -712,30 +565,25 @@
 			target = 0C15E8632C8BDA6300D7B51B /* WordOfTheDayWidgetExtension */;
 			targetProxy = 0C15E8712C8BDA6500D7B51B /* PBXContainerItemProxy */;
 		};
-		0C2800202CF0E45F00A4BC70 /* PBXTargetDependency */ = {
+		0CBAF4A12D95ED8D00488D5A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0C1D67002A5DC21400EAAD30 /* ChineseWordOfTheDay */;
-			targetProxy = 0C28001F2CF0E45F00A4BC70 /* PBXContainerItemProxy */;
+			target = 0CBAF48E2D95ED8D00488D5A /* Persistence */;
+			targetProxy = 0CBAF4A02D95ED8D00488D5A /* PBXContainerItemProxy */;
 		};
-		0C778DE62A5F20FC007D2A8F /* PBXTargetDependency */ = {
+		0CBF393C2DA59E5100E6C867 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0CD09E2F2A5DC7E1005C97F1 /* DataStoreBuilder */;
-			targetProxy = 0C778DE52A5F20FC007D2A8F /* PBXContainerItemProxy */;
+			target = 0CBF39362DA59E5100E6C867 /* CoreDataModels */;
+			targetProxy = 0CBF393B2DA59E5100E6C867 /* PBXContainerItemProxy */;
 		};
-		0CD09E3A2A5DC7E1005C97F1 /* PBXTargetDependency */ = {
+		0CBF39612DA59FAC00E6C867 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0CD09E2F2A5DC7E1005C97F1 /* DataStoreBuilder */;
-			targetProxy = 0CD09E392A5DC7E1005C97F1 /* PBXContainerItemProxy */;
+			target = 0CBF39362DA59E5100E6C867 /* CoreDataModels */;
+			targetProxy = 0CBF39602DA59FAC00E6C867 /* PBXContainerItemProxy */;
 		};
-		0CD09E3C2A5DC7E1005C97F1 /* PBXTargetDependency */ = {
+		0CBF39662DA5A17B00E6C867 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0C1D67002A5DC21400EAAD30 /* ChineseWordOfTheDay */;
-			targetProxy = 0CD09E3B2A5DC7E1005C97F1 /* PBXContainerItemProxy */;
-		};
-		0CD09E622A5DCB3A005C97F1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0C1D67002A5DC21400EAAD30 /* ChineseWordOfTheDay */;
-			targetProxy = 0CD09E612A5DCB3A005C97F1 /* PBXContainerItemProxy */;
+			target = 0CBF39362DA59E5100E6C867 /* CoreDataModels */;
+			targetProxy = 0CBF39652DA5A17B00E6C867 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -983,82 +831,14 @@
 			};
 			name = Release;
 		};
-		0C2800212CF0E45F00A4BC70 /* Debug */ = {
+		0CBAF4A62D95ED8D00488D5A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.WordModelTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChineseWordOfTheDay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChineseWordOfTheDay";
-			};
-			name = Debug;
-		};
-		0C2800222CF0E45F00A4BC70 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.WordModelTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChineseWordOfTheDay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChineseWordOfTheDay";
-			};
-			name = Release;
-		};
-		0C778DE12A5F20DB007D2A8F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		0C778DE22A5F20DB007D2A8F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		0CD09E462A5DC7E1005C97F1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_ASSET_PATHS = DataStoreBuilder/output.json;
 				DEVELOPMENT_TEAM = SU6X47WC59;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1069,23 +849,92 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.DataStoreBuilder;
+				PRODUCT_BUNDLE_IDENTIFIER = matthedm.Persistence;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = auto;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		0CBAF4A72D95ED8D00488D5A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = SU6X47WC59;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = matthedm.Persistence;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		0CBF39402DA59E5100E6C867 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = SU6X47WC59;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = matthedm.CoreDataModels;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1094,16 +943,14 @@
 			};
 			name = Debug;
 		};
-		0CD09E472A5DC7E1005C97F1 /* Release */ = {
+		0CBF39412DA59E5100E6C867 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_ASSET_PATHS = DataStoreBuilder/output.json;
 				DEVELOPMENT_TEAM = SU6X47WC59;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1112,109 +959,24 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.DataStoreBuilder;
+				PRODUCT_BUNDLE_IDENTIFIER = matthedm.CoreDataModels;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = auto;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		0CD09E4A2A5DC7E1005C97F1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.DataStoreBuilderTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChineseWordOfTheDay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChineseWordOfTheDay";
-			};
-			name = Debug;
-		};
-		0CD09E4B2A5DC7E1005C97F1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.DataStoreBuilderTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChineseWordOfTheDay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChineseWordOfTheDay";
-			};
-			name = Release;
-		};
-		0CD09E6F2A5DCB3A005C97F1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.WordFrameworkTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChineseWordOfTheDay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChineseWordOfTheDay";
-			};
-			name = Debug;
-		};
-		0CD09E702A5DCB3A005C97F1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SU6X47WC59;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = matthedm.WordFrameworkTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChineseWordOfTheDay.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChineseWordOfTheDay";
 			};
 			name = Release;
 		};
@@ -1248,71 +1010,40 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0C2800232CF0E45F00A4BC70 /* Build configuration list for PBXNativeTarget "WordModelTests" */ = {
+		0CBAF4A52D95ED8D00488D5A /* Build configuration list for PBXNativeTarget "Persistence" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0C2800212CF0E45F00A4BC70 /* Debug */,
-				0C2800222CF0E45F00A4BC70 /* Release */,
+				0CBAF4A62D95ED8D00488D5A /* Debug */,
+				0CBAF4A72D95ED8D00488D5A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0C778DE02A5F20DB007D2A8F /* Build configuration list for PBXNativeTarget "StoreBuilderMain" */ = {
+		0CBF393F2DA59E5100E6C867 /* Build configuration list for PBXNativeTarget "CoreDataModels" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0C778DE12A5F20DB007D2A8F /* Debug */,
-				0C778DE22A5F20DB007D2A8F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		0CD09E452A5DC7E1005C97F1 /* Build configuration list for PBXNativeTarget "DataStoreBuilder" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0CD09E462A5DC7E1005C97F1 /* Debug */,
-				0CD09E472A5DC7E1005C97F1 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		0CD09E492A5DC7E1005C97F1 /* Build configuration list for PBXNativeTarget "DataStoreBuilderTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0CD09E4A2A5DC7E1005C97F1 /* Debug */,
-				0CD09E4B2A5DC7E1005C97F1 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		0CD09E6E2A5DCB3A005C97F1 /* Build configuration list for PBXNativeTarget "WordFrameworkTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0CD09E6F2A5DCB3A005C97F1 /* Debug */,
-				0CD09E702A5DCB3A005C97F1 /* Release */,
+				0CBF39402DA59E5100E6C867 /* Debug */,
+				0CBF39412DA59E5100E6C867 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCSwiftPackageProductDependency section */
-		0C2800242CF0E49B00A4BC70 /* WordModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WordModels;
+/* Begin XCLocalSwiftPackageReference section */
+		0C7850DE2D8CB0CF00741F38 /* XCLocalSwiftPackageReference "Packages/WordBuilder" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/WordBuilder;
 		};
-		0C8783432CF0DF270039E51A /* WordModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WordModels;
+		0C7850E02D8CB10F00741F38 /* XCLocalSwiftPackageReference "Packages/MYPersistence" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/MYPersistence;
 		};
-		0CAA2EEC2CCACD360046F6AC /* WordModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WordModels;
+		0CBF392F2DA59B1A00E6C867 /* XCLocalSwiftPackageReference "Packages/CoreDataModels" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/CoreDataModels;
 		};
-		0CD8C51F2CF0D7C00053B9BA /* WordModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = WordModels;
-		};
-/* End XCSwiftPackageProductDependency section */
+/* End XCLocalSwiftPackageReference section */
 	};
 	rootObject = 0C1D66F92A5DC21300EAAD30 /* Project object */;
 }
