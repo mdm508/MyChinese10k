@@ -4,18 +4,31 @@
 //
 //  Created by m on 12/5/23.
 //
-// Functionality related to receiving remote notifications from CloudKit
+// This file handles functionality related to receiving remote notifications from CloudKit,
+// updating local data based on those notifications, and setting up CloudKit subscriptions.
+//
 
 import Foundation
 import UIKit
 import CloudKit
 import CoreDataModels
 
-/// Lightweight struct to store information from remote notifactions in
+// MARK: - CloudKit Notification Structures & Protocols
+
+/// A lightweight structure to encapsulate information extracted from CloudKit remote notifications.
 public struct CloudKitNotificationInfo {
+    /// The traditional Chinese string from the notification.
     let cdTraditional: String
+    /// The status value associated with the word.
     let cdStatus: Int64
+    /// The date when the record was last modified.
     let cdLastModified: Date
+    
+    /// Initializes a new instance of `CloudKitNotificationInfo`.
+    /// - Parameters:
+    ///   - cdTraditional: The traditional Chinese character.
+    ///   - cdStatus: The status number.
+    ///   - cdLastModified: The last modified date.
     public init(cdTraditional: String, cdStatus: Int64, cdLastModified: Date) {
         self.cdTraditional = cdTraditional
         self.cdStatus = cdStatus
@@ -23,234 +36,188 @@ public struct CloudKitNotificationInfo {
     }
 }
 
-/// This delegate's refresh method is invoked upon successful local status update triggered by an iCloud notification.
+/// Delegate protocol used to refresh the current word when a successful local status update
+/// is triggered by a CloudKit notification.
 public protocol CurrentWordRefreshDelegate: AnyObject {
-    func refresh() -> ()
+    func refresh()
 }
 
-/// A collection of related CloudKit contsants
-public struct Cloud{
-    /// Must setup container like this because `CKContainer.default` has a different identifier
+// MARK: - CloudKit Configuration Constants
+
+/// A collection of related CloudKit constants.
+public struct Cloud {
+    /// Setup the CloudKit container with a specific identifier.
+    /// - Note: `CKContainer.default` may have a different identifier.
     public static let ck = CKContainer(identifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
+    /// Access to the private CloudKit database.
     public static var db: CKDatabase {
-        ck.privateCloudDatabase
+        return ck.privateCloudDatabase
     }
-    /// Default subrciption that is setup for you by the CloudKit Container
+    /// Subscription identifier for CloudKit notifications.
     public static let subID = "wordStatusSubscription"
+    /// The default record zone for word status notifications.
     public static let wordStatusRecordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
 }
+
 extension Cloud {
+    /// The record type used for word statuses.
     public static let wordStatusRecordType = "CD_WordStatus"
+    /// The key used for storing the traditional string.
     public static let wordStatusKeyTraditional = "CD_traditional"
+    /// The key used for storing the status value.
     public static let wordStatusKeyStatus = "CD_status"
+    /// The key used for storing the last modified date.
     public static let wordStatusKeyLastModified = "CD_lastModified"
-    
-    public static let wordStatusAllKeys = [Self.wordStatusKeyTraditional, Self.wordStatusKeyStatus, Self.wordStatusKeyLastModified]
+    /// An array of all keys that are important for the CloudKit record.
+    public static let wordStatusAllKeys = [wordStatusKeyTraditional, wordStatusKeyStatus, wordStatusKeyLastModified]
 }
+
+// MARK: - CloudKit Record Creation
+
+/// Creates a CloudKit record for a given `Word` object. Invokes the completion handler upon success.
+/// - Parameters:
+///   - word: The `Word` object to create the record for.
+///   - completion: Completion closure executed on success.
 @MainActor
-public func createCloudKitRecord(for word: Word, completion: @escaping () -> ()) {
-    let hexString = convertChineseToHex(chineseCharacter: word.traditional)
-    let ckID = CKRecord.ID(recordName: hexString, zoneID: Cloud.wordStatusRecordZone.zoneID)
-    let newRecord = CKRecord(recordType: Cloud.wordStatusRecordType, recordID: ckID)
-    newRecord["CD_entityName"] = "WordStatus" //TODO: make into a constant
-    // Set the appropriate fields for the new record based on your WordStatus entity
-    newRecord[Cloud.wordStatusKeyTraditional] = word.traditional as CKRecordValue
-    newRecord[Cloud.wordStatusKeyStatus] = LearnStatus.seen.rawValue as CKRecordValue
-    newRecord[Cloud.wordStatusKeyLastModified] = Date() as CKRecordValue
-    // Save the record to the public CloudKit database
-    let db = Cloud.db
-    db.save( newRecord) { savedRecord, error in
+public func createCloudKitRecord(for word: Word, completion: @escaping () -> Void) {
+    let record = makeCloudKitRecord(for: word)
+    // Save the record to the CloudKit database.
+    Cloud.db.save(record) { savedRecord, error in
         if let error = error {
             print("Error saving record: \(error.localizedDescription)")
         } else {
             print("Successfully saved record with ID: \(savedRecord?.recordID.recordName ?? "")")
+            // Ensure completion is executed on the main thread.
             Task { @MainActor in
-                        completion()
-                    }
+                completion()
+            }
         }
     }
 }
 
-/// when you receive a custom notification (not default) transform it into `CloudKitNotification`
-/// - Parameter notificationPayload: notification from remote.
-/// - Returns: nil or a `CloudKitNotification`
+/// Asynchronously creates a CloudKit record for a given `Word` object using async/await.
+/// - Parameter word: The `Word` object to create the record for.
+/// - Throws: An error if the save operation fails.
+public func createCloudKitRecord(for word: Word) async throws {
+    let record = makeCloudKitRecord(for: word)
+    let savedRecord = try await Cloud.db.save(record)
+    print("Successfully saved record with ID: \(savedRecord.recordID.recordName)")
+}
+
+/// Constructs and configures a `CKRecord` for a given `Word` object.
+/// This function encapsulates the shared record configuration logic.
+/// - Parameter word: The `Word` object used to configure the record.
+/// - Returns: A fully configured `CKRecord`.
+private func makeCloudKitRecord(for word: Word) -> CKRecord {
+    let hexString = convertChineseToHex(chineseCharacter: word.traditional)
+    let ckID = CKRecord.ID(recordName: hexString, zoneID: Cloud.wordStatusRecordZone.zoneID)
+    let record = CKRecord(recordType: Cloud.wordStatusRecordType, recordID: ckID)
+    
+    // Set the entity name (consider moving this to a constant)
+    record["CD_entityName"] = "WordStatus"
+    // Set record values using the provided `Word` object's properties.
+    record[Cloud.wordStatusKeyTraditional] = word.traditional as CKRecordValue
+    record[Cloud.wordStatusKeyStatus] = LearnStatus.seen.rawValue as CKRecordValue
+    record[Cloud.wordStatusKeyLastModified] = Date() as CKRecordValue
+    
+    return record
+}
+
+// MARK: - CloudKit Notification Handling
+
+/// Extracts and transforms remote notification payload data into a `CloudKitNotificationInfo` object.
+/// - Parameter notificationPayload: The remote notification payload dictionary.
+/// - Returns: A `CloudKitNotificationInfo` object if extraction is successful; otherwise, `nil`.
 public func extractCloudKitInfo(from notificationPayload: [AnyHashable: Any]) -> CloudKitNotificationInfo? {
+    // Extract the CloudKit-specific payload.
     guard let ckInfo = notificationPayload[AnyHashable("ck")] as? [AnyHashable: Any] else {
         print("Failed to extract 'ck' from notificationPayload.")
         return nil
     }
+    // Extract the query dictionary. If absent, this is a default notification, so ignore it.
     guard let qry = ckInfo["qry"] as? [String: Any] else {
-        // "qry" is not present in ckInfo.
-        // this must be a default notification so ignore it.
         return nil
     }
+    // Extract additional fields ('af') from the query.
     guard let af = qry["af"] as? [String: Any] else {
         print("Failed to extract 'af' from qry.")
         return nil
     }
+    
+    // Retrieve the traditional Chinese string.
     guard let cdTraditional = af[Cloud.wordStatusKeyTraditional] as? String else {
-            print("Failed to extract '\(Cloud.wordStatusKeyTraditional)' from af.")
-            return nil
+        print("Failed to extract '\(Cloud.wordStatusKeyTraditional)' from af.")
+        return nil
     }
+    // Retrieve the status value.
     guard let cdStatus = af[Cloud.wordStatusKeyStatus] as? Int64 else {
         print("Failed to extract '\(Cloud.wordStatusKeyStatus)' from af.")
         return nil
     }
-    var cdLastModified: Date! = nil
+    
+    // Convert the last modified timestamp from a number or string to a Date.
+    var cdLastModified: Date? = nil
     if let timestampNumber = af[Cloud.wordStatusKeyLastModified] as? NSNumber {
-        // If the value is a number, convert it using timeIntervalSince1970.
         cdLastModified = Date(timeIntervalSince1970: timestampNumber.doubleValue)
     } else if let timestampString = af[Cloud.wordStatusKeyLastModified] as? String,
               let timestampDouble = Double(timestampString) {
-        // If the value is a string, try converting it to a Double first.
         cdLastModified = Date(timeIntervalSince1970: timestampDouble)
     }
-    guard cdLastModified != nil else {
+    
+    guard let lastModified = cdLastModified else {
         print("Failed to extract or convert '\(Cloud.wordStatusKeyLastModified)' from af.")
         return nil
     }
-    return CloudKitNotificationInfo(cdTraditional: cdTraditional, cdStatus: cdStatus, cdLastModified: cdLastModified)
+    return CloudKitNotificationInfo(cdTraditional: cdTraditional, cdStatus: cdStatus, cdLastModified: lastModified)
 }
 
+// MARK: - CloudKit Subscription Setup
 
-/// Save CKWordStatus to cloud.
-public func createCloudKitRecord(for word: Word) async throws {
-    let hexString = convertChineseToHex(chineseCharacter: word.traditional)
-    let ckID = CKRecord.ID(recordName: hexString, zoneID: Cloud.wordStatusRecordZone.zoneID)
-
-    let newRecord = CKRecord(recordType: Cloud.wordStatusRecordType, recordID: ckID)
-    newRecord["CD_entityName"] = "WordStatus"
-    newRecord[Cloud.wordStatusKeyTraditional] = word.traditional as CKRecordValue
-    newRecord[Cloud.wordStatusKeyStatus] = LearnStatus.seen.rawValue as CKRecordValue
-    newRecord[Cloud.wordStatusKeyLastModified] = Date() as CKRecordValue
-    let db = Cloud.db
-    let savedRecord = try await db.save(newRecord)
-    print("Successfully saved record with ID: \(savedRecord.recordID.recordName)")
-}
-
-
-/// If a cloud kit subscription does not exist then set one up
+/// Sets up a CloudKit subscription if one does not already exist. This subscription triggers on record creation
+/// for word status updates.
+/// - Note: The notification payload is configured to include all necessary keys.
 public func setupCloudSub() {
     let db = Cloud.db
-    db.fetch(withSubscriptionID: Cloud.subID){ sub, error in
-        if let error = error  {
-            print(error.localizedDescription)
+    db.fetch(withSubscriptionID: Cloud.subID) { subscription, error in
+        if let error = error {
+            print("Error fetching subscription: \(error.localizedDescription)")
         }
-        if sub == nil {
-            let sub = CKQuerySubscription(recordType: Cloud.wordStatusRecordType,
-                                predicate: NSPredicate(value: true),
-                                          subscriptionID: Cloud.subID,
-                                          options: .firesOnRecordCreation)
+        // Create a new subscription if none exists.
+        if subscription == nil {
+            let sub = CKQuerySubscription(
+                recordType: Cloud.wordStatusRecordType,
+                predicate: NSPredicate(value: true),
+                subscriptionID: Cloud.subID,
+                options: .firesOnRecordCreation
+            )
             let notification = CKSubscription.NotificationInfo()
             notification.shouldSendContentAvailable = true
-            ///ensure fields included in the payload
+            // Specify which record keys should be included in the notification payload.
             notification.desiredKeys = Cloud.wordStatusAllKeys
             sub.notificationInfo = notification
-            db.save(sub) { (subscription, error) in
-                 if let error = error {
-                     print(error.localizedDescription)
-                 }
+            db.save(sub) { savedSubscription, error in
+                if let error = error {
+                    print("Error saving subscription: \(error.localizedDescription)")
+                } else {
+                    print("Successfully created subscription with ID: \(savedSubscription?.subscriptionID ?? "")")
+                }
             }
         } else {
-            print("sub already exists")
+            print("Subscription already exists.")
         }
     }
 }
 
+// MARK: - Utility Functions
+
+/// Converts a Chinese string to a hexadecimal representation.
+/// - Parameter chineseCharacter: A string containing Chinese characters.
+/// - Returns: A hexadecimal string corresponding to the UTF-8 encoded data.
 public func convertChineseToHex(chineseCharacter: String) -> String {
-    let utf8Data = chineseCharacter.data(using: .utf8)!
+    guard let utf8Data = chineseCharacter.data(using: .utf8) else {
+        return ""
+    }
     return utf8Data.map { String(format: "%02x", $0) }.joined()
 }
-
-///// Updates matching local entity with the new status
-//@MainActor
-//public func updateLocalStatus(with new: CloudKitNotificationInfo){
-//    let request = Word.fetchRequest()
-//    request.predicate = NSPredicate(format: "traditional == %@", argumentArray: [new.cdTraditional])
-//    print(new)
-//    request.fetchLimit = 1
-//    let managedObjectContext = PersistenceController.shared.context
-//    do {
-//        // Fetch the words matching the predicate
-//        if let localWord = try managedObjectContext.fetch(request).first {
-//            print(localWord.debugDescription)
-//            localWord.status = new.cdStatus
-//            print("updated \(localWord.traditional)")
-//            print(localWord.status)
-//        } else {
-//            print("unable to update \(new)")
-//        }
-//        // Save the changes to the managed object context
-//        try managedObjectContext.save()
-//    } catch {
-//        print("Error fetching or updating words: \(error.localizedDescription)")
-//    }
-//}
-
-
-
-/// updates all the local records with the statuses found in the cloud
-//@MainActor
-//public func updateAllLocalStatus() async {
-//    let db = Cloud.db
-//    let query = CKQuery(recordType: Cloud.wordStatusRecordType, predicate: NSPredicate(value: true))
-//    // Create a query object. Assuming 'WordStatus' is your record type.
-//    // Perform the query
-//    do {
-//        let records = try await db.records(matching: query, inZoneWith: Cloud.wordStatusRecordZone.zoneID, desiredKeys: Cloud.wordStatusAllKeys)
-//        let matchResults: [(CKRecord.ID, Result<CKRecord, Error>)] = records.matchResults
-//        print("will update \(matchResults.count) records from icloud")
-//        for (id, result) in matchResults {
-//            switch (result){
-//            case .success(let record):
-//                let word = record[Cloud.wordStatusKeyTraditional]! as! String
-//                let status = record[Cloud.wordStatusKeyStatus]! as! Int64
-//                let modified = record[Cloud.wordStatusKeyLastModified]! as! Date
-//                updateLocalStatus(with: CloudKitNotificationInfo(cdTraditional: word, cdStatus: status, cdLastModified: modified))
-//            case .failure(let error):
-//                print("Record \(id) unable unable to be fetched.")
-//                print(error.localizedDescription)
-//            }
-//        }
-//        
-//    } catch {
-//        print(error.localizedDescription)
-//    }
-//
-//}
-
-//public func updateAllLocalStatus() async {
-//    let db = Cloud.db
-//    let query = CKQuery(recordType: Cloud.wordStatusRecordType, predicate: NSPredicate(value: true))
-//
-//    do {
-//        let records = try await db.records(matching: query, inZoneWith: Cloud.wordStatusRecordZone.zoneID, desiredKeys: Cloud.wordStatusAllKeys)
-//        let matchResults: [(CKRecord.ID, Result<CKRecord, Error>)] = records.matchResults
-//
-//        print("Fetched \(matchResults.count) records from iCloud")
-//
-//        for (id, result) in matchResults {
-//            switch result {
-//            case .success(let record):
-//                guard let word = record[Cloud.wordStatusKeyTraditional] as? String,
-//                      let status = record[Cloud.wordStatusKeyStatus] as? Int64,
-//                      let modified = record[Cloud.wordStatusKeyLastModified] as? Date else {
-//                    print("Error: Missing required fields in CloudKit record \(record.recordID)")
-//                    continue
-//                }
-//
-//                // Ensure local updates happen on the main thread
-//                DispatchQueue.main.async {
-//                    updateLocalStatus(with: CloudKitNotificationInfo(cdTraditional: word, cdStatus: status, cdLastModified: modified))
-//                }
-//
-//            case .failure(let error):
-//                print("Record \(id) unable to be fetched: \(error.localizedDescription)")
-//            }
-//        }
-//    } catch {
-//        print("Error fetching records: \(error.localizedDescription)")
-//    }
-//}
 
 
