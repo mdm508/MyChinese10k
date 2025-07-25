@@ -6,9 +6,10 @@
 // 'id like to fit tha characters into that space'
 
 import SwiftUI
+import CoreDataModels
 
 struct WordView {
-    var word: String
+    @Binding var word: String
     var size:  CGSize
 }
 
@@ -31,16 +32,15 @@ extension WordView {
 }
 
 struct ChineseCharacter_Previews: PreviewProvider {
-    static var previews: some View {
-        GeometryReaderCentered { geo in
-            WordView(word: "一發不可收拾", size: geo.size)
+    struct PreviewWrapper: View {
+        @State var mockWord = MockWord.placeholder.traditional
+        var body: some View {
+            GeometryReaderCentered { geo in
+                WordView(word: $mockWord, size: geo.size)
+            }
         }
     }
+    static var previews: some View {
+        PreviewWrapper()
+    }
 }
-/*
- Testing data
- Traditional: 一發不可收拾, Frequency: 7 6
- Traditional: 不可同日而語, Frequency: 0 6
- Traditional: 二氧化碳, Frequency: 108 4
- Traditional: 不好意思, Frequency: 69 4
- */

@@ -57,6 +57,8 @@ public struct Cloud {
     public static let subID = "wordStatusSubscription"
     /// The default record zone for word status notifications.
     public static let wordStatusRecordZone = CKRecordZone(zoneName: "com.apple.coredata.cloudkit.zone")
+    /// User default key for CKAccountStatus
+    public static let ckAccountStatusKey = "ckAccountStatus"
 }
 
 extension Cloud {
@@ -220,4 +222,27 @@ public func convertChineseToHex(chineseCharacter: String) -> String {
     return utf8Data.map { String(format: "%02x", $0) }.joined()
 }
 
+///// Update user defaults with users cloud kit status
+//public func saveCKAccountStatusToUserDefaults() async {
+//    await status = Cloud.ck.acccountStatus()
+//    UserDefaults.standard.set(?,forKey: Cloud.ckAccountStatusKey)
+//}
 
+/// Convenience method to determine if the user is connected to iCloud.
+///
+/// - Returns: The user's `CKAccountStatus`.
+/// - Note: If an error occurs during the check, `.couldNotDetermine` is returned.
+public func getCloudAccountStatus() async -> CKAccountStatus {
+    do {
+        let status = try await Cloud.ck.accountStatus()
+        return status
+    } catch {
+        return .couldNotDetermine
+    }
+}
+
+///
+public func isCloudKitAvailable() async -> Bool {
+    let accountStatus: CKAccountStatus = await getCloudAccountStatus()
+    return accountStatus == .available
+}

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C05B10C2DFA39E2009F6120 /* Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B10B2DFA39DD009F6120 /* Misc.swift */; };
 		0C15E8662C8BDA6400D7B51B /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C15E8652C8BDA6300D7B51B /* WidgetKit.framework */; };
 		0C15E8682C8BDA6400D7B51B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C15E8672C8BDA6400D7B51B /* SwiftUI.framework */; };
 		0C15E86B2C8BDA6400D7B51B /* WordOfTheDayWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C15E86A2C8BDA6400D7B51B /* WordOfTheDayWidgetBundle.swift */; };
@@ -18,8 +19,13 @@
 		0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D67082A5DC21500EAAD30 /* Assets.xcassets */; };
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
 		0C22FF242AEDDE7900913EC3 /* CurrentWordHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C22FF232AEDDE7900913EC3 /* CurrentWordHelpers.swift */; };
+		0C45D4DD2E331E2C006AD0EF /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; };
+		0C45D4DE2E331E2C006AD0EF /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
 		0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C72A71992E00AF96C2 /* WordView.swift */; };
+		0C85179D2DF76CD600004774 /* WordDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85179C2DF76CD600004774 /* WordDetail.swift */; };
+		0C85179F2DF76E3500004774 /* WordDetailContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85179E2DF76E3500004774 /* WordDetailContainer.swift */; };
+		0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8517A02DF79EA500004774 /* SettingsView.swift */; };
 		0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */; };
@@ -41,6 +47,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0C15E8632C8BDA6300D7B51B;
 			remoteInfo = WordOfTheDayWidgetExtension;
+		};
+		0C45D4DF2E331E2C006AD0EF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C1D66F92A5DC21300EAAD30 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0CBAF48E2D95ED8D00488D5A;
+			remoteInfo = Persistence;
 		};
 		0CBAF4A02D95ED8D00488D5A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -101,6 +114,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				0C45D4DE2E331E2C006AD0EF /* Persistence.framework in Embed Frameworks */,
 				0CBF39642DA5A17B00E6C867 /* CoreDataModels.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -121,6 +135,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0C05B10B2DFA39DD009F6120 /* Misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Misc.swift; sourceTree = "<group>"; };
 		0C15E8642C8BDA6300D7B51B /* WordOfTheDayWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WordOfTheDayWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C15E8652C8BDA6300D7B51B /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0C15E8672C8BDA6400D7B51B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -139,7 +154,10 @@
 		0C4858C72A71992E00AF96C2 /* WordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
 		0C7914132DA58E3E00C4883D /* CoreDataModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CoreDataModels; path = Packages/CoreDataModels; sourceTree = "<group>"; };
 		0C7E2DB32B3283690005224E /* ChineseWordOfTheDay.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChineseWordOfTheDay.xctestplan; sourceTree = "<group>"; };
-		0CAE8D152CC426A9008954BB /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UserDefaults.swift; path = ../Helpers/UserDefaults.swift; sourceTree = "<group>"; };
+		0C85179C2DF76CD600004774 /* WordDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDetail.swift; sourceTree = "<group>"; };
+		0C85179E2DF76E3500004774 /* WordDetailContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDetailContainer.swift; sourceTree = "<group>"; };
+		0C8517A02DF79EA500004774 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0CAE8D152CC426A9008954BB /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentFunctions.swift; sourceTree = "<group>"; };
 		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataModels.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -187,6 +205,7 @@
 			files = (
 				0C15E8682C8BDA6400D7B51B /* SwiftUI.framework in Frameworks */,
 				0CBF39632DA5A17B00E6C867 /* CoreDataModels.framework in Frameworks */,
+				0C45D4DD2E331E2C006AD0EF /* Persistence.framework in Frameworks */,
 				0C15E8662C8BDA6400D7B51B /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -278,21 +297,33 @@
 		0C22FF472AF56FDD00913EC3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				0CAE8D152CC426A9008954BB /* UserDefaults.swift */,
-				0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
+				0C8517A22DFA274800004774 /* Components */,
 				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
-				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
+				0C8517A02DF79EA500004774 /* SettingsView.swift */,
+				0C85179E2DF76E3500004774 /* WordDetailContainer.swift */,
+				0C85179C2DF76CD600004774 /* WordDetail.swift */,
 				0C4858C72A71992E00AF96C2 /* WordView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
 		};
+		0C8517A22DFA274800004774 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */,
+				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		0CB6B3732B2BCE060008DC54 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				0C05B10B2DFA39DD009F6120 /* Misc.swift */,
 				0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */,
 				0C22FF232AEDDE7900913EC3 /* CurrentWordHelpers.swift */,
+				0CAE8D152CC426A9008954BB /* UserDefaults.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -356,6 +387,7 @@
 			);
 			dependencies = (
 				0CBF39662DA5A17B00E6C867 /* PBXTargetDependency */,
+				0C45D4E02E331E2C006AD0EF /* PBXTargetDependency */,
 			);
 			name = WordOfTheDayWidgetExtension;
 			productName = WordOfTheDayWidgetExtension;
@@ -538,8 +570,12 @@
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
 				0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
+				0C85179D2DF76CD600004774 /* WordDetail.swift in Sources */,
 				0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */,
+				0C85179F2DF76E3500004774 /* WordDetailContainer.swift in Sources */,
+				0C05B10C2DFA39E2009F6120 /* Misc.swift in Sources */,
 				0C22FF242AEDDE7900913EC3 /* CurrentWordHelpers.swift in Sources */,
+				0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -564,6 +600,11 @@
 			isa = PBXTargetDependency;
 			target = 0C15E8632C8BDA6300D7B51B /* WordOfTheDayWidgetExtension */;
 			targetProxy = 0C15E8712C8BDA6500D7B51B /* PBXContainerItemProxy */;
+		};
+		0C45D4E02E331E2C006AD0EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0CBAF48E2D95ED8D00488D5A /* Persistence */;
+			targetProxy = 0C45D4DF2E331E2C006AD0EF /* PBXContainerItemProxy */;
 		};
 		0CBAF4A12D95ED8D00488D5A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -834,7 +875,9 @@
 		0CBAF4A62D95ED8D00488D5A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALTERNATIVE_DISTRIBUTION_WEB = NO;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULE_DEBUGGING = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -871,7 +914,9 @@
 		0CBAF4A72D95ED8D00488D5A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALTERNATIVE_DISTRIBUTION_WEB = NO;
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULE_DEBUGGING = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

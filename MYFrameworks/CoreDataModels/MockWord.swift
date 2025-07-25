@@ -10,7 +10,7 @@ import Foundation
 /// It's primary purpose is for use in the widget extension.
 /// A MockWord is  what will be stored in `UserDefaults`
 /// and displayed by the widget.
-public struct MockWord: Identifiable, WordRepresentable{
+public struct MockWord: Identifiable, WordRepresentable {
     public var index: Int64
     public var context: [String]
     public var meanings: [String]
@@ -24,7 +24,7 @@ public struct MockWord: Identifiable, WordRepresentable{
     // Static placeholder word with realistic data
     public static var placeholder: MockWord {
         MockWord(
-            index: 1500,
+            index: -1,
             context: ["教育"], // Education
             meanings: ["to study", "to learn"],
             pinyin: "xuéxí",

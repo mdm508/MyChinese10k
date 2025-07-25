@@ -31,32 +31,7 @@
     }
   },
   "testTargets" : [
-    {
-      "enabled" : false,
-      "parallelizable" : true,
-      "target" : {
-        "containerPath" : "container:ChineseWordOfTheDay.xcodeproj",
-        "identifier" : "0CD09E362A5DC7E1005C97F1",
-        "name" : "DataStoreBuilderTests"
-      }
-    },
-    {
-      "enabled" : false,
-      "parallelizable" : true,
-      "target" : {
-        "containerPath" : "container:ChineseWordOfTheDay.xcodeproj",
-        "identifier" : "0CD09E5C2A5DCB3A005C97F1",
-        "name" : "WordFrameworkTests"
-      }
-    },
-    {
-      "parallelizable" : true,
-      "target" : {
-        "containerPath" : "container:ChineseWordOfTheDay.xcodeproj",
-        "identifier" : "0C7E2DA92B32830C0005224E",
-        "name" : "ChineseWordOfTheDayTests"
-      }
-    }
+
   ],
   "version" : 1
 }

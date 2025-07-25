@@ -14,18 +14,39 @@ import Persistence
 
 @main
 struct ChineseWordOfTheDayApp: App {
-//    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     init(){
 //        deleteAll()
         PersistenceController.copyDatabaseIfNeeded()
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithDefaultBackground() // looks like classic UIKit
+        appearance.backgroundColor = .systemBackground
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
 //        appDelegate.delegate = wordVM
     }
-} 
+}
 extension ChineseWordOfTheDayApp {
     var body: some Scene {
         WindowGroup {
             ContentView().environment(\.managedObjectContext, PersistenceController.shared.context)
         }
+    }
+}
+class AppDelegate: NSObject, UIApplicationDelegate {
+    /// Handles app launch setup, including synchronizing iCloud Key-Value Store and setting default user preferences.
+    /// - Note: iCloud sync may take a few seconds to propagate across devices.
+    /// - Returns: `true` to indicate successful launch.
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        /// Try
+        NSUbiquitousKeyValueStore.default.synchronize()
+        // If the app is launching for the first time or preferences are missing,
+        // set the default values for user settings.
+        if UserPreferences.areUnset() {
+            Task { await UserPreferences.setAppDefaults()}
+        }
+        return true
     }
 }
 
@@ -35,7 +56,7 @@ extension ChineseWordOfTheDayApp {
 //        application.registerForRemoteNotifications()
 //        return true
 //    }
-//    
+//
 //    func application(_ application: UIApplication,
 //                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
 //                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
