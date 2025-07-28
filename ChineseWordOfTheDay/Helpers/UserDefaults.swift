@@ -56,24 +56,43 @@ extension UserPreferences {
             return UserPreferences.Value(rawValue: Self.localStore.string(forKey: key.rawValue)!)!
         }
     }
-    /// The app will default to using zhuyin and traditional.
-    ///
-    /// - Returns: True if settings have never been set.
-    /// - Note: Zhuyin and traditional are the best and I will throwdown with anyone who disagrees.
-    static func setAppDefaults() async {
-        async let _ = Self.set(.zhuyin, for: .phoneticNotation)
-        async let _ = Self.set(.traditional, for: .chineseWritingSystem)
+    /// Sets both local and cloud keys to default `.zhuyin` and `.traditional` if either are unset.
+    /// - Note: Should be called at startup to avoid errors.
+    static func setAppDefaults() {
+        if Self.cloudIsUnset(){
+            Self.setCloudDefaults()
+        }
+        if Self.localIsUnset(){
+            Self.setLocalDefaults()
+        }
     }
-    static func areUnset() -> Bool {
+    static private func setCloudDefaults(){
+        Self.iCloudStore.set(UserPreferences.Value.zhuyin.rawValue, forKey: UserPreferences.Key.phoneticNotation.rawValue)
+        Self.iCloudStore.set(UserPreferences.Value.traditional.rawValue, forKey: UserPreferences.Key.chineseWritingSystem.rawValue)
+    }
+    static private func setLocalDefaults(){
+        Self.localStore.set(UserPreferences.Value.zhuyin.rawValue, forKey: UserPreferences.Key.phoneticNotation.rawValue)
+        Self.localStore.set(UserPreferences.Value.traditional.rawValue, forKey: UserPreferences.Key.chineseWritingSystem.rawValue)
+    }
+    
+    static private func cloudIsUnset() -> Bool {
         let phoneticKey = UserPreferences.Key.phoneticNotation.rawValue
-        guard Self.iCloudStore.object(forKey: phoneticKey) != nil ||
-                Self.localStore.object(forKey: phoneticKey) != nil
+        // guard to ensure each key does not exist. if one exists
+        guard Self.iCloudStore.object(forKey: phoneticKey) != nil
         else { return true }
         let writtingKey = UserPreferences.Key.chineseWritingSystem.rawValue
-        guard Self.iCloudStore.object(forKey: writtingKey) != nil ||
-                Self.localStore.object(forKey: writtingKey) != nil
+        guard Self.iCloudStore.object(forKey: writtingKey) != nil
         else { return true }
-        return false // keys have already been set
+        return false
+    }
+    static private func localIsUnset() -> Bool {
+        let phoneticKey = UserPreferences.Key.phoneticNotation.rawValue
+        guard Self.localStore.object(forKey: phoneticKey) != nil
+        else { return true }
+        let writtingKey = UserPreferences.Key.chineseWritingSystem.rawValue
+        guard Self.localStore.object(forKey: writtingKey) != nil
+        else { return true }
+        return false
     }
 
     

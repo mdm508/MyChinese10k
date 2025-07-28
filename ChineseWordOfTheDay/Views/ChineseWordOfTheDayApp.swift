@@ -43,9 +43,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         NSUbiquitousKeyValueStore.default.synchronize()
         // If the app is launching for the first time or preferences are missing,
         // set the default values for user settings.
-        if UserPreferences.areUnset() {
-            Task { await UserPreferences.setAppDefaults()}
-        }
+        UserPreferences.setAppDefaults()
         return true
     }
 }
