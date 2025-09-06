@@ -19,12 +19,14 @@
 		0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D67082A5DC21500EAAD30 /* Assets.xcassets */; };
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
 		0C22FF242AEDDE7900913EC3 /* CurrentWordHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C22FF232AEDDE7900913EC3 /* CurrentWordHelpers.swift */; };
+		0C27F5542E6A1C3C002397A2 /* LoadingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F5532E6A1C3C002397A2 /* LoadingManager.swift */; };
+		0C27F5582E6A27CE002397A2 /* LoadingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F5572E6A27CE002397A2 /* LoadingContainerView.swift */; };
+		0C27F55A2E6A402F002397A2 /* LearningProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F5592E6A402F002397A2 /* LearningProgressBar.swift */; };
 		0C45D4DD2E331E2C006AD0EF /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; };
 		0C45D4DE2E331E2C006AD0EF /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
 		0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C72A71992E00AF96C2 /* WordView.swift */; };
 		0C85179D2DF76CD600004774 /* WordDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85179C2DF76CD600004774 /* WordDetail.swift */; };
-		0C85179F2DF76E3500004774 /* WordDetailContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85179E2DF76E3500004774 /* WordDetailContainer.swift */; };
 		0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8517A02DF79EA500004774 /* SettingsView.swift */; };
 		0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
@@ -37,6 +39,7 @@
 		0CBF395F2DA59FAC00E6C867 /* CoreDataModels.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0CBF39632DA5A17B00E6C867 /* CoreDataModels.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; };
 		0CBF39642DA5A17B00E6C867 /* CoreDataModels.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0CE372942E6A72D60046AB6F /* output.json in Resources */ = {isa = PBXBuildFile; fileRef = 0CE372932E6A72D60046AB6F /* output.json */; };
 		0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */; };
 /* End PBXBuildFile section */
 
@@ -149,18 +152,23 @@
 		0C1D67082A5DC21500EAAD30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0C22FF232AEDDE7900913EC3 /* CurrentWordHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWordHelpers.swift; sourceTree = "<group>"; };
+		0C27F5532E6A1C3C002397A2 /* LoadingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingManager.swift; sourceTree = "<group>"; };
+		0C27F5552E6A1F7E002397A2 /* AnimatedPenguin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedPenguin.swift; sourceTree = "<group>"; };
+		0C27F5572E6A27CE002397A2 /* LoadingContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingContainerView.swift; sourceTree = "<group>"; };
+		0C27F5592E6A402F002397A2 /* LearningProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningProgressBar.swift; sourceTree = "<group>"; };
 		0C4726702CAF1DB90014E288 /* WordOfTheDayWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordOfTheDayWidgetExtension.entitlements; sourceTree = "<group>"; };
 		0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryReaderCentered.swift; sourceTree = "<group>"; };
 		0C4858C72A71992E00AF96C2 /* WordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
 		0C7914132DA58E3E00C4883D /* CoreDataModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CoreDataModels; path = Packages/CoreDataModels; sourceTree = "<group>"; };
 		0C7E2DB32B3283690005224E /* ChineseWordOfTheDay.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChineseWordOfTheDay.xctestplan; sourceTree = "<group>"; };
 		0C85179C2DF76CD600004774 /* WordDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDetail.swift; sourceTree = "<group>"; };
-		0C85179E2DF76E3500004774 /* WordDetailContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDetailContainer.swift; sourceTree = "<group>"; };
 		0C8517A02DF79EA500004774 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0CAE8D152CC426A9008954BB /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentFunctions.swift; sourceTree = "<group>"; };
 		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataModels.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CE372932E6A72D60046AB6F /* output.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output.json; sourceTree = "<group>"; };
+		0CEB89B62E6BA7FB001F1E67 /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
 		0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChineseWordOfTheDay.entitlements; sourceTree = "<group>"; };
 		0CEBE9C32B17C21500650626 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownButton.swift; sourceTree = "<group>"; };
@@ -169,20 +177,10 @@
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		0CBAF4A42D95ED8D00488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				WordModel.sqlite,
-			);
 			publicHeaders = (
 				Persistence.h,
 			);
 			target = 0CBAF48E2D95ED8D00488D5A /* Persistence */;
-		};
-		0CBAF4F12DA56B9600488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				WordModel.sqlite,
-			);
-			target = 0C1D67002A5DC21400EAAD30 /* ChineseWordOfTheDay */;
 		};
 		0CBF39422DA59E5100E6C867 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -194,7 +192,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0CBAF4902D95ED8D00488D5A /* Persistence */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0CBAF4F12DA56B9600488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 0CBAF4A42D95ED8D00488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Persistence; sourceTree = "<group>"; };
+		0CBAF4902D95ED8D00488D5A /* Persistence */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0CBAF4A42D95ED8D00488D5A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Persistence; sourceTree = "<group>"; };
 		0CBF39382DA59E5100E6C867 /* CoreDataModels */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0CBF39422DA59E5100E6C867 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CoreDataModels; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -251,6 +249,7 @@
 		0C1D66F82A5DC21300EAAD30 = {
 			isa = PBXGroup;
 			children = (
+				0CEB89B62E6BA7FB001F1E67 /* WordModel.sqlite */,
 				0C4726702CAF1DB90014E288 /* WordOfTheDayWidgetExtension.entitlements */,
 				0C7E2DB32B3283690005224E /* ChineseWordOfTheDay.xctestplan */,
 				0C1D67032A5DC21400EAAD30 /* ChineseWordOfTheDay */,
@@ -297,11 +296,11 @@
 		0C22FF472AF56FDD00913EC3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0C27F5572E6A27CE002397A2 /* LoadingContainerView.swift */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C8517A22DFA274800004774 /* Components */,
 				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
 				0C8517A02DF79EA500004774 /* SettingsView.swift */,
-				0C85179E2DF76E3500004774 /* WordDetailContainer.swift */,
 				0C85179C2DF76CD600004774 /* WordDetail.swift */,
 				0C4858C72A71992E00AF96C2 /* WordView.swift */,
 			);
@@ -311,6 +310,8 @@
 		0C8517A22DFA274800004774 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0C27F5592E6A402F002397A2 /* LearningProgressBar.swift */,
+				0C27F5552E6A1F7E002397A2 /* AnimatedPenguin.swift */,
 				0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */,
 				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
 			);
@@ -320,6 +321,7 @@
 		0CB6B3732B2BCE060008DC54 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				0C27F5532E6A1C3C002397A2 /* LoadingManager.swift */,
 				0C05B10B2DFA39DD009F6120 /* Misc.swift */,
 				0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */,
 				0C22FF232AEDDE7900913EC3 /* CurrentWordHelpers.swift */,
@@ -350,6 +352,7 @@
 		0CEEEE642A70571400262651 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0CE372932E6A72D60046AB6F /* output.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -501,7 +504,6 @@
 			packageReferences = (
 				0C7850DE2D8CB0CF00741F38 /* XCLocalSwiftPackageReference "Packages/WordBuilder" */,
 				0C7850E02D8CB10F00741F38 /* XCLocalSwiftPackageReference "Packages/MYPersistence" */,
-				0CBF392F2DA59B1A00E6C867 /* XCLocalSwiftPackageReference "Packages/CoreDataModels" */,
 			);
 			productRefGroup = 0C1D67022A5DC21400EAAD30 /* Products */;
 			projectDirPath = "";
@@ -528,6 +530,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CE372942E6A72D60046AB6F /* output.json in Resources */,
 				0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */,
 				0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */,
 			);
@@ -570,9 +573,11 @@
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
 				0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
+				0C27F55A2E6A402F002397A2 /* LearningProgressBar.swift in Sources */,
 				0C85179D2DF76CD600004774 /* WordDetail.swift in Sources */,
+				0C27F5582E6A27CE002397A2 /* LoadingContainerView.swift in Sources */,
 				0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */,
-				0C85179F2DF76E3500004774 /* WordDetailContainer.swift in Sources */,
+				0C27F5542E6A1C3C002397A2 /* LoadingManager.swift in Sources */,
 				0C05B10C2DFA39E2009F6120 /* Misc.swift in Sources */,
 				0C22FF242AEDDE7900913EC3 /* CurrentWordHelpers.swift in Sources */,
 				0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */,
@@ -642,7 +647,7 @@
 				INFOPLIST_FILE = WordOfTheDayWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WordOfTheDayWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -671,7 +676,7 @@
 				INFOPLIST_FILE = WordOfTheDayWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WordOfTheDayWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -739,7 +744,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -796,7 +801,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -825,7 +830,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -858,7 +863,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -890,7 +895,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -929,7 +934,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -966,7 +971,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1004,7 +1009,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1083,10 +1088,6 @@
 		0C7850E02D8CB10F00741F38 /* XCLocalSwiftPackageReference "Packages/MYPersistence" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/MYPersistence;
-		};
-		0CBF392F2DA59B1A00E6C867 /* XCLocalSwiftPackageReference "Packages/CoreDataModels" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/CoreDataModels;
 		};
 /* End XCLocalSwiftPackageReference section */
 	};

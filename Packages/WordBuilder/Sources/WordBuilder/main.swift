@@ -70,24 +70,36 @@ func printStoreLocation(container:NSPersistentContainer){
 }
 func main() {
     print("hello boy")
-    // Setup Persistent Container
-//    let container = NSPersistentContainer(name: Constants.STORE_NAME)    
-    let model = ModelLoader.loadModel()
-    let container = NSPersistentContainer(name: ModelLoader.name, managedObjectModel: model)
     
-    container.loadPersistentStores { (_, error) in
-        if let error = error as NSError? {
-            fatalError("Failed to load persistent stores: \(error), \(error.userInfo)")
-        }
-        // Load words from json then save to container
-        let words = loadWordsFromJson()
-        let context = container.viewContext
-        let request = NSBatchInsertRequest(entityName: "Word", objects: words)
-        print(words[0].keys)
-        printStoreLocation(container: container)
-        try! context.execute(request)
-        try! context.save()
+    // Copy the existing database from MYFrameworks to Documents
+    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    let destinationURL = documentsPath.appendingPathComponent("WordModel.sqlite")
+    
+    // Source database path
+    let sourcePath = "/Users/m/Developer/MyChinese10k/MYFrameworks/Persistence/WordModel.sqlite"
+    
+    // Remove existing database if it exists
+    if FileManager.default.fileExists(atPath: destinationURL.path) {
+        try! FileManager.default.removeItem(at: destinationURL)
+        print("🗑️ Removed existing database")
     }
+    
+    // Copy the database
+    try! FileManager.default.copyItem(atPath: sourcePath, toPath: destinationURL.path)
+    print("✅ Database copied successfully!")
+    print("📁 Destination: \(destinationURL)")
+    
+    // Verify the copy
+    let sourceSize = try! FileManager.default.attributesOfItem(atPath: sourcePath)[.size] as! Int64
+    let destSize = try! FileManager.default.attributesOfItem(atPath: destinationURL.path)[.size] as! Int64
+    
+    if sourceSize == destSize {
+        print("✅ File sizes match: \(sourceSize) bytes")
+    } else {
+        print("❌ File size mismatch! Source: \(sourceSize), Destination: \(destSize)")
+    }
+    
+    print("🎯 Database is ready to be copied to your app!")
 }
 print("sup boy")
 main()

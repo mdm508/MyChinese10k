@@ -15,9 +15,9 @@ import Persistence
 /// - Warning: Will delete everything in local and cloud
 @MainActor
 public func deleteAll() {
-    Task {
-        await deletAllCloudWordStatus()
-    }
+//    Task {
+//        await deletAllCloudWordStatus()
+//    }
     deleteAllLocalWordStatus()
     PersistenceController.deleteDatabase()
 }

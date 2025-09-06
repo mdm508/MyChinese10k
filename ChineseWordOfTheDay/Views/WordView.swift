@@ -9,7 +9,7 @@ import SwiftUI
 import CoreDataModels
 
 struct WordView {
-    @Binding var word: String
+    var word: String
     var size:  CGSize
 }
 
@@ -36,7 +36,7 @@ struct ChineseCharacter_Previews: PreviewProvider {
         @State var mockWord = MockWord.placeholder.traditional
         var body: some View {
             GeometryReaderCentered { geo in
-                WordView(word: $mockWord, size: geo.size)
+                WordView(word: mockWord, size: geo.size)
             }
         }
     }

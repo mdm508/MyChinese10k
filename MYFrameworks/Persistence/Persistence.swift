@@ -34,6 +34,31 @@ struct UserInfoKey {
     static let transactions = "transactions"
 }
 
+
+extension PersistenceController {
+    /// Returns true if the on-disk SQLite at `url` is compatible with `model`.
+    /// If the file doesn't exist or metadata can't be read, returns false (so you reseed).
+    public static func storeIsCompatible(with model: NSManagedObjectModel,
+                                         at url: URL,
+                                         configuration: String? = "local") -> Bool {
+        guard FileManager.default.fileExists(atPath: url.path) else { return false }
+        do {
+            let metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(
+                ofType: NSSQLiteStoreType,
+                at: url
+            )
+            // Prefer the named config, fall back to default (nil) if needed
+            if let configuration = configuration,
+               model.isConfiguration(withName: configuration, compatibleWithStoreMetadata: metadata) {
+                return true
+            }
+            return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
+        } catch {
+            return false
+        }
+    }
+}
+
 @MainActor
 public class PersistenceController {
     public static var shared = PersistenceController(actor: .swiftuiApp)
@@ -87,13 +112,32 @@ public class PersistenceController {
             print("hi im widget")
         }
 //         MARK: - Local Configuration
-        let localDesc = NSPersistentStoreDescription(url: Self.appGroupURL)
+        // --- Local store (App Group) ---
+        let localURL = Self.appGroupURL
+
+        // 🔑 Manual compatibility check (wipe + reseed if outdated or corrupt)
+        if !PersistenceController.storeIsCompatible(with: model, at: localURL) {
+            let fm = FileManager.default
+            try? fm.removeItem(at: localURL)
+            try? fm.removeItem(at: localURL.appendingPathExtension("wal"))
+            try? fm.removeItem(at: localURL.appendingPathExtension("shm"))
+            PersistenceController.copyDatabaseIfNeeded()
+        }
+
+        // Describe and append the local store
+        let localDesc = NSPersistentStoreDescription(url: localURL)
         localDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         localDesc.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         localDesc.configuration = "local"
+        // (Recommended)
+        localDesc.shouldMigrateStoreAutomatically = true
+        localDesc.shouldInferMappingModelAutomatically = true
+
         container.persistentStoreDescriptions.append(localDesc)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
+                print("Loaded store:", localDesc.url?.path ?? "nil", " config:", localDesc.configuration ?? "nil")
+                assert(localDesc.url == PersistenceController.appGroupURL, "Not the App Group store!")
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
@@ -124,39 +168,62 @@ extension PersistenceController {
     /// For this function to work correctly, it must be that the store was previously set to journal mode.
     /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
     public static func copyDatabaseIfNeeded() {
-        guard let bundlePath = Bundle.main.path(forResource: Constants.STORE_NAME, ofType: "sqlite") else {
-            print("Database file not found in the app bundle.")
-            return
-        }
-        let destinationURL = appGroupURL
-        if !fm.fileExists(atPath: destinationURL.path) {
-            do {
-                try fm.copyItem(atPath: bundlePath, toPath: destinationURL.path)
-                print("Database file copied to AppGroup Container")
-                print(destinationURL)
-            } catch {
-                print("Error copying database file: \(error)")
-                fatalError()
+            // Framework bundle
+            let bundle = Bundle(for: PersistenceController.self)
+
+            // Look for the seed database in the framework bundle
+            guard let path = bundle.path(forResource: Constants.STORE_NAME, ofType: "sqlite") else {
+                fatalError("Seed database \(Constants.STORE_NAME).sqlite not found in framework bundle")
             }
-        } else {
-            print("Database file already exists in the documents directory at: ")
-            print(destinationURL)
+
+            let srcURL = URL(fileURLWithPath: path)
+            let dstURL = appGroupURL
+
+            // Make sure App Group folder exists
+            do {
+                try fm.createDirectory(at: dstURL.deletingLastPathComponent(),
+                                       withIntermediateDirectories: true,
+                                       attributes: nil)
+            } catch {
+                fatalError("Failed to create App Group directory: \(error)")
+            }
+
+            // Copy if missing
+            if !fm.fileExists(atPath: dstURL.path) {
+                do {
+                    try fm.copyItem(at: srcURL, to: dstURL)
+                    print("Database copied to App Group: \(dstURL)")
+                } catch {
+                    fatalError("Error copying database: \(error)")
+                }
+            } else {
+                print("Database already exists at: \(dstURL)")
+            }
         }
-    }
-    // Convenience function to delete SQLite file
+        
+        
+        
+        // Convenience function to delete SQLite file
     public static func deleteDatabase() {
-        let fileManager = fm
+        let fm = FileManager.default
         let storeURL = appGroupURL
         
         do {
-            if fileManager.fileExists(atPath: storeURL.path) {
-                try fileManager.removeItem(at: storeURL)
-                print("Database deleted successfully.")
-            } else {
-                print("Database not found at path: \(storeURL.path).")
+            // Remove main store
+            if fm.fileExists(atPath: storeURL.path) {
+                try fm.removeItem(at: storeURL)
+                print("✅ Deleted:", storeURL.lastPathComponent)
+            }
+            // Remove WAL + SHM sidecars
+            for ext in ["-wal", "-shm"] {
+                let sidecar = storeURL.path + ext
+                if fm.fileExists(atPath: sidecar) {
+                    try fm.removeItem(atPath: sidecar)
+                    print("✅ Deleted sidecar:", (sidecar as NSString).lastPathComponent)
+                }
             }
         } catch {
-            print("Error deleting database: \(error)")
+            print("❌ Error deleting database: \(error)")
         }
     }
 }

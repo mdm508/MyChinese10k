@@ -18,11 +18,11 @@ import CoreDataModels
 /// A lightweight structure to encapsulate information extracted from CloudKit remote notifications.
 public struct CloudKitNotificationInfo {
     /// The traditional Chinese string from the notification.
-    let cdTraditional: String
+    public let cdTraditional: String
     /// The status value associated with the word.
-    let cdStatus: Int64
+    public let cdStatus: Int64
     /// The date when the record was last modified.
-    let cdLastModified: Date
+    public let cdLastModified: Date
     
     /// Initializes a new instance of `CloudKitNotificationInfo`.
     /// - Parameters:
@@ -72,6 +72,13 @@ extension Cloud {
     public static let wordStatusKeyLastModified = "CD_lastModified"
     /// An array of all keys that are important for the CloudKit record.
     public static let wordStatusAllKeys = [wordStatusKeyTraditional, wordStatusKeyStatus, wordStatusKeyLastModified]
+    
+    /// The record type used for word index.
+    public static let wordIndexRecordType = "CD_WordIndex"
+    /// The key used for storing the current index.
+    public static let wordIndexKeyCurrent = "CD_current"
+    /// An array of all keys that are important for the WordIndex CloudKit record.
+    public static let wordIndexAllKeys = [wordIndexKeyCurrent]
 }
 
 // MARK: - CloudKit Record Creation
@@ -175,37 +182,77 @@ public func extractCloudKitInfo(from notificationPayload: [AnyHashable: Any]) ->
 
 // MARK: - CloudKit Subscription Setup
 
-/// Sets up a CloudKit subscription if one does not already exist. This subscription triggers on record creation
-/// for word status updates.
-/// - Note: The notification payload is configured to include all necessary keys.
+/// Sets up CloudKit subscriptions for both WordStatus and WordIndex updates.
+/// - Note: The notification payloads are configured to include all necessary keys.
 public func setupCloudSub() {
+    print("🔔 Setting up CloudKit subscriptions...")
     let db = Cloud.db
-    db.fetch(withSubscriptionID: Cloud.subID) { subscription, error in
+    
+    // Setup WordStatus subscription
+    setupWordStatusSubscription(db: db)
+    
+    // Setup WordIndex subscription
+    setupWordIndexSubscription(db: db)
+    
+    print("🔔 CloudKit subscription setup completed")
+}
+
+private func setupWordStatusSubscription(db: CKDatabase) {
+    let subID = Cloud.subID
+    db.fetch(withSubscriptionID: subID) { subscription, error in
         if let error = error {
-            print("Error fetching subscription: \(error.localizedDescription)")
+            print("Error fetching WordStatus subscription: \(error.localizedDescription)")
         }
-        // Create a new subscription if none exists.
         if subscription == nil {
             let sub = CKQuerySubscription(
                 recordType: Cloud.wordStatusRecordType,
                 predicate: NSPredicate(value: true),
-                subscriptionID: Cloud.subID,
-                options: .firesOnRecordCreation
+                subscriptionID: subID,
+                options: [.firesOnRecordCreation, .firesOnRecordUpdate]
             )
             let notification = CKSubscription.NotificationInfo()
             notification.shouldSendContentAvailable = true
-            // Specify which record keys should be included in the notification payload.
             notification.desiredKeys = Cloud.wordStatusAllKeys
             sub.notificationInfo = notification
             db.save(sub) { savedSubscription, error in
                 if let error = error {
-                    print("Error saving subscription: \(error.localizedDescription)")
+                    print("Error saving WordStatus subscription: \(error.localizedDescription)")
                 } else {
-                    print("Successfully created subscription with ID: \(savedSubscription?.subscriptionID ?? "")")
+                    print("Successfully created WordStatus subscription with ID: \(savedSubscription?.subscriptionID ?? "")")
                 }
             }
         } else {
-            print("Subscription already exists.")
+            print("WordStatus subscription already exists.")
+        }
+    }
+}
+
+private func setupWordIndexSubscription(db: CKDatabase) {
+    let subID = "wordIndexSubscription"
+    db.fetch(withSubscriptionID: subID) { subscription, error in
+        if let error = error {
+            print("Error fetching WordIndex subscription: \(error.localizedDescription)")
+        }
+        if subscription == nil {
+            let sub = CKQuerySubscription(
+                recordType: Cloud.wordIndexRecordType,
+                predicate: NSPredicate(value: true),
+                subscriptionID: subID,
+                options: [.firesOnRecordCreation, .firesOnRecordUpdate]
+            )
+            let notification = CKSubscription.NotificationInfo()
+            notification.shouldSendContentAvailable = true
+            notification.desiredKeys = Cloud.wordIndexAllKeys
+            sub.notificationInfo = notification
+            db.save(sub) { savedSubscription, error in
+                if let error = error {
+                    print("Error saving WordIndex subscription: \(error.localizedDescription)")
+                } else {
+                    print("Successfully created WordIndex subscription with ID: \(savedSubscription?.subscriptionID ?? "")")
+                }
+            }
+        } else {
+            print("WordIndex subscription already exists.")
         }
     }
 }

@@ -5,7 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "CoreDataModels",
-    platforms: [.macOS(.v10_15)], // Ensures macOS 10.15+ compatibility
+    platforms: [
+        .iOS(.v15), // Ensures iOS 15.0+ compatibility
+        .macOS(.v10_15) // Ensures macOS 10.15+ compatibility
+    ],
     products: [
         .library(
             name: "CoreDataModels",
