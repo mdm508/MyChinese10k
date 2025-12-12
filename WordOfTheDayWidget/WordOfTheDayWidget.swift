@@ -57,7 +57,6 @@ struct WordOfTheDayWidgetEntryView : View {
                     .minimumScaleFactor(0.5) // Allow text to scale down if needed to fit
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) // Center the text
             }
-
             Text(entry.word.zhuyin).font(.subheadline)
         }
     }

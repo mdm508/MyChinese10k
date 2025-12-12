@@ -32,6 +32,24 @@ extension UserPreferences {
     enum Key: String {
         case phoneticNotation
         case chineseWritingSystem
+        
+        var defaultValue: String {
+            switch self {
+            case .phoneticNotation:
+                return Value.zhuyin.rawValue
+            case .chineseWritingSystem:
+                return Value.traditional.rawValue
+            }
+        }
+        
+        var defaultValueEnum: Value {
+            switch self {
+            case .phoneticNotation:
+                return .zhuyin
+            case .chineseWritingSystem:
+                return .traditional
+            }
+        }
     }
     enum Value: String {
         case zhuyin
@@ -51,9 +69,11 @@ extension UserPreferences {
     }
     static func get(_ key: UserPreferences.Key) async -> UserPreferences.Value {
         if await isCloudKitAvailable(){
-            return UserPreferences.Value(rawValue: Self.iCloudStore.string(forKey: key.rawValue)!)!
+            let value = Self.iCloudStore.string(forKey: key.rawValue)
+            return UserPreferences.Value(rawValue: value ?? key.defaultValue) ?? key.defaultValueEnum
         } else {
-            return UserPreferences.Value(rawValue: Self.localStore.string(forKey: key.rawValue)!)!
+            let value = Self.localStore.string(forKey: key.rawValue)
+            return UserPreferences.Value(rawValue: value ?? key.defaultValue) ?? key.defaultValueEnum
         }
     }
     /// Sets both local and cloud keys to default `.zhuyin` and `.traditional` if either are unset.

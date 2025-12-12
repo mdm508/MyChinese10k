@@ -29,7 +29,7 @@ struct LearningProgressBar: View {
                                 .frame(width: 44, height: 44)
                                 .background(
                                     Circle()
-                                        .fill(isLearned ? Color.green.opacity(0.7) : Color.gray.opacity(0.2))
+                                        .fill(isLearned ? Color.blue.opacity(0.7) : Color.gray.opacity(0.2))
                                         .overlay(
                                             Circle()
                                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
@@ -144,7 +144,7 @@ struct LearningProgressBar: View {
 
 #Preview {
     LearningProgressBar(
-        currentIndex: 15, 
+        currentIndex: 10904, 
         size: CGSize(width: 300, height: 100),
         context: PersistenceController.shared.context
     )
