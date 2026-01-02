@@ -7,7 +7,6 @@
 
 import Foundation
 import CoreData
-import CloudKit
 import CoreDataModels
 import Persistence
 
@@ -29,39 +28,16 @@ final class WordService {
         self.context = context
     }
 
-    /// Marks the given word as "seen" by updating status in Core Data and synchronizing with CloudKit.
-    ///
-    /// - Parameters:
-    ///   - word: The `Word` entity to mark as seen.
-    ///
-    /// This method attempts to push the updated state to CloudKit with a timeout to avoid hanging the app.
-    /// It always attempts to save changes to Core Data regardless of CloudKit outcome.
+    /// Marks the given word as seen by upserting a WordStatus (status = 1) and incrementing the WordIndex, then saving.
     @discardableResult
     func markWordAsSeen(_ word: Word) async -> Bool {
-        // Attempt to update CloudKit with a timeout, but never block local save
         do {
-            try await withThrowingTaskGroup(of: Void.self) { group in
-                group.addTask {
-                    try await createCloudKitRecord(for: word)
-                }
-                group.addTask {
-                    try await Task.sleep(nanoseconds: 5_000_000_000) // 5 seconds
-                    throw NSError(domain: "Timeout", code: -1, userInfo: [NSLocalizedDescriptionKey: "CloudKit operation timed out"])
-                }
-                try await group.next()
-                group.cancelAll()
-            }
-        } catch {
-            // Handle CloudKit errors gracefully, but proceed with Core Data save
-            print("⚠️ CloudKit operation failed or timed out: \(error)")
-        }
-        // Always save the local Core Data state
-        do {
+            try upsertWordStatus(for: word, to: .seen)
+            try incrementCurrentWordIndex()
             try context.save()
-            print("✅ Successfully saved word status locally")
             return true
         } catch {
-            print("❌ Error saving changes: \(error)")
+            print("❌ Error updating status or index: \(error)")
             return false
         }
     }
@@ -76,15 +52,39 @@ final class WordService {
     }
 
     // MARK: - Private Helpers
-    /// Creates a CloudKit record for a seen word. This should be implemented to match your CloudKit schema.
-    ///
-    /// - Parameter word: The `Word` entity to sync to CloudKit.
-    /// - Throws: Any errors thrown by CloudKit.
-    private func createCloudKitRecord(for word: Word) async throws {
-        // Placeholder: Implement your actual CloudKit sync logic here.
-        // This is a stub for demonstration and should be replaced with real CloudKit code.
-        print("[Stub] Would create CloudKit record for word: \(word)")
-    }
-    
     // You can add additional methods for deleting, fetching, or synchronizing words and indices as needed.
+
+    private func upsertWordStatus(for word: Word, to status: LearnStatus) throws {
+        let request: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
+        request.predicate = NSPredicate(format: "traditional == %@", word.traditional)
+        request.fetchLimit = 1
+
+        let wordStatus: WordStatus
+        if let existing = try context.fetch(request).first {
+            wordStatus = existing
+        } else {
+            let newStatus = WordStatus(context: context)
+            newStatus.traditional = word.traditional
+            wordStatus = newStatus
+        }
+        wordStatus.status = status.rawValue
+        wordStatus.lastModified = Date()
+    }
+
+    private func getOrCreateWordIndex() throws -> WordIndex {
+        let request: NSFetchRequest<WordIndex> = WordIndex.fetchRequest()
+        request.fetchLimit = 1
+        if let existing = try context.fetch(request).first {
+            return existing
+        } else {
+            let index = WordIndex(context: context)
+            index.current = 0
+            return index
+        }
+    }
+
+    private func incrementCurrentWordIndex() throws {
+        let wordIndex = try getOrCreateWordIndex()
+        wordIndex.current += 1
+    }
 }

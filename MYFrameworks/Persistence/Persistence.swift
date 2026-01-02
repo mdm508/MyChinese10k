@@ -1,4 +1,3 @@
-
 //  Persistence.swift
 //  ChineseWordOfTheDay
 //
@@ -67,7 +66,7 @@ public class PersistenceController {
         let con = PersistenceController(actor: .widget)
         return con
     }
-    static var preview: PersistenceController = {
+    public static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true, actor: .swiftuiApp)
         let viewContext = result.container.viewContext
         do {
@@ -83,7 +82,6 @@ public class PersistenceController {
         self.container.viewContext
     }
     public init(inMemory: Bool = false, actor: StorageActor) {
-        setupCloudSub()
         ValueTransformer.setValueTransformer(
             StringArrayTransformer(),
             forName: NSValueTransformerName("StringArrayTransformer")
@@ -91,8 +89,25 @@ public class PersistenceController {
         let model = ModelLoader.loadModel()
         container = NSPersistentCloudKitContainer(name: ModelLoader.name, managedObjectModel: model)
         if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
-            container.persistentStoreDescriptions.first!.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+            // Use a single in-memory store for tests/previews (local configuration only)
+            let localDesc = NSPersistentStoreDescription()
+            localDesc.type = NSInMemoryStoreType
+            localDesc.configuration = "local"
+            localDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+
+            container.persistentStoreDescriptions = [localDesc]
+            container.loadPersistentStores { (storeDescription, error) in
+                if let error = error as NSError? {
+                    print("❌ Failed to load in-memory store:", storeDescription.url?.path ?? "nil", "config:", storeDescription.configuration ?? "nil")
+                    fatalError("Unresolved error \(error), \(error.userInfo)")
+                } else {
+                    print("✅ Loaded in-memory store:", storeDescription.url?.path ?? "nil", "config:", storeDescription.configuration ?? "nil")
+                }
+            }
+            container.viewContext.automaticallyMergesChangesFromParent = true
+            container.viewContext.name = "viewContext"
+            container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+            return
         }
         container.persistentStoreDescriptions = []
         if actor == .swiftuiApp{
@@ -133,19 +148,24 @@ public class PersistenceController {
         localDesc.shouldMigrateStoreAutomatically = true
         localDesc.shouldInferMappingModelAutomatically = true
 
-        container.persistentStoreDescriptions.append(localDesc)
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+        if !container.persistentStoreDescriptions.contains(where: { $0.url == localURL }) {
+            container.persistentStoreDescriptions.append(localDesc)
+        }
+        container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
-                print("Loaded store:", localDesc.url?.path ?? "nil", " config:", localDesc.configuration ?? "nil")
-                assert(localDesc.url == PersistenceController.appGroupURL, "Not the App Group store!")
+                print("Failed to load store at:", storeDescription.url?.path ?? "nil", "config:", storeDescription.configuration ?? "nil")
                 fatalError("Unresolved error \(error), \(error.userInfo)")
+            } else {
+                print("Loaded store:", storeDescription.url?.path ?? "nil", "config:", storeDescription.configuration ?? "nil")
             }
-        })
+        }
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.name = "viewContext"
-        //        NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
-        //                                               name: .NSPersistentStoreRemoteChange,
-        //                                               object: container.persistentStoreCoordinator)
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+//        self.deduplicateLocally()
+//        NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
+//                                               name: .NSPersistentStoreRemoteChange,
+//                                               object: container.persistentStoreCoordinator)
     }
 }
 
@@ -254,4 +274,49 @@ extension NSPersistentCloudKitContainer {
 //    }
 //}
 
+extension PersistenceController {
+    /// Deduplicate entities that cannot use Core Data uniqueness constraints when mirroring with CloudKit.
+    /// - Note: This runs on the viewContext and coalesces duplicates for WordIndex and WordStatus.
+    func deduplicateLocally() {
+        let context = self.container.viewContext
+        context.perform {
+            // Deduplicate WordIndex: keep the one with the highest `current` value
+            do {
+                let indexFetch: NSFetchRequest<WordIndex> = WordIndex.fetchRequest()
+                let indices = try context.fetch(indexFetch)
+                if indices.count > 1 {
+                    if let keep = indices.max(by: { $0.current < $1.current }) {
+                        indices.filter { $0 != keep }.forEach { context.delete($0) }
+                    }
+                }
+            } catch {
+                print("❌ Dedup WordIndex failed: \(error)")
+            }
+
+            // Deduplicate WordStatus by `traditional`: keep the one with the latest `lastModified` (fallback to highest status)
+            do {
+                let statusFetch: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
+                let all = try context.fetch(statusFetch)
+                let grouped = Dictionary(grouping: all, by: { $0.traditional })
+                for (_, group) in grouped where group.count > 1 {
+                    let keep = group.max { lhs, rhs in
+                        let lDate = lhs.lastModified ?? .distantPast
+                        let rDate = rhs.lastModified ?? .distantPast
+                        if lDate == rDate { return lhs.status < rhs.status }
+                        return lDate < rDate
+                    }
+                    if let keep = keep {
+                        group.filter { $0 != keep }.forEach { context.delete($0) }
+                    }
+                }
+            } catch {
+                print("❌ Dedup WordStatus failed: \(error)")
+            }
+
+            if context.hasChanges {
+                do { try context.save() } catch { print("❌ Error saving after dedup: \(error)") }
+            }
+        }
+    }
+}
 

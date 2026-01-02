@@ -15,7 +15,7 @@ public extension WordStatus {
         return NSFetchRequest<WordStatus>(entityName: "WordStatus")
     }
     @NSManaged var status: Int64
-    @NSManaged var traditional: String?
+    @NSManaged var traditional: String
     @NSManaged var lastModified: Date?
 }
 

@@ -19,6 +19,7 @@ public func deleteAll() {
 //        await deletAllCloudWordStatus()
 //    }
     deleteAllLocalWordStatus()
+    deleteAllWordIndex()
     PersistenceController.deleteDatabase()
 }
 
@@ -47,6 +48,20 @@ public func deletAllCloudWordStatus() async {
 }
 
 @MainActor
+public func deleteAllWordStatus() {
+    let context = PersistenceController.shared.context
+    let request: NSFetchRequest<NSFetchRequestResult> = WordStatus.fetchRequest()
+    let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+    do {
+        try context.execute(deleteRequest)
+        // No need to call save() after a batch delete
+    } catch {
+        print("Error executing batch delete for WordStatus: \(error)")
+    }
+}
+
+@MainActor
 fileprivate func deleteAllLocalWordStatus() {
     let context = PersistenceController.shared.context
     let request: NSFetchRequest<NSFetchRequestResult> = WordStatus.fetchRequest()
@@ -57,5 +72,19 @@ fileprivate func deleteAllLocalWordStatus() {
         // No need to call save() after a batch delete
     } catch {
         print("Error executing batch delete: \(error)")
+    }
+}
+
+@MainActor
+fileprivate func deleteAllWordIndex() {
+    let context = PersistenceController.shared.context
+    let request: NSFetchRequest<NSFetchRequestResult> = WordIndex.fetchRequest()
+    let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+
+    do {
+        try context.execute(deleteRequest)
+        // No need to call save() after a batch delete
+    } catch {
+        print("Error executing batch delete for WordIndex: \(error)")
     }
 }
