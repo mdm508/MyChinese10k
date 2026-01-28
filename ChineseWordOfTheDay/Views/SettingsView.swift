@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Persistence
+import CoreDataModels
 
 /// A view that allows users to adjust app settings related to phonetic notation and Chinese writing system.
 /// It also displays iCloud sync status with a visual indicator.
@@ -45,9 +46,9 @@ extension SettingsView {
                         Text("Zhuyin").tag(UserPreferences.Value.zhuyin)
                         Text("Pinyin").tag(UserPreferences.Value.pinyin)
                     }.onChange(of: self.phonetic) {newPhonetic in
-                        Task{ await self.setPhonetic(with: newPhonetic)}
+                        self.setPhonetic(with: newPhonetic)
                     }.onAppear(){
-                        Task { await self.loadPhonetic()}
+                         self.loadPhonetic()
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
@@ -58,10 +59,10 @@ extension SettingsView {
                         Text("Simplified").tag(UserPreferences.Value.simplified)
                     }
                     .onChange(of: self.textPreference) { newValue in
-                        Task { await self.setHanzi(with: newValue) }
+                         self.setHanzi(with: newValue)
                     }
                     .onAppear {
-                        Task { await self.loadHanzi() }
+                        self.loadHanzi()
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
@@ -100,16 +101,16 @@ extension SettingsView {
 }
 // MARK: - Loading Settings
 extension SettingsView {
-    func loadPhonetic() async -> Void {
-        self.phonetic = await UserPreferences.get(.phoneticNotation)
+    func loadPhonetic() -> Void {
+        self.phonetic = UserPreferences.get(.phoneticNotation)
     }
-    func setPhonetic(with newValue: UserPreferences.Value) async -> Void {
-        await UserPreferences.set(newValue, for: .phoneticNotation)
+    func setPhonetic(with newValue: UserPreferences.Value) -> Void {
+        UserPreferences.set(newValue, for: .phoneticNotation)
     }
-    func loadHanzi() async {
-        self.textPreference = await UserPreferences.get(.chineseWritingSystem)
+    func loadHanzi() {
+        self.textPreference = UserPreferences.get(.chineseWritingSystem)
     }
-    func setHanzi(with newValue: UserPreferences.Value) async {
-        await UserPreferences.set(newValue, for: .chineseWritingSystem)
+    func setHanzi(with newValue: UserPreferences.Value) {
+        UserPreferences.set(newValue, for: .chineseWritingSystem)
     }
 }

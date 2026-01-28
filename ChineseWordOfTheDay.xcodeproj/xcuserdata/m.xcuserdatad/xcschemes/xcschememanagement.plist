@@ -12,7 +12,7 @@
 		<key>ChineseWordOfTheDayTests.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>5</integer>
+			<integer>4</integer>
 		</dict>
 		<key>CoreDataModels.xcscheme_^#shared#^_</key>
 		<dict>
@@ -48,7 +48,7 @@
 		<key>Persistence.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>5</integer>
 		</dict>
 		<key>StoreBuilderMain.xcscheme_^#shared#^_</key>
 		<dict>

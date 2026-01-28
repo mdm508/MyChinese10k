@@ -15,12 +15,7 @@ import CoreData
 @MainActor
 struct WordDetail {
     // MARK: - State
-    /// View model for handling all data operations and display preferences
     @State private var word: WordRepresentable = MockWord.placeholder
-    @State private var wordIndex: WordIndex?
-    @State private var phoneticText: String = ""
-    @State private var hanziText: String = ""
-    @State private var isRefreshing: Bool = false
     @State private var isProcessingNextWord = false
     private let context = PersistenceController.shared.context
 }
@@ -44,7 +39,6 @@ extension WordDetail: View {
                     .padding()
             }
         }
-        // Load current word immediately since loading screen should have prepared everything
         .onAppear {
             Task { await loadCurrentWord() }
         }
@@ -66,8 +60,8 @@ private extension WordDetail {
                 .padding(.horizontal)
                 .padding(.bottom, 8)
             
-            WordView(word: hanziText, size: geo.size)
-            Text(phoneticText)
+            WordView(word: word.characters, size: geo.size)
+            Text(word.phonetic)
                 .font(.headline)
 
             meaningsList
@@ -76,11 +70,11 @@ private extension WordDetail {
         }
         .padding()
         .task {
-            await updateDisplay(for: word)
+            await loadCurrentWord()
         }
         .onChange(of: word.index) { _ in
             Task {
-                await updateDisplay(for: word)
+                await loadCurrentWord()
             }
         }
     }
@@ -112,60 +106,18 @@ private extension WordDetail {
 // MARK: - Async Logic
 
 extension WordDetail {
-    @MainActor
-    func updateDisplay(for word: WordRepresentable) async {
-        // Update phonetic based on user preferences
-        if await UserPreferences.get(.phoneticNotation) == .zhuyin {
-            phoneticText = word.zhuyin
-        } else {
-            phoneticText = word.pinyin
-        }
-        // Update hanzi based on user preferences
-        if await UserPreferences.get(.chineseWritingSystem) == .traditional {
-            hanziText = word.traditional
-        } else {
-            hanziText = word.simplified
-        }
-    }
-    
-    func loadCurrentIndex() -> Void {
-        if self.wordIndex != nil {
-            return
-        }
-        do {
-            if let existing = try self.context.fetch(WordIndex.fetchRequest()).first {
-                self.wordIndex = existing
-            } else {
-                // only called first time app created
-                let indexObject = WordIndex(context: self.context)
-                indexObject.current = 1
-                self.wordIndex = indexObject
-                try self.context.save()
-            }
-        } catch {
-            print("Failed to fetch or create WordIndex: \(error)")
-            return
-        }
-    }
-    func getCurrentIndex()  -> Int64{
-        self.loadCurrentIndex()
-        return self.wordIndex!.current
-    }
-    func incrementIndex(){
-        self.loadCurrentIndex()
-        self.wordIndex!.current += 1
-        try! self.context.save()
-    }
+    /// Fetches the current word then updates the display.
     func loadCurrentWord() async {
-        let fetchedWord = Word.fetchWord(at: self.getCurrentIndex(), context: self.context)!
-        self.word = fetchedWord
-        await updateDisplay(for: self.word)
+        let ws = WordService(context: self.context)
+        await self.word = ws.loadCurrentWord()
     }
-    
+    /// Marks the current word as known and loads the next word.
     func nextWord() async {
-        self.incrementIndex()
+        let ws = WordService(context: self.context)
+        await ws.markWordAsSeen(self.word)
         await loadCurrentWord()
     }
     
     
 }
+

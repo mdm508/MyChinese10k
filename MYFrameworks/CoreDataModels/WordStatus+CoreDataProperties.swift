@@ -31,8 +31,10 @@ public extension Word {
             pinyin: self.pinyin,
             simplified: self.simplified,
             traditional: self.traditional,
-            zhuyin: self.zhuyin
-        )
+            zhuyin: self.zhuyin,
+            characters: self.characters,
+            phonetic: self.phonetic
+            )
     }
     /// Writes self to user defaults.
     /// - Parameters:

@@ -30,7 +30,7 @@ final class WordService {
 
     /// Marks the given word as seen by upserting a WordStatus (status = 1) and incrementing the WordIndex, then saving.
     @discardableResult
-    func markWordAsSeen(_ word: Word) async -> Bool {
+    func markWordAsSeen(_ word: WordRepresentable) async -> Bool {
         do {
             try upsertWordStatus(for: word, to: .seen)
             try incrementCurrentWordIndex()
@@ -41,12 +41,44 @@ final class WordService {
             return false
         }
     }
+    
+    /// Loads the current word by fetching the current WordIndex
+    @discardableResult
+    func loadCurrentWord() async -> WordRepresentable {
+        
+        if let fetchedWord = Word.fetchWord(at: self.getCurrentIndex(), context: self.context){
+            return fetchedWord
+        } else {
+            fatalError("Unable to fetch word at \(self.getCurrentIndex())")
+        }
+    }
+    
+    /// Fetch the current WordIndex. If none exists then we assume it is the first time you loaded the app and set the index to 1.
+    private func getCurrentIndex() -> Int64 {
+        do {
+            let request: NSFetchRequest<WordIndex> = WordIndex.fetchRequest()
+            request.fetchLimit = 1
+            if let existing = try context.fetch(request).first {
+                return existing.current
+            } else {
+                // Only called first time app created
+                let indexObject = WordIndex(context: context)
+                indexObject.current = 1
+                try context.save()
+                return 1
+            }
+        } catch {
+            fatalError("Failed to fetch or create WordIndex: \(error)")
+        }
+    }
+    
+    
 
     /// Increments the given `WordIndex`'s current value and saves the change to Core Data.
     ///
     /// - Parameter wordIndex: The `WordIndex` entity to increment.
     /// - Throws: Any error thrown by Core Data's save operation.
-    func incrementWordIndex(_ wordIndex: WordIndex) throws {
+    private func incrementWordIndex(_ wordIndex: WordIndex) throws {
         wordIndex.current += 1
         try context.save()
     }
@@ -54,7 +86,7 @@ final class WordService {
     // MARK: - Private Helpers
     // You can add additional methods for deleting, fetching, or synchronizing words and indices as needed.
 
-    private func upsertWordStatus(for word: Word, to status: LearnStatus) throws {
+    private func upsertWordStatus(for word: WordRepresentable, to status: LearnStatus) throws {
         let request: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
         request.predicate = NSPredicate(format: "traditional == %@", word.traditional)
         request.fetchLimit = 1

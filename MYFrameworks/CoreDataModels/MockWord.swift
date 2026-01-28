@@ -18,6 +18,8 @@ public struct MockWord: Identifiable, WordRepresentable {
     public var simplified: String
     public var traditional: String
     public var zhuyin: String
+    public var characters: String
+    public var phonetic: String
     public var id = UUID()
 
 
@@ -30,7 +32,9 @@ public struct MockWord: Identifiable, WordRepresentable {
             pinyin: "xuéxí",
             simplified: "学习",
             traditional: "學習",
-            zhuyin: "ㄒㄩㄝˊ ㄒㄧˊ")
+            zhuyin: "ㄒㄩㄝˊ ㄒㄧˊ",
+            characters: "學習",
+            phonetic: "ㄒㄩㄝˊ ㄒㄧ")
     }
 }
 extension MockWord: Encodable, Decodable {
