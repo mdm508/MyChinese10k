@@ -11,6 +11,7 @@ import SwiftUI
 struct BigGreenButton: View {
     let parentSize: CGSize
     let action: () -> Void
+    @State private var isPressed = false
 }
 extension BigGreenButton{
     var body: some View {
@@ -23,52 +24,49 @@ extension BigGreenButton{
         }, label: {
             // Inner circle with depth effect
             ZStack {
-                // Outer shadow circle for depth
                 Circle()
-                    .fill(Color.black.opacity(0.2))
-                    .frame(width: self.buttonSize + 8, height: self.buttonSize + 8)
-                    .offset(y: 4)
-                
-                // Main button circle
-                Circle()
-                    .fill(LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color.green.opacity(0.9),
-                            Color.green,
-                            Color.green.opacity(0.8)
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ))
+                    .foregroundStyle(Color.mint)
                     .frame(width: self.buttonSize, height: self.buttonSize)
+                    .shadow(color: .black.opacity(isPressed ? 0.4 : 0.2),
+                            radius: self.isPressed ? 0 : 7,
+                            x: 0,
+                            y: 0
+                            )
+//                    ).animation(.linear(duration: 0.05), value: self.isPressed)
                     .overlay(
                         // Inner highlight for 3D effect
                         Circle()
                             .fill(LinearGradient(
                                 gradient: Gradient(colors: [
-                                    Color.white.opacity(0.3),
+                                    Color.white.opacity(0.9),
                                     Color.clear
                                 ]),
                                 startPoint: .topLeading,
-                                endPoint: .center
+                                endPoint: .bottomTrailing
                             ))
-                            .frame(width: self.buttonSize * 0.7, height: self.buttonSize * 0.7)
-                            .offset(x: -self.buttonSize * 0.15, y: -self.buttonSize * 0.15)
+                            .frame(width: self.buttonSize, height: self.buttonSize)
                     )
                     .overlay(
                         // Border for definition
                         Circle()
-                            .stroke(Color.white, lineWidth: 3)
+                            .stroke(Color.white, lineWidth: 1.5)
                     )
-                    .shadow(color: .black.opacity(0.4), radius: 12, x: 0, y: 6)
-                
-                // Chinese text in the center
+
                 Text("知道")
-                    .font(.system(size: self.buttonSize * 0.25, weight: .medium))
+                    .font(.system(size: self.buttonSize * 0.15, weight: .light))
                     .foregroundColor(.white)
             }
         })
         .buttonStyle(ScaleButtonStyle())
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    withAnimation(.linear(duration: 0.03)) { isPressed = true }
+                }
+                .onEnded { _ in
+                    withAnimation(.linear(duration: 0.06)) { isPressed = false }
+                }
+        )
     }
 }
 
@@ -82,7 +80,7 @@ struct ScaleButtonStyle: ButtonStyle {
     }
 }
 extension BigGreenButton {
-    static let percentageOfScreen: CGFloat = 25/100 // Increased from 16/100
+    static let percentageOfScreen: CGFloat = 20/100 // Increased from 16/100
     static let paddingAmount = 0.15
     var dynamicPadding: CGFloat {
         return self.buttonSize * Self.paddingAmount
