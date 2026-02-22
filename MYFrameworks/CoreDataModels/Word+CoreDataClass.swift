@@ -11,6 +11,19 @@ import CoreData
 
 @objc(Word)
 public class Word: NSManagedObject, @unchecked Sendable {
+    /// Returns the index of the word with the largest index.
+    public static func maxIndex(context: NSManagedObjectContext) -> Int64? {
+        let request: NSFetchRequest<Word> = Word.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "index", ascending: false)]
+        request.fetchLimit = 1
+        do {
+            let maxIndex = try context.fetch(request).first?.index
+            return maxIndex
+        } catch {
+            print("Failded to fetch the largest index for some reason")
+            return nil
+        }
+    }
     public static func fetchWord(at index: Int64, context: NSManagedObjectContext) -> Word? {
         let fetchRequest: NSFetchRequest<Word> = Word.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "index == %d", index)

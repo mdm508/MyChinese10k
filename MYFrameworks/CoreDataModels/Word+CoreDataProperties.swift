@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-extension Word: Identifiable {
+extension Word: Identifiable, WordRepresentable {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Word> {
         return NSFetchRequest<Word>(entityName: "Word")
     }
@@ -20,31 +20,9 @@ extension Word: Identifiable {
     @NSManaged public var simplified: String
     @NSManaged public var traditional: String
     @NSManaged public var zhuyin: String
+    /// `characters` and `phonetic` are set to `simplified` or `traditional`, `pinyin` or `zhuyin` resp.
+    /// depending on the current settings. These are the only two properties defined on `Word` that actually might change.
+    @NSManaged public var characters: String
+    @NSManaged public var phonetic: String
 }
 
-extension Word: WordRepresentable {
-    /// Fetch the characters according to the user's preference.
-    public var characters: String {
-        let ws = (UserPreferences.get(.chineseWritingSystem))
-        if ws == .simplified {
-            return self.simplified
-        } else if ws == .traditional {
-            return self.traditional
-        } else {
-            print("Warning: Invalid writting system. Defaulting to traditional")
-            return self.traditional
-        }
-    }
-    /// Fetch phonetic notation according to the user's preference.
-    public var phonetic: String {
-        let ws = (UserPreferences.get(.phoneticNotation))
-        if ws == .pinyin {
-            return self.pinyin
-        } else if ws == .zhuyin {
-            return self.zhuyin
-        } else {
-            print("Warning: Invalid phonetic notation. Defaulting to zhuyin")
-            return self.zhuyin
-        }
-    }
-}

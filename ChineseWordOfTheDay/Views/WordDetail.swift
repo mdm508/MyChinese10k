@@ -15,17 +15,15 @@ import CoreData
 @MainActor
 struct WordDetail {
     // MARK: - State
-    @State private var word: WordRepresentable = MockWord.placeholder
+    @EnvironmentObject private var ws: WordService
     @State private var isProcessingNextWord = false
-    private let context = PersistenceController.shared.context
 }
 
-// MARK: - View Conformance
+// MARK: - Body Definition
 extension WordDetail: View {
     var body: some View {
         Group {
-            if word.index != MockWord.placeholder.index {
-                // Display the word details - everything should be ready from loading screen
+            if ws.currentWord.index < ws.maxIndex {
                 GeometryReaderCentered { geo in
                     ZStack {
                         content(in: geo)
@@ -33,68 +31,45 @@ extension WordDetail: View {
                 }
             } else {
                 // Fallback when all words have been completed
-                Text("Loading")
+                Text("Congratulations! You've learned all the words!")
                     .font(.title2)
                     .multilineTextAlignment(.center)
                     .padding()
             }
         }
-        .onAppear {
-            Task { await loadCurrentWord() }
-        }
     }
 }
-
 // MARK: - Layout & Subviews
-
 private extension WordDetail {
     /// The main content layout inside the GeometryReader.
     func content(in geo: GeometryProxy) -> some View {
         VStack(alignment: .center) {
             // Learning progress bar
-            LearningProgressBar(
-                currentIndex: Int(word.index),
-                size: geo.size,
-                context: PersistenceController.shared.context
-            )
-                .padding(.horizontal)
-                .padding(.bottom, 8)
-            
-            WordView(word: word.characters, size: geo.size)
-            Text(word.phonetic)
+            Text(ws.currentWord.phonetic) // or word.phonetic if you add it to MockWord
                 .font(.headline)
+            WordView(word: ws.currentWord.characters, size: geo.size) // or word.characters if you add it
 
             meaningsList
 
             nextButton(in: geo)
         }
         .padding()
-        .task {
-            await loadCurrentWord()
-        }
-        .onChange(of: word.index) { _ in
-            Task {
-                await loadCurrentWord()
-            }
-        }
+        .onReceive(NotificationCenter.default.publisher(for: .settingDidChange),
+                   perform: {_ in ws.settingsUpdated()})
     }
-
     /// A scrollable list of the word's meanings.
     var meaningsList: some View {
-        List(word.meanings, id: \.self) { meaning in
+        List(ws.currentWord.meanings, id: \.self) { meaning in
             Text(meaning)
         }
         .listStyle(.plain)
     }
-
     /// The Next button centered at the bottom.
     func nextButton(in geo: GeometryProxy) -> some View {
         VStack {
             Spacer()
             BigGreenButton(parentSize: geo.size) {
-                Task {
-                    await nextWord()
-                }
+                ws.markWordAsSeen()
             }
             .disabled(isProcessingNextWord)
             .opacity(isProcessingNextWord ? 0.6 : 1.0)
@@ -102,22 +77,3 @@ private extension WordDetail {
         }
     }
 }
-
-// MARK: - Async Logic
-
-extension WordDetail {
-    /// Fetches the current word then updates the display.
-    func loadCurrentWord() async {
-        let ws = WordService(context: self.context)
-        await self.word = ws.loadCurrentWord()
-    }
-    /// Marks the current word as known and loads the next word.
-    func nextWord() async {
-        let ws = WordService(context: self.context)
-        await ws.markWordAsSeen(self.word)
-        await loadCurrentWord()
-    }
-    
-    
-}
-

@@ -106,11 +106,23 @@ extension SettingsView {
     }
     func setPhonetic(with newValue: UserPreferences.Value) -> Void {
         UserPreferences.set(newValue, for: .phoneticNotation)
+        self.postSettingsDidChangeNotification()
     }
     func loadHanzi() {
         self.textPreference = UserPreferences.get(.chineseWritingSystem)
     }
     func setHanzi(with newValue: UserPreferences.Value) {
         UserPreferences.set(newValue, for: .chineseWritingSystem)
+        self.postSettingsDidChangeNotification()
     }
+    /// Announces (to WordDetail) that the settings have changed.
+    /// Could be avoided if I instantiated the WordService enviorment object but I
+    /// just thought posting and reacting to notificiations is cool.
+    func postSettingsDidChangeNotification(){
+        NotificationCenter.default.post(name: .settingDidChange, object: nil)
+    }
+}
+
+extension Notification.Name {
+    static let settingDidChange = Notification.Name("settingDidChange")
 }

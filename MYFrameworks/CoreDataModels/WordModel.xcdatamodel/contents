@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24411" systemVersion="25C56" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1.0.0">
     <entity name="Word" representedClassName="Word" syncable="YES">
+        <attribute name="characters" optional="YES" attributeType="String"/>
         <attribute name="context" optional="YES" attributeType="Transformable" valueTransformerName="StringArrayTransformer"/>
         <attribute name="index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="meanings" optional="YES" attributeType="Transformable" valueTransformerName="StringArrayTransformer"/>
+        <attribute name="phonetic" optional="YES" attributeType="String"/>
         <attribute name="pinyin" optional="YES" attributeType="String"/>
         <attribute name="simplified" optional="YES" attributeType="String"/>
         <attribute name="traditional" optional="YES" attributeType="String"/>

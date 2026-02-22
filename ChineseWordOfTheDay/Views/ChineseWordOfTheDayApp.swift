@@ -12,11 +12,14 @@ import UIKit
 import CloudKit
 import Persistence
 import UserNotifications
+import Combine
 
 @main
 struct ChineseWordOfTheDayApp: App {
+    @StateObject var ws: WordService
     init(){
         PersistenceController.copyDatabaseIfNeeded()
+        _ws = StateObject(wrappedValue: WordService(context: PersistenceController.shared.context))
     }
 }
 extension ChineseWordOfTheDayApp {
@@ -24,8 +27,8 @@ extension ChineseWordOfTheDayApp {
         WindowGroup {
             Group {
                     ContentView()
-                        .environment(\.managedObjectContext, PersistenceController.shared.context)
-                        .transition(.opacity)
+                    .environmentObject(ws)
+                    .transition(.opacity)
             }
         }
     }
