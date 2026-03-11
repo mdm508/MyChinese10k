@@ -45,9 +45,9 @@ extension MockWord: Encodable, Decodable {
     ///   - mockWordKey:
     /// - Returns: Most recent word return to `UserDefaults`.
     /// - Precondition: `appGroupId` exists and both the widget and main app are a part of it.
-        public static func readFromUserDefaults(appGroupId: String, mockWordKey: String) -> MockWord? {
-            let sharedDefaults = UserDefaults(suiteName: appGroupId)
-            if let savedData = sharedDefaults?.data(forKey: mockWordKey),
+        public static func readFromUserDefaults() -> MockWord? {
+            let sharedDefaults = UserDefaults(suiteName: Constants.appGroupId)
+            if let savedData = sharedDefaults?.data(forKey: Constants.mockWordKey),
                let decodedWord = try? JSONDecoder().decode(MockWord.self, from: savedData) {
                 return decodedWord
             }

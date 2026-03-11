@@ -10,6 +10,7 @@ import CoreData
 import CoreDataModels
 import Persistence
 import Combine
+import WidgetKit
 
 /// `WordService` centralizes all operations and business logic concerning `Word` and `WordIndex` Core Data entities.
 ///  It is basically a helper that acts as an intermediary between views and Core Data.
@@ -56,6 +57,7 @@ final class WordService: ObservableObject{
     private func fetchAndSetCurrentWordAndIndex(){
         self.currentIndex = self.fetchCurrentIndex()
         self.currentWord = self.fetchCurrentWord()
+        self.syncWidget()
     }
     /// Loads the current word by fetching the current WordIndex
     /// Ensures the fetched word has the appropriate phonetic and character set based on the current settings.
@@ -158,5 +160,10 @@ extension WordService{
             print("Warning: Invalid phonetic notation. Defaulting to zhuyin")
             return word.zhuyin
         }
+    }
+    /// Ensures the current word is written out to UserDefaults and the timeline is reloaded.
+    private func syncWidget(){
+        self.currentWord.writeToUserDefaults()
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

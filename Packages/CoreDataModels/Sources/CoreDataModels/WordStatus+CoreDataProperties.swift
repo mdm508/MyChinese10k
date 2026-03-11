@@ -34,7 +34,8 @@ public extension Word {
             zhuyin: self.zhuyin
         )
     }
-    /// Writes self to user defaults.
+    /// Writes self to user defaults. Needed because the widget reads from user defaults in order to
+    /// determine what word to display
     /// - Parameters:
     ///   - appGroupId:
     ///   - mockWordKey:
@@ -45,6 +46,7 @@ public extension Word {
             let sharedDefaults = UserDefaults(suiteName: appGroupId)
             sharedDefaults?.set(encodedWord, forKey: mockWordKey)
         }
+        WidgetCenter.shared.reloadTimelines(ofKind: "WordOfTheDayWidget")
     }
 }
 
