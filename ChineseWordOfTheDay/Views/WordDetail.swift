@@ -47,6 +47,10 @@ private extension WordDetail {
             // Learning progress bar
             Text(ws.currentWord.phonetic) // or word.phonetic if you add it to MockWord
                 .font(.headline)
+        #if DEBUG
+            Text("\(self.ws.currentWord.index)")
+                .font(.body)
+        #endif
             WordView(word: ws.currentWord.characters, size: geo.size) // or word.characters if you add it
 
             meaningsList

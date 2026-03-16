@@ -21,22 +21,9 @@ public struct MockWord: Identifiable, WordRepresentable {
     public var characters: String
     public var phonetic: String
     public var id = UUID()
-
-
-    // Static placeholder word with realistic data
-    public static var placeholder: MockWord {
-        MockWord(
-            index: -1,
-            context: ["教育"], // Education
-            meanings: ["to study", "to learn"],
-            pinyin: "xuéxí",
-            simplified: "学习",
-            traditional: "學習",
-            zhuyin: "ㄒㄩㄝˊ ㄒㄧˊ",
-            characters: "學習",
-            phonetic: "ㄒㄩㄝˊ ㄒㄧ")
-    }
 }
+
+
 extension MockWord: Encodable, Decodable {
     /// Decodes MockWord from UserDefaults.
     /// Use to share data between main application and widget.
@@ -53,4 +40,115 @@ extension MockWord: Encodable, Decodable {
             }
             return nil
         }
+}
+
+public extension MockWord {
+    static var placeholder: MockWord {
+        MockWord(
+            index: -1,
+            context: ["教育"],
+            meanings: ["to study", "to learn"],
+            pinyin: "xuéxí",
+            simplified: "学习",
+            traditional: "學習",
+            zhuyin: "ㄒㄩㄝˊ ㄒㄧˊ",
+            characters: "學習",
+            phonetic: "ㄒㄩㄝˊ ㄒㄧˊ"
+        )
+    }
+
+    static var twoCharacters: MockWord {
+        MockWord(
+            index: -2,
+            context: ["生活"],
+            meanings: ["to rest", "to stop and recover energy"],
+            pinyin: "xiūxí",
+            simplified: "休息",
+            traditional: "休息",
+            zhuyin: "ㄒㄧㄡ ㄒㄧˊ",
+            characters: "休息",
+            phonetic: "ㄒㄧㄡ ㄒㄧˊ"
+        )
+    }
+
+    static var threeCharacters: MockWord {
+        MockWord(
+            index: -3,
+            context: ["交通"],
+            meanings: ["subway", "metro", "underground railway system"],
+            pinyin: "dìtiě",
+            simplified: "地铁",
+            traditional: "地鐵站",
+            zhuyin: "ㄉㄧˋ ㄊㄧㄝˇ ㄓㄢˋ",
+            characters: "地鐵站",
+            phonetic: "ㄉㄧˋ ㄊㄧㄝˇ ㄓㄢˋ"
+        )
+    }
+
+    static var fourCharacters: MockWord {
+        MockWord(
+            index: -4,
+            context: ["成語"],
+            meanings: ["to draw inferences about other cases from one instance"],
+            pinyin: "jǔ yī fǎn sān",
+            simplified: "举一反三",
+            traditional: "舉一反三",
+            zhuyin: "ㄐㄩˇ ㄧ ㄈㄢˇ ㄙㄢ",
+            characters: "舉一反三",
+            phonetic: "ㄐㄩˇ ㄧ ㄈㄢˇ ㄙㄢ"
+        )
+    }
+
+    static var longMeaning: MockWord {
+        MockWord(
+            index: -5,
+            context: ["思考"],
+            meanings: [
+                "to reflect on carefully and deeply; to turn a subject over in one's mind before making a decision or judgment"
+            ],
+            pinyin: "sīkǎo",
+            simplified: "思考",
+            traditional: "思考",
+            zhuyin: "ㄙ ㄎㄠˇ",
+            characters: "思考",
+            phonetic: "ㄙ ㄎㄠˇ"
+        )
+    }
+
+    static var manyMeanings: MockWord {
+        MockWord(
+            index: -6,
+            context: ["語言"],
+            meanings: [
+                "to say",
+                "to speak",
+                "to explain",
+                "to express",
+                "to tell",
+                "to talk about at length"
+            ],
+            pinyin: "shuō",
+            simplified: "说",
+            traditional: "說",
+            zhuyin: "ㄕㄨㄛ",
+            characters: "說",
+            phonetic: "ㄕㄨㄛ"
+        )
+    }
+
+    static var fourCharactersLongMeaning: MockWord {
+        MockWord(
+            index: -7,
+            context: ["成語"],
+            meanings: [
+                "to add flowers to brocade; to make something already good even better by adding further refinement or excellence"
+            ],
+            pinyin: "jǐn shàng tiān huā",
+            simplified: "锦上添花",
+            traditional: "錦上添花",
+            zhuyin: "ㄐㄧㄣˇ ㄕㄤˋ ㄊㄧㄢ ㄏㄨㄚ",
+            characters: "錦上添花",
+            phonetic: "ㄐㄧㄣˇ ㄕㄤˋ ㄊㄧㄢ ㄏㄨㄚ"
+        )
+    }
 }

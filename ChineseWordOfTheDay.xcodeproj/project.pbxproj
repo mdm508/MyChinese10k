@@ -8,6 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		0C05B10C2DFA39E2009F6120 /* Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B10B2DFA39DD009F6120 /* Misc.swift */; };
+		0C0BDB122F67896100AA043A /* WidgetPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB112F67896100AA043A /* WidgetPreviewData.swift */; };
+		0C0BDB182F678BEB00AA043A /* SmallWordWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB172F678BEB00AA043A /* SmallWordWidgetView.swift */; };
+		0C0BDB1A2F678D2400AA043A /* ResizingCharacterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB192F678D2400AA043A /* ResizingCharacterText.swift */; };
+		0C0BDB1C2F678D3200AA043A /* MediumWordWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB1B2F678D3200AA043A /* MediumWordWidgetView.swift */; };
+		0C0BDB1E2F678D4000AA043A /* InlineWordWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB1D2F678D4000AA043A /* InlineWordWidgetView.swift */; };
+		0C0BDB202F678D4F00AA043A /* CircularWordWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB1F2F678D4F00AA043A /* CircularWordWidgetView.swift */; };
+		0C0BDB222F678D5E00AA043A /* RectangularWordWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB212F678D5E00AA043A /* RectangularWordWidgetView.swift */; };
+		0C0BDB242F678DAB00AA043A /* WordEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB232F678DAB00AA043A /* WordEntry.swift */; };
+		0C0BDB262F679AA000AA043A /* WordOfTheDayWidgetEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB252F679A9F00AA043A /* WordOfTheDayWidgetEntryView.swift */; };
 		0C15E8662C8BDA6400D7B51B /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C15E8652C8BDA6300D7B51B /* WidgetKit.framework */; };
 		0C15E8682C8BDA6400D7B51B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C15E8672C8BDA6400D7B51B /* SwiftUI.framework */; };
 		0C15E86B2C8BDA6400D7B51B /* WordOfTheDayWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C15E86A2C8BDA6400D7B51B /* WordOfTheDayWidgetBundle.swift */; };
@@ -140,6 +149,15 @@
 
 /* Begin PBXFileReference section */
 		0C05B10B2DFA39DD009F6120 /* Misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Misc.swift; sourceTree = "<group>"; };
+		0C0BDB112F67896100AA043A /* WidgetPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPreviewData.swift; sourceTree = "<group>"; };
+		0C0BDB172F678BEB00AA043A /* SmallWordWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallWordWidgetView.swift; sourceTree = "<group>"; };
+		0C0BDB192F678D2400AA043A /* ResizingCharacterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingCharacterText.swift; sourceTree = "<group>"; };
+		0C0BDB1B2F678D3200AA043A /* MediumWordWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumWordWidgetView.swift; sourceTree = "<group>"; };
+		0C0BDB1D2F678D4000AA043A /* InlineWordWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineWordWidgetView.swift; sourceTree = "<group>"; };
+		0C0BDB1F2F678D4F00AA043A /* CircularWordWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularWordWidgetView.swift; sourceTree = "<group>"; };
+		0C0BDB212F678D5E00AA043A /* RectangularWordWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangularWordWidgetView.swift; sourceTree = "<group>"; };
+		0C0BDB232F678DAB00AA043A /* WordEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordEntry.swift; sourceTree = "<group>"; };
+		0C0BDB252F679A9F00AA043A /* WordOfTheDayWidgetEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOfTheDayWidgetEntryView.swift; sourceTree = "<group>"; };
 		0C15E8642C8BDA6300D7B51B /* WordOfTheDayWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WordOfTheDayWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C15E8652C8BDA6300D7B51B /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0C15E8672C8BDA6400D7B51B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -248,6 +266,15 @@
 			children = (
 				0C15E86A2C8BDA6400D7B51B /* WordOfTheDayWidgetBundle.swift */,
 				0C15E86C2C8BDA6400D7B51B /* WordOfTheDayWidget.swift */,
+				0C0BDB252F679A9F00AA043A /* WordOfTheDayWidgetEntryView.swift */,
+				0C0BDB232F678DAB00AA043A /* WordEntry.swift */,
+				0C0BDB172F678BEB00AA043A /* SmallWordWidgetView.swift */,
+				0C0BDB192F678D2400AA043A /* ResizingCharacterText.swift */,
+				0C0BDB1B2F678D3200AA043A /* MediumWordWidgetView.swift */,
+				0C0BDB1D2F678D4000AA043A /* InlineWordWidgetView.swift */,
+				0C0BDB1F2F678D4F00AA043A /* CircularWordWidgetView.swift */,
+				0C0BDB212F678D5E00AA043A /* RectangularWordWidgetView.swift */,
+				0C0BDB112F67896100AA043A /* WidgetPreviewData.swift */,
 				0C15E86E2C8BDA6500D7B51B /* Assets.xcassets */,
 				0C15E8702C8BDA6500D7B51B /* Info.plist */,
 			);
@@ -600,10 +627,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C0BDB242F678DAB00AA043A /* WordEntry.swift in Sources */,
+				0C0BDB1E2F678D4000AA043A /* InlineWordWidgetView.swift in Sources */,
+				0C0BDB222F678D5E00AA043A /* RectangularWordWidgetView.swift in Sources */,
+				0C0BDB182F678BEB00AA043A /* SmallWordWidgetView.swift in Sources */,
+				0C0BDB202F678D4F00AA043A /* CircularWordWidgetView.swift in Sources */,
 				0CBF7EF82F61F54E000CA6B2 /* GeometryReaderCentered.swift in Sources */,
+				0C0BDB1C2F678D3200AA043A /* MediumWordWidgetView.swift in Sources */,
+				0C0BDB262F679AA000AA043A /* WordOfTheDayWidgetEntryView.swift in Sources */,
 				0CBF7EF72F61F451000CA6B2 /* WordView.swift in Sources */,
 				0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */,
 				0C15E86B2C8BDA6400D7B51B /* WordOfTheDayWidgetBundle.swift in Sources */,
+				0C0BDB1A2F678D2400AA043A /* ResizingCharacterText.swift in Sources */,
+				0C0BDB122F67896100AA043A /* WidgetPreviewData.swift in Sources */,
 				0C15E86D2C8BDA6400D7B51B /* WordOfTheDayWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
