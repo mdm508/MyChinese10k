@@ -12,79 +12,35 @@ import CoreDataModels
 import Persistence
 
 
-/// - Warning: Will delete everything in local and cloud
-@MainActor
-public func deleteAll() {
-//    Task {
-//        await deletAllCloudWordStatus()
-//    }
-    deleteAllLocalWordStatus()
-    deleteAllWordIndex()
-    PersistenceController.deleteDatabase()
-}
+/*
+ Development reminder:
+ call this after changing the Core Data model if the local store
+ was created from an older schema.
 
-/// - Warning: Will delete everything in iCloud
-public func deletAllCloudWordStatus() async {
-    let db = Cloud.db
-    let records = try! await db.records(
-        matching: CKQuery(recordType: Cloud.wordStatusRecordType, predicate: NSPredicate(value: true)),
-        inZoneWith: Cloud.wordStatusRecordZone.zoneID,
-        desiredKeys: nil
-    )
-    let matches = records.matchResults
-    let recordIds = matches.map { $0.0 }
-
-    let operation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: recordIds)
-    operation.modifyRecordsResultBlock = { result in
-        switch result {
-        case .success:
-            print("Deleted records (this callback may not be on the main thread)")
-        case .failure(let error):
-            print("Error modifying records: \(error)")
+ This removes the old local SQLite files so the next launch can
+ build a fresh store from the current model instead of trying to
+ load a stale or incompatible one.
+*/
+public func deleteDatabase() {
+    let fm = FileManager.default
+    let storeURL = PersistenceController.appGroupURL
+    do {
+        // Remove main store
+        if fm.fileExists(atPath: storeURL.path) {
+            try fm.removeItem(at: storeURL)
+            print("✅ Deleted:", storeURL.lastPathComponent)
         }
-    }
-
-    db.add(operation)
-}
-
-@MainActor
-public func deleteAllWordStatus() {
-    let context = PersistenceController.shared.context
-    let request: NSFetchRequest<NSFetchRequestResult> = WordStatus.fetchRequest()
-    let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-    do {
-        try context.execute(deleteRequest)
-        // No need to call save() after a batch delete
+        // Remove WAL + SHM sidecars
+        for ext in ["-wal", "-shm"] {
+            let sidecar = storeURL.path + ext
+            if fm.fileExists(atPath: sidecar) {
+                try fm.removeItem(atPath: sidecar)
+                print("✅ Deleted sidecar:", (sidecar as NSString).lastPathComponent)
+            }
+        }
     } catch {
-        print("Error executing batch delete for WordStatus: \(error)")
+        print("❌ Error deleting database: \(error)")
     }
-}
-
-@MainActor
-fileprivate func deleteAllLocalWordStatus() {
-    let context = PersistenceController.shared.context
-    let request: NSFetchRequest<NSFetchRequestResult> = WordStatus.fetchRequest()
-    let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-    do {
-        try context.execute(deleteRequest)
-        // No need to call save() after a batch delete
-    } catch {
-        print("Error executing batch delete: \(error)")
-    }
-}
-
-@MainActor
-fileprivate func deleteAllWordIndex() {
-    let context = PersistenceController.shared.context
-    let request: NSFetchRequest<NSFetchRequestResult> = WordIndex.fetchRequest()
-    let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-
-    do {
-        try context.execute(deleteRequest)
-        // No need to call save() after a batch delete
-    } catch {
-        print("Error executing batch delete for WordIndex: \(error)")
-    }
+    print("Deleted \(storeURL.absoluteString) database. Restart the app to use it.")
+    exit(0)
 }

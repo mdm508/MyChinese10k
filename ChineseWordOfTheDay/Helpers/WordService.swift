@@ -19,13 +19,16 @@ import WidgetKit
 ///   - Notify observers whenever the index changes.
 ///   - Encapsulates all direct interactions with Core Data for `Word` and `WordIndex`.
 ///   - Provides convenience methods for updating, saving, or synchronizing `Word` and `WordIndex` data.
+///   - Listen for remote changes from CloudkitStore. Refetch whenever such changes occur.
 
 final class WordService: ObservableObject{
     /// The managed object context used for all local Core Data operations.
     private let context: NSManagedObjectContext
     @Published var currentIndex: Int64!
     @Published var currentWord: Word!
-    /// One more than the largest index in the database. 
+    private var cancellables: Set<AnyCancellable> = []
+    
+    /// One more than the largest index in the database.
     var maxIndex: Int64 {
         Word.maxIndex(context: context)! + 1
     }
@@ -34,6 +37,13 @@ final class WordService: ObservableObject{
     init(context: NSManagedObjectContext) {
         self.context = context
         self.fetchAndSetCurrentWordAndIndex()
+        /// Set up subscribtion to persistent history changes
+        NotificationCenter.default.publisher(for: .cdcksStoreDidChange)
+            .receive(on: DispatchQueue.main)
+            .sink{ [weak self] _ in
+                self?.fetchAndSetCurrentWordAndIndex()
+            }
+            .store(in: &cancellables)
     }
     /// Marks the given word as seen by upserting a WordStatus (status = 1) and incrementing the WordIndex, then saving.
     @discardableResult
@@ -81,6 +91,7 @@ final class WordService: ObservableObject{
                 // Only called first time app created
                 let indexObject = WordIndex(context: context)
                 indexObject.current = 1
+                indexObject.lastModified = Date()
                 try context.save()
                 return 1
             }
@@ -120,6 +131,7 @@ final class WordService: ObservableObject{
     private func incrementCurrentWordIndex() throws {
         let wordIndex = try getOrCreateWordIndex()
         wordIndex.current += 1
+        wordIndex.lastModified = Date()
     }
 }
 
@@ -135,7 +147,6 @@ extension WordService{
         word.characters = characters
         let phonetic = self.fetchPhoneticBasedOnSetting(for: word)
         word.phonetic = phonetic
-        try! self.context.save()
     }
     /// Fetch the character set (simplified or traditional) based on the user's current preferenc)
     private func fetchCharactersBasedOnSetting(for word: Word) -> String {

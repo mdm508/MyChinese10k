@@ -1,3 +1,11 @@
+//
+//  LoadingView.swift
+//  ChineseWordOfTheDay
+//
+//  Created by Matthew McLaughlin on 3/15/26.
+//
+
+
 import SwiftUI
 
 struct LoadingView: View {
@@ -8,7 +16,7 @@ struct LoadingView: View {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle())
 
-            Image("AppIcon")
+            Image("AppIconDisplay")
                 .resizable()
                 .frame(width: 96, height: 96)
                 .cornerRadius(22)

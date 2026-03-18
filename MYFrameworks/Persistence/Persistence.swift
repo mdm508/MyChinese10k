@@ -20,11 +20,16 @@ public enum StorageActor: String, CaseIterable {
  */
 extension Notification.Name {
     public static let cdcksStoreDidChange = Notification.Name("cdcksStoreDidChange")
+    public static let nowWeReady = Notification.Name("nowWeReady")
+
 }
 
 extension NotificationCenter {
     public var storeDidChangePublisher: Publishers.ReceiveOn<NotificationCenter.Publisher, DispatchQueue> {
         return publisher(for: .cdcksStoreDidChange).receive(on: DispatchQueue.main)
+    }
+    public var nowWeReadyPublisher: Publishers.ReceiveOn<NotificationCenter.Publisher, DispatchQueue> {
+        publisher(for: .nowWeReady).receive(on: DispatchQueue.main)
     }
 }
 
@@ -58,9 +63,9 @@ extension PersistenceController {
     }
 }
 
-@MainActor
 public class PersistenceController {
     public static var shared = PersistenceController(actor: .swiftuiApp)
+    private var historyTracker: PersistentHistoryTracker?
 //    public weak var delegate: CurrentWordRefreshDelegate?
     static var widget: PersistenceController {
         let con = PersistenceController(actor: .widget)
@@ -81,7 +86,19 @@ public class PersistenceController {
     public var context: NSManagedObjectContext {
         self.container.viewContext
     }
+    /*
+     A serial queue ensures history processing happens in order.
+
+     Why this matters:
+     - persistent history is processed incrementally
+     - the history token must move forward in a reliable sequence
+     - if two history-processing jobs overlap, they can race and save the wrong token
+
+     So all reads/writes of the history token should happen on this queue.
+    */
+    private let historyQueue = OperationQueue()
     public init(inMemory: Bool = false, actor: StorageActor) {
+        // WARNING: - this will delete everything on the cloud and locally then exit
         ValueTransformer.setValueTransformer(
             StringArrayTransformer(),
             forName: NSValueTransformerName("StringArrayTransformer")
@@ -110,28 +127,23 @@ public class PersistenceController {
             return
         }
         container.persistentStoreDescriptions = []
-        if actor == .swiftuiApp{
-            // MARK: - Cloud Configuration
-            let cloudURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                          .appendingPathComponent("cloud.sqlite")
-            let cloudDesc = NSPersistentStoreDescription(url: cloudURL)
-            cloudDesc.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
-            cloudDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-            cloudDesc.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-            cloudDesc.cloudKitContainerOptions!.databaseScope = .private
-            cloudDesc.configuration = "cloud"
-            container.persistentStoreDescriptions = [cloudDesc]
-
-        }
-        if actor == .widget {
-            print("hi im widget")
-        }
+        // MARK: - Cloud Configuration
+        let cloudURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                      .appendingPathComponent("cloud.sqlite")
+        let cloudDesc = NSPersistentStoreDescription(url: cloudURL)
+        cloudDesc.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.com.matthedm.ChineseWordOfTheDay")
+        cloudDesc.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        cloudDesc.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        cloudDesc.cloudKitContainerOptions!.databaseScope = .private
+        cloudDesc.configuration = "cloud"
+        container.persistentStoreDescriptions = [cloudDesc]
 //         MARK: - Local Configuration
         // --- Local store (App Group) ---
         let localURL = Self.appGroupURL
 
         // 🔑 Manual compatibility check (wipe + reseed if outdated or corrupt)
         if !PersistenceController.storeIsCompatible(with: model, at: localURL) {
+            print("INCOMPATIBLE STORE")
             let fm = FileManager.default
             try? fm.removeItem(at: localURL)
             try? fm.removeItem(at: localURL.appendingPathExtension("wal"))
@@ -162,12 +174,59 @@ public class PersistenceController {
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.name = "viewContext"
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-//        self.deduplicateLocally()
-//        NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
-//                                               name: .NSPersistentStoreRemoteChange,
-//                                               object: container.persistentStoreCoordinator)
+        //debug
+        historyTracker = PersistentHistoryTracker(
+            container: container,
+            appGroupIdentifier: Constants.appGroupId
+        )
+        historyTracker?.start()
+
+        print("done")
+        print("done")
     }
+    deinit {
+        historyTracker?.stop()
+    }
+    
 }
+
+
+
+//extension PersistenceController {
+////    @objc
+////    func containerEventChanged(_ notification: Notification) {
+////        return
+////    }
+//    
+//    @objc
+//    nonisolated func containerEventChanged(_ notification: Notification) {
+//        guard
+//            let value = notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey],
+//            let event = value as? NSPersistentCloudKitContainer.Event
+//        else { return }
+//
+//        print("CloudKit event:", event.type.rawValue)
+//
+//        if let error = event.error {
+//            print("CloudKit error:", error)
+//            return
+//        }
+//
+//        guard event.type == .import else { return }
+//
+//        print("Cloud data imported")
+//
+//        let context = container.newBackgroundContext()
+//
+//        context.perform {
+//            self.deduplicateLocally(context: self.container.newBackgroundContext())
+//
+//            DispatchQueue.main.async {
+//                NotificationCenter.default.post(name: .cdcksStoreDidChange, object: self)
+//            }
+//        }
+//    }
+//}
 
 
 // MARK: - Conveinent URLS
@@ -182,81 +241,8 @@ extension PersistenceController {
     }()
 }
 
-// MARK: - Setup PersistenceController on first run of the application
-extension PersistenceController {
-    /// Ensures that when application is first run, a preloaded database will be copied into the Sandbox.
-    /// For this function to work correctly, it must be that the store was previously set to journal mode.
-    /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
-    public static func copyDatabaseIfNeeded() {
-            // Framework bundle
-            let bundle = Bundle(for: PersistenceController.self)
-
-            // Look for the seed database in the framework bundle
-            guard let path = bundle.path(forResource: Constants.STORE_NAME, ofType: "sqlite") else {
-                fatalError("Seed database \(Constants.STORE_NAME).sqlite not found in framework bundle")
-            }
-
-            let srcURL = URL(fileURLWithPath: path)
-            let dstURL = appGroupURL
-
-            // Make sure App Group folder exists
-            do {
-                try fm.createDirectory(at: dstURL.deletingLastPathComponent(),
-                                       withIntermediateDirectories: true,
-                                       attributes: nil)
-            } catch {
-                fatalError("Failed to create App Group directory: \(error)")
-            }
-
-            // Copy if missing
-            if !fm.fileExists(atPath: dstURL.path) {
-                do {
-                    try fm.copyItem(at: srcURL, to: dstURL)
-                    print("Database copied to App Group: \(dstURL)")
-                } catch {
-                    fatalError("Error copying database: \(error)")
-                }
-            } else {
-                print("Database already exists at: \(dstURL)")
-            }
-        }
-        
-        
-        
-        // Convenience function to delete SQLite file
-    public static func deleteDatabase() {
-        let fm = FileManager.default
-        let storeURL = appGroupURL
-        
-        do {
-            // Remove main store
-            if fm.fileExists(atPath: storeURL.path) {
-                try fm.removeItem(at: storeURL)
-                print("✅ Deleted:", storeURL.lastPathComponent)
-            }
-            // Remove WAL + SHM sidecars
-            for ext in ["-wal", "-shm"] {
-                let sidecar = storeURL.path + ext
-                if fm.fileExists(atPath: sidecar) {
-                    try fm.removeItem(atPath: sidecar)
-                    print("✅ Deleted sidecar:", (sidecar as NSString).lastPathComponent)
-                }
-            }
-        } catch {
-            print("❌ Error deleting database: \(error)")
-        }
-    }
-}
 
 
-// MARK: - Notification handlers that trigger history processing.
-extension NSPersistentCloudKitContainer {
-    func newTaskContext() -> NSManagedObjectContext {
-        let context = newBackgroundContext()
-        context.transactionAuthor = StorageActor.swiftuiApp.rawValue
-        return context
-    }
-}
 /**
  Handle .NSPersistentStoreRemoteChange notifications.
  Process persistent history to merge relevant changes to the context, and deduplicate the tags if necessary.
@@ -274,11 +260,11 @@ extension NSPersistentCloudKitContainer {
 //    }
 //}
 
+
 extension PersistenceController {
     /// Deduplicate entities that cannot use Core Data uniqueness constraints when mirroring with CloudKit.
     /// - Note: This runs on the viewContext and coalesces duplicates for WordIndex and WordStatus.
-    func deduplicateLocally() {
-        let context = self.container.viewContext
+    nonisolated func deduplicateLocally(context: NSManagedObjectContext) {
         context.perform {
             // Deduplicate WordIndex: keep the one with the highest `current` value
             do {
@@ -320,3 +306,43 @@ extension PersistenceController {
     }
 }
 
+// MARK: - Setup PersistenceController on first run of the application
+extension PersistenceController {
+    /// Ensures that when application is first run, a preloaded database will be copied into the Sandbox.
+    /// For this function to work correctly, it must be that the store was previously set to journal mode.
+    /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
+    public static func copyDatabaseIfNeeded() {
+            // Framework bundle
+            let bundle = Bundle(for: PersistenceController.self)
+
+            // Look for the seed database in the framework bundle
+            guard let path = bundle.path(forResource: Constants.STORE_NAME, ofType: "sqlite") else {
+                fatalError("Seed database \(Constants.STORE_NAME).sqlite not found in framework bundle")
+            }
+
+            let srcURL = URL(fileURLWithPath: path)
+            let dstURL = appGroupURL
+
+            // Make sure App Group folder exists
+            do {
+                try fm.createDirectory(at: dstURL.deletingLastPathComponent(),
+                                       withIntermediateDirectories: true,
+                                       attributes: nil)
+            } catch {
+                fatalError("Failed to create App Group directory: \(error)")
+            }
+
+            // Copy if missing
+            if !fm.fileExists(atPath: dstURL.path) {
+                do {
+                    try fm.copyItem(at: srcURL, to: dstURL)
+                    print("Database copied to App Group: \(dstURL)")
+                } catch {
+                    fatalError("Error copying database: \(error)")
+                }
+            } else {
+                print("Database already exists at: \(dstURL)")
+            }
+        }
+    
+}
