@@ -25,6 +25,6 @@ extension ContentView: View {
                         }
                     }
                 }
-        }
+        }.navigationViewStyle(.stack)
     }
 }
