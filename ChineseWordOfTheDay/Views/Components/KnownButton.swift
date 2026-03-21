@@ -32,7 +32,6 @@ extension BigGreenButton{
                             x: 0,
                             y: 0
                             )
-//                    ).animation(.linear(duration: 0.05), value: self.isPressed)
                     .overlay(
                         // Inner highlight for 3D effect
                         Circle()
@@ -49,11 +48,11 @@ extension BigGreenButton{
                     .overlay(
                         // Border for definition
                         Circle()
-                            .stroke(Color.white, lineWidth: 1.5)
+                            .stroke(Color.clear, lineWidth: 1.5)
                     )
 
-                Text("知道")
-                    .font(.system(size: self.buttonSize * 0.15, weight: .light))
+                Text("知道了")
+                    .font(.system(size: self.buttonSize * 0.23, weight: .light))
                     .foregroundColor(.white)
             }
         })
