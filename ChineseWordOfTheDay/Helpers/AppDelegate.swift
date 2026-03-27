@@ -1,27 +1,31 @@
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        if let shortcutItem = options.shortcutItem {
-            // Handle the shortcut right away if the app was closed
-            handleShortcut(shortcutItem)
-        }
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
+//
+//  AppDelegate.swift
+//  ChineseWordOfTheDay
+//
+//  Created by Matthew McLaughlin on 3/27/26.
+//
 
-    func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
-        // Handle the shortcut if the app was already open in the background
+import UIKit
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         handleShortcut(shortcutItem)
         completionHandler(true)
     }
-
-    private func handleShortcut(_ item: UIApplicationShortcutItem) {
+    func handleShortcut(_ item: UIApplicationShortcutItem) {
         if item.type == "com.waabl.shareApp" {
-            // This is where we call your share function!
             let url = URL(string: "https://apps.apple.com/us/app/waabl/id1671041620")!
+            let message = "Check out Waabl! Learn a new Chinese word every day."
             
-            // We'll use a simple helper to find the top view controller to present from
             DispatchQueue.main.async {
-                let activityVC = UIActivityViewController(activityItems: ["Check out Waabl!", url], applicationActivities: nil)
-                UIApplication.shared.windows.first?.rootViewController?.present(activityVC, animated: true)
+                // 2. Fix for the 'windows' deprecation:
+                // We find the active window through the connected scenes.
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                    
+                    let activityVC = UIActivityViewController(activityItems: [message, url], applicationActivities: nil)
+                    rootVC.present(activityVC, animated: true)
+                }
             }
         }
     }

@@ -19,7 +19,7 @@ struct ChineseWordOfTheDayApp: App {
     @StateObject var ws: WordService
     @State private var ready = false
     @State private var p = PersistenceController.shared
-    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     init(){
 //        deleteDatabase()
         _ws = StateObject(wrappedValue: WordService(context: PersistenceController.shared.context))

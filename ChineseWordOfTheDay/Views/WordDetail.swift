@@ -10,8 +10,9 @@ import CoreDataModels
 import Persistence
 import CoreData
 
-/// A view that displays a single word's details and handles navigation to the next word.
-/// If no word remains, it displays a congratulations message.
+/**
+ Displays the current Word. If all word's have been completed exits.
+ */
 @MainActor
 struct WordDetail {
     // MARK: - State
@@ -52,7 +53,6 @@ private extension WordDetail {
                 .font(.body)
         #endif
             WordView(word: ws.currentWord.characters, size: geo.size) // or word.characters if you add it
-
             meaningsList
 
             nextButton(in: geo)

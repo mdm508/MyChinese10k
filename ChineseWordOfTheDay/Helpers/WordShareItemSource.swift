@@ -1,3 +1,11 @@
+//
+//  WordShareItemSource.swift
+//  ChineseWordOfTheDay
+//
+//  Created by Matthew McLaughlin on 3/27/26.
+//
+
+
 import LinkPresentation
 import UIKit
 
@@ -33,10 +41,12 @@ class WordShareItemSource: NSObject, UIActivityItemSource {
         
         // The Subtitle/Description
         metadata.originalURL = appURL
-        
-        // Optional: You can even set an image here if you have one!
-        // metadata.iconProvider = NSItemProvider(contentsOf: imageURL)
-        
+        if let image = UIImage(named: "appstore1024") {
+            metadata.iconProvider = NSItemProvider(object: image)
+            print("Successfully loaded icon for share banner! ✅")
+        } else {
+            print("Failed to load image named appstore1024 ❌")
+        }
         return metadata
     }
 }

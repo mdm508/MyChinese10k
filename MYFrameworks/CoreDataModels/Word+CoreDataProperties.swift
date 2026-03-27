@@ -26,3 +26,11 @@ extension Word: Identifiable, WordRepresentable {
     @NSManaged public var phonetic: String
 }
 
+extension Word {
+    /// Used when the user want's to share the current word of the day.
+    public var shareText: String {
+        return """
+            Word of the day: \(self.characters) \(self.phonetic)
+            """
+    }
+}

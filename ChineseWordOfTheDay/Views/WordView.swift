@@ -18,6 +18,7 @@ extension WordView: View {
         Text(self.word)
             .font(.system(size: 100))
             .multilineTextAlignment(.center) // Center-align the text
+            .textSelection(.enabled)
 
     }
 }
