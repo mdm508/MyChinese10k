@@ -18,6 +18,7 @@ struct WordDetail {
     // MARK: - State
     @EnvironmentObject private var ws: WordService
     @State private var isProcessingNextWord = false
+    @StateObject private var speechVM = SpeechViewModel()
 }
 
 // MARK: - Body Definition
@@ -46,16 +47,17 @@ private extension WordDetail {
     func content(in geo: GeometryProxy) -> some View {
         VStack(alignment: .center) {
             // Learning progress bar
-            Text(ws.currentWord.phonetic) // or word.phonetic if you add it to MockWord
-                .font(.headline)
-        #if DEBUG
-            Text("\(self.ws.currentWord.index)")
-                .font(.body)
-        #endif
-            WordView(word: ws.currentWord.characters, size: geo.size) // or word.characters if you add it
+            Group {
+                Text(ws.currentWord.phonetic) // or word.phonetic if you add it to MockWord
+                    .font(.headline)
+                WordView(word: ws.currentWord.characters, size: geo.size) // or word.characters if you add it
+            }.onTapGesture {
+                self.speechVM.speak(ws.currentWord.traditional, .chineseTaiwan)
+            }
             meaningsList
 
             nextButton(in: geo)
+                
         }
         .padding()
         .onReceive(NotificationCenter.default.publisher(for: .settingDidChange),
@@ -65,8 +67,14 @@ private extension WordDetail {
     var meaningsList: some View {
         List(ws.currentWord.meanings, id: \.self) { meaning in
             Text(meaning)
+            // 1. Make the row react to a tap
+                        .onTapGesture {
+                            // 2. Tell the VM to speak the specific meaning in English
+                            speechVM.speak(meaning, .english)
+                        }
         }
         .listStyle(.plain)
+        .layoutPriority(1)
     }
     /// The Next button centered at the bottom.
     func nextButton(in geo: GeometryProxy) -> some View {

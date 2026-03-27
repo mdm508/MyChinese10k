@@ -36,6 +36,7 @@
 		0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8517A02DF79EA500004774 /* SettingsView.swift */; };
 		0C93C8102F76E852000F24AE /* WordShareItemSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */; };
 		0C93C8122F76EC60000F24AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8112F76EC60000F24AE /* AppDelegate.swift */; };
+		0C93C8142F76EE19000F24AE /* SpeechViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */; };
 		0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */; };
@@ -185,6 +186,7 @@
 		0C8517A02DF79EA500004774 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordShareItemSource.swift; sourceTree = "<group>"; };
 		0C93C8112F76EC60000F24AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechViewModel.swift; sourceTree = "<group>"; };
 		0CAE8D152CC426A9008954BB /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentFunctions.swift; sourceTree = "<group>"; };
 		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -367,6 +369,7 @@
 				0C05B10B2DFA39DD009F6120 /* Misc.swift */,
 				0C93C8112F76EC60000F24AE /* AppDelegate.swift */,
 				0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */,
+				0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */,
 				0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */,
 				0CAE8D152CC426A9008954BB /* UserDefaults.swift */,
 				0C7461EA2EECA26000475537 /* WordService.swift */,
@@ -661,6 +664,7 @@
 				0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */,
 				0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */,
 				0C93C8122F76EC60000F24AE /* AppDelegate.swift in Sources */,
+				0C93C8142F76EE19000F24AE /* SpeechViewModel.swift in Sources */,
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
 				0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
