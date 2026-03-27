@@ -17,8 +17,9 @@ import Combine
 @main
 struct ChineseWordOfTheDayApp: App {
     @StateObject var ws: WordService
-    @State private var ready = true
-
+    @State private var ready = false
+    @State private var p = PersistenceController.shared
+    
     init(){
 //        deleteDatabase()
         _ws = StateObject(wrappedValue: WordService(context: PersistenceController.shared.context))
@@ -29,7 +30,7 @@ extension ChineseWordOfTheDayApp {
     var body: some Scene {
         WindowGroup {
             Group {
-                if ready{
+                if p.isReady {
                     ContentView()
                     .environmentObject(ws)
                     .transition(.opacity)

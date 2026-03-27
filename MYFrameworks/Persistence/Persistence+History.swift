@@ -9,9 +9,9 @@ import CoreData
 import Foundation
 import CoreDataModels
 
-/*
- A small helper object whose only job is to consume persistent history
- for the CloudKit-backed Core Data store.
+/**
+ A small helper object whose  job is to consume persistent history
+ for the CloudKit-backed Core Data store and preform dedeplication
 
  Why this exists:
  - loadPersistentStores only means the stores are open and usable
@@ -20,16 +20,13 @@ import CoreDataModels
  - this class responds by reading persistent history after the last token
  - then it merges those changes into viewContext so fetched UI can refresh
 
- This gives you a clean pipeline:
-
  remote store change
  -> read new history
  -> merge changes into viewContext
  -> fetched UI sees updated data
 */
 final class PersistentHistoryTracker {
-
-    /*
+    /**
      The Core Data container that owns the stores.
 
      We need this so we can:
@@ -39,7 +36,7 @@ final class PersistentHistoryTracker {
     */
     private let container: NSPersistentCloudKitContainer
 
-    /*
+    /**
      A serial queue used to process history in order.
 
      Why serial matters:
@@ -52,7 +49,7 @@ final class PersistentHistoryTracker {
     */
     private let historyQueue = OperationQueue()
 
-    /*
+    /**
      The specific CloudKit-backed store whose history we want to read.
 
      Your container has both a local store and a cloud store.
@@ -60,7 +57,7 @@ final class PersistentHistoryTracker {
     */
     private let cloudStore: NSPersistentStore
 
-    /*
+    /**
      The App Group identifier used to access shared UserDefaults.
 
      We store the persistent history token there so the token survives app relaunches
@@ -68,7 +65,7 @@ final class PersistentHistoryTracker {
     */
     private let appGroupIdentifier: String
 
-    /*
+    /**
      The unique key used to save and load the history token.
 
      We include the persistent store identifier so the token is tied to
@@ -78,7 +75,7 @@ final class PersistentHistoryTracker {
         "PersistentHistoryToken-\(cloudStore.identifier ?? "unknownStore")"
     }
 
-    /*
+    /**
      Create a tracker for one CloudKit container.
 
      What setup happens here:
@@ -114,7 +111,7 @@ final class PersistentHistoryTracker {
         self.cloudStore = store
     }
 
-    /*
+    /**
      Begin listening for persistent-store remote change notifications.
 
      This notification is the signal that the store changed.
@@ -132,7 +129,7 @@ final class PersistentHistoryTracker {
         )
     }
 
-    /*
+    /**
      Stop listening for store-change notifications.
 
      This is useful if the tracker is being torn down and you want to avoid
@@ -157,7 +154,7 @@ final class PersistentHistoryTracker {
         processHistoryAsynchronously()
     }
 
-    /*
+    /**
      Schedule persistent-history processing on the serial queue.
 
      Why not do the work immediately:
@@ -183,7 +180,7 @@ final class PersistentHistoryTracker {
         }
     }
 
-    /*
+    /**
      Fetch and apply all persistent history newer than the last saved token.
 
      High-level algorithm:
@@ -214,9 +211,10 @@ final class PersistentHistoryTracker {
                 return
             }
             try deduplicateWordIndex(using: context)
+            try deduplicateWordStatus(using: context)
             let userInfo = mergeUserInfo(from: transactions)
 
-            /*
+            /**
              Merge the changes into viewContext on viewContext's own queue.
 
              Why:
@@ -231,7 +229,7 @@ final class PersistentHistoryTracker {
                 )
             }
 
-            /*
+            /**
              Advance the token only after successful processing.
 
              This ensures that next time we fetch only newer transactions.
@@ -251,7 +249,7 @@ final class PersistentHistoryTracker {
         }
     }
 
-    /*
+    /**
      Combine many transactions into one mergeable userInfo dictionary.
 
      Each NSPersistentHistoryTransaction can produce a notification-shaped
@@ -292,7 +290,7 @@ final class PersistentHistoryTracker {
         return merged
     }
 
-    /*
+    /**
      Load the last processed persistent-history token from shared defaults.
 
      If no token exists yet, return nil.
@@ -315,8 +313,7 @@ final class PersistentHistoryTracker {
             from: data
         )
     }
-
-    /*
+    /**
      Save the newest processed token into shared defaults.
 
      Why save it:
@@ -342,7 +339,7 @@ final class PersistentHistoryTracker {
             print("Failed to save history token: \(error)")
         }
     }
-    /*
+    /**
      Deduplicate the singleton WordIndex entity.
 
      Strategy:
@@ -372,175 +369,29 @@ final class PersistentHistoryTracker {
             try context.save()
         }
     }
+    /// Deduplicate WordStatus by `traditional`: keep the one with the latest `lastModified` (fallback to highest status)
+    private func deduplicateWordStatus(using context: NSManagedObjectContext) throws {
+        print("running de-deplicateWordStatus")
+        do {
+            let statusFetch: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
+            let all = try context.fetch(statusFetch)
+            let grouped = Dictionary(grouping: all, by: { $0.traditional })
+            for (_, group) in grouped where group.count > 1 {
+                let keep = group.max { lhs, rhs in
+                    let lDate = lhs.lastModified ?? .distantPast
+                    let rDate = rhs.lastModified ?? .distantPast
+                    if lDate == rDate { return lhs.status < rhs.status }
+                    return lDate < rDate
+                }
+                if let keep = keep {
+                    group.filter { $0 != keep }.forEach { context.delete($0) }
+                }
+            }
+        } catch {
+            print("❌ Dedup WordStatus failed: \(error)")
+        }
+        if context.hasChanges {
+            do { try context.save() } catch { print("❌ Error saving after dedup: \(error)") }
+        }
+    }
 }
-
-//extension PersistenceController{
-//    private func processPersistentHistory() {
-//        let taskContext = container.newBackgroundContext()
-//        taskContext.perform {
-//            let request: NSPersistentHistoryChangeRequest
-//
-//            if let token = self.loadHistoryToken() {
-//                request = NSPersistentHistoryChangeRequest.fetchHistory(after: token)
-//            } else {
-//                request = NSPersistentHistoryChangeRequest.fetchHistory(after: nil)
-//            }
-//
-//            request.resultType = .transactionsOnly
-//
-//            do {
-//                let result = try taskContext.execute(request) as? NSPersistentHistoryResult
-//                let transactions = result?.result as? [NSPersistentHistoryTransaction] ?? []
-//
-//                guard !transactions.isEmpty else { return }
-//
-//                let newToken = transactions.last?.token
-//
-//                let changes = transactions.compactMap(\.objectIDNotification).reduce(into: [AnyHashable: Any]()) { partial, note in
-//                    for (k, v) in note.userInfo ?? [:] {
-//                        let existing = partial[k] as? Set<NSManagedObjectID> ?? []
-//                        let incoming = v as? Set<NSManagedObjectID> ?? []
-//                        partial[k] = existing.union(incoming)
-//                    }
-//                }
-//
-//                NSManagedObjectContext.mergeChanges(
-//                    fromRemoteContextSave: changes,
-//                    into: [self.container.viewContext]
-//                )
-//
-//                if let newToken {
-//                    self.saveHistoryToken(newToken)
-//                }
-//            } catch {
-//                print("Persistent history error:", error)
-//            }
-//        }
-//    }
-//    private func saveHistoryToken(_ token: NSPersistentHistoryToken) {
-//        do {
-//            let data = try NSKeyedArchiver.archivedData(withRootObject: token, requiringSecureCoding: true)
-//            UserDefaults(suiteName: "group.com.your.app")?.set(data, forKey: "historyToken")
-//        } catch {
-//            print("save token error:", error)
-//        }
-//    }
-//
-//    private func loadHistoryToken() -> NSPersistentHistoryToken? {
-//        guard
-//            let data = UserDefaults(suiteName: "group.com.your.app")?.data(forKey: "historyToken"),
-//            let token = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSPersistentHistoryToken.self, from: data)
-//        else {
-//            return nil
-//        }
-//        return token
-//    }
-//}
-
-
-
-
-
-
-//// MARK: - Notification handlers that trigger history processing.
-//extension PersistenceController {
-//    /**
-//     Handle the container's event changed notifications (NSPersistentCloudKitContainer.eventChangedNotification).
-//     */
-//    @objc
-//    func containerEventChanged(_ notification: Notification) {
-//         guard let value = notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey],
-//              let event = value as? NSPersistentCloudKitContainer.Event else {
-//            print("\(#function): Failed to retrieve the container event from notification.userInfo.")
-//            return
-//        }
-//        if event.error != nil {
-//            print("\(#function): Received a persistent CloudKit container event changed notification.\n\(event)")
-//        }
-//    }
-//}
-
-//// MARK: - Process persistent historty asynchronously
-//@MainActor
-//extension PersistenceController {
-//    /**
-//     Process persistent history, posting any relevant transactions to the current view.
-//     This method processes the new history since the last history token, and is simply a fetch if there is no new history.
-//     */
-//    func processHistoryAsynchronously() {
-//        historyQueue.addOperation {
-//            let taskContext = self.container.newTaskContext()
-//            taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-//            taskContext.performAndWait {
-//                self.performHistoryProcessing(performingContext: taskContext)
-//            }
-//        }
-//    }
-//    /**
-//     Fetch history received from outside the app since the last timestamp
-//    */
-//    private func performHistoryProcessing(performingContext: NSManagedObjectContext) {
-//        // Prepare to make history fetch request on iCloud container
-//        let lastHistoryToken = historyToken()
-//        let request = NSPersistentHistoryChangeRequest.fetchHistory(after: lastHistoryToken)
-//        let historyFetchRequest = NSPersistentHistoryTransaction.fetchRequest!
-//        historyFetchRequest.predicate = NSPredicate(format: "author != %@", StorageActor.swiftuiApp.rawValue)
-//        request.fetchRequest = historyFetchRequest
-//        request.affectedStores =  [self.cloudPersistentStore]
-//        let context = self.container.newTaskContext()
-//        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-//        // Do the fetch
-//        let result = (try? performingContext.execute(request)) as? NSPersistentHistoryResult
-//        guard let transactions = result?.result as? [NSPersistentHistoryTransaction] else {
-//            return
-//        }
-//        print("\(#function): Processing transactions: \(transactions.count).")
-//
-//        // Post transactions so observers can update UI if necessary, even when transactions are empty.
-//        //TODO! Filter and then post or dont post at all
-//        //        let userInfo: [String: Any] = [UserInfoKey.storeUUID: self.cloudPersistentStore.identifier!,
-////                                       UserInfoKey.transactions: transactions]
-////        NotificationCenter.default.post(name: .cdcksStoreDidChange, object: self, userInfo: userInfo)
-//        // Update the history token using the last transaction. The last transaction has the latest token.
-//        if let newToken = transactions.last?.token {
-//            updateHistoryToken(newToken: newToken)
-//        }
-//        // Check if we need to even bother with de-duplications
-//        guard !transactions.isEmpty else {
-//            return
-//        }
-//        // De-duplicate words
-//        var newWordStatusObjectIDs = [NSManagedObjectID]()
-//        let wordStatusEntityName = WordStatus.entity().name
-//        // Gather all WordStatus id's for insertions
-//        for transaction in transactions where transaction.changes != nil {
-//            for change in transaction.changes! {
-//                if change.changedObjectID.entity.name == wordStatusEntityName && change.changeType == .insert {
-//                    newWordStatusObjectIDs.append(change.changedObjectID)
-//                }
-//            }
-//        }
-//        if !newWordStatusObjectIDs.isEmpty {
-//            deduplicateWordStatusesAndWait(statusObjectIDs: newWordStatusObjectIDs)
-//        }
-//    }
-//}
-//extension PersistenceController{
-//    /**
-//     Track the last history tokens for the stores.
-//     The historyQueue reads the token when executing operations, and updates it after completing the processing.
-//     Access this user default from the history queue.
-//     */
-//    func historyToken() -> NSPersistentHistoryToken? {
-//        let key = "HistoryToken" + self.cloudPersistentStore.identifier
-//        if let data = UserDefaults.standard.data(forKey: key) {
-//            return  try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSPersistentHistoryToken.self, from: data)
-//        }
-//        return nil
-//    }
-//    func updateHistoryToken(newToken: NSPersistentHistoryToken) {
-//        let key = "HistoryToken" + self.cloudPersistentStore.identifier
-//        let data = try? NSKeyedArchiver.archivedData(withRootObject: newToken, requiringSecureCoding: true)
-//        UserDefaults.standard.set(data, forKey: key)
-//    }
-//}

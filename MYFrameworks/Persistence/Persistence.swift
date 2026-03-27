@@ -11,66 +11,9 @@ import UIKit
 import CloudKit
 import CoreDataModels
 
-public enum StorageActor: String, CaseIterable {
-    case swiftuiApp, widget
-}
-
-/**
- We might post notifications from a background queueue.
- */
-extension Notification.Name {
-    public static let cdcksStoreDidChange = Notification.Name("cdcksStoreDidChange")
-    public static let nowWeReady = Notification.Name("nowWeReady")
-
-}
-
-extension NotificationCenter {
-    public var storeDidChangePublisher: Publishers.ReceiveOn<NotificationCenter.Publisher, DispatchQueue> {
-        return publisher(for: .cdcksStoreDidChange).receive(on: DispatchQueue.main)
-    }
-    public var nowWeReadyPublisher: Publishers.ReceiveOn<NotificationCenter.Publisher, DispatchQueue> {
-        publisher(for: .nowWeReady).receive(on: DispatchQueue.main)
-    }
-}
-
-struct UserInfoKey {
-    static let storeUUID = "storeUUID"
-    static let transactions = "transactions"
-}
-
-
-extension PersistenceController {
-    /// Returns true if the on-disk SQLite at `url` is compatible with `model`.
-    /// If the file doesn't exist or metadata can't be read, returns false (so you reseed).
-    public static func storeIsCompatible(with model: NSManagedObjectModel,
-                                         at url: URL,
-                                         configuration: String? = "local") -> Bool {
-        guard FileManager.default.fileExists(atPath: url.path) else { return false }
-        do {
-            let metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(
-                ofType: NSSQLiteStoreType,
-                at: url
-            )
-            // Prefer the named config, fall back to default (nil) if needed
-            if let configuration = configuration,
-               model.isConfiguration(withName: configuration, compatibleWithStoreMetadata: metadata) {
-                return true
-            }
-            return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
-        } catch {
-            return false
-        }
-    }
-}
-
 public class PersistenceController {
     public static var shared = PersistenceController(actor: .swiftuiApp)
     private var historyTracker: PersistentHistoryTracker?
-//    public weak var delegate: CurrentWordRefreshDelegate?
-    static var widget: PersistenceController {
-        let con = PersistenceController(actor: .widget)
-        return con
-    }
     public static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true, actor: .swiftuiApp)
         let viewContext = result.container.viewContext
@@ -86,7 +29,7 @@ public class PersistenceController {
     public var context: NSManagedObjectContext {
         self.container.viewContext
     }
-    /*
+    /**
      A serial queue ensures history processing happens in order.
 
      Why this matters:
@@ -96,6 +39,8 @@ public class PersistenceController {
 
      So all reads/writes of the history token should happen on this queue.
     */
+    /// Publishes a notification when ready to go. This is needed if initial sync is slow on first time install.
+    @Published public private(set) var isReady = false
     private let historyQueue = OperationQueue()
     public init(inMemory: Bool = false, actor: StorageActor) {
         // WARNING: - this will delete everything on the cloud and locally then exit
@@ -180,53 +125,14 @@ public class PersistenceController {
             appGroupIdentifier: Constants.appGroupId
         )
         historyTracker?.start()
-
-        print("done")
-        print("done")
+        print("Persistent store is ready to go.")
+        self.isReady = true
     }
     deinit {
         historyTracker?.stop()
     }
     
 }
-
-
-
-//extension PersistenceController {
-////    @objc
-////    func containerEventChanged(_ notification: Notification) {
-////        return
-////    }
-//    
-//    @objc
-//    nonisolated func containerEventChanged(_ notification: Notification) {
-//        guard
-//            let value = notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey],
-//            let event = value as? NSPersistentCloudKitContainer.Event
-//        else { return }
-//
-//        print("CloudKit event:", event.type.rawValue)
-//
-//        if let error = event.error {
-//            print("CloudKit error:", error)
-//            return
-//        }
-//
-//        guard event.type == .import else { return }
-//
-//        print("Cloud data imported")
-//
-//        let context = container.newBackgroundContext()
-//
-//        context.perform {
-//            self.deduplicateLocally(context: self.container.newBackgroundContext())
-//
-//            DispatchQueue.main.async {
-//                NotificationCenter.default.post(name: .cdcksStoreDidChange, object: self)
-//            }
-//        }
-//    }
-//}
 
 
 // MARK: - Conveinent URLS
@@ -241,73 +147,29 @@ extension PersistenceController {
     }()
 }
 
-
-
-/**
- Handle .NSPersistentStoreRemoteChange notifications.
- Process persistent history to merge relevant changes to the context, and deduplicate the tags if necessary.
- */
-//extension PersistenceController {
-//    @objc
-//    func storeRemoteChange(_ notification: Notification) {
-//        guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
-//              self.cloudPersistentStore.identifier == storeUUID
-//        else {
-//            print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
-//            return
-//        }
-////        processHistoryAsynchronously()
-//    }
-//}
-
-
-extension PersistenceController {
-    /// Deduplicate entities that cannot use Core Data uniqueness constraints when mirroring with CloudKit.
-    /// - Note: This runs on the viewContext and coalesces duplicates for WordIndex and WordStatus.
-    nonisolated func deduplicateLocally(context: NSManagedObjectContext) {
-        context.perform {
-            // Deduplicate WordIndex: keep the one with the highest `current` value
-            do {
-                let indexFetch: NSFetchRequest<WordIndex> = WordIndex.fetchRequest()
-                let indices = try context.fetch(indexFetch)
-                if indices.count > 1 {
-                    if let keep = indices.max(by: { $0.current < $1.current }) {
-                        indices.filter { $0 != keep }.forEach { context.delete($0) }
-                    }
-                }
-            } catch {
-                print("❌ Dedup WordIndex failed: \(error)")
-            }
-
-            // Deduplicate WordStatus by `traditional`: keep the one with the latest `lastModified` (fallback to highest status)
-            do {
-                let statusFetch: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
-                let all = try context.fetch(statusFetch)
-                let grouped = Dictionary(grouping: all, by: { $0.traditional })
-                for (_, group) in grouped where group.count > 1 {
-                    let keep = group.max { lhs, rhs in
-                        let lDate = lhs.lastModified ?? .distantPast
-                        let rDate = rhs.lastModified ?? .distantPast
-                        if lDate == rDate { return lhs.status < rhs.status }
-                        return lDate < rDate
-                    }
-                    if let keep = keep {
-                        group.filter { $0 != keep }.forEach { context.delete($0) }
-                    }
-                }
-            } catch {
-                print("❌ Dedup WordStatus failed: \(error)")
-            }
-
-            if context.hasChanges {
-                do { try context.save() } catch { print("❌ Error saving after dedup: \(error)") }
-            }
-        }
-    }
-}
-
 // MARK: - Setup PersistenceController on first run of the application
 extension PersistenceController {
+    /// Returns true if the on-disk SQLite at `url` is compatible with `model`.
+    /// If the file doesn't exist or metadata can't be read, returns false (so you reseed).
+    public static func storeIsCompatible(with model: NSManagedObjectModel,
+                                         at url: URL,
+                                         configuration: String? = "local") -> Bool {
+        guard FileManager.default.fileExists(atPath: url.path) else { return false }
+        do {
+            let metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(
+                ofType: NSSQLiteStoreType,
+                at: url
+            )
+            // Prefer the named config, fall back to default (nil) if needed
+            if let configuration = configuration,
+               model.isConfiguration(withName: configuration, compatibleWithStoreMetadata: metadata) {
+                return true
+            }
+            return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
+        } catch {
+            return false
+        }
+    }
     /// Ensures that when application is first run, a preloaded database will be copied into the Sandbox.
     /// For this function to work correctly, it must be that the store was previously set to journal mode.
     /// I did this by executing the sql command 'PRAGMA journal_mode = delete;' on the store.
@@ -344,5 +206,4 @@ extension PersistenceController {
                 print("Database already exists at: \(dstURL)")
             }
         }
-    
 }
