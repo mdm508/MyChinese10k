@@ -11,13 +11,14 @@ import Foundation
 public struct UserPreferences {
     private static let iCloudStore = NSUbiquitousKeyValueStore.default
     public static let sharedDefaults = UserDefaults(suiteName: Constants.appGroupId)
+    public static let remindersEnabledKey = "remindersEnabledKey"
+    public static let notificationNewWordKey = "notificationNewWordKey"
 
 }
 extension UserPreferences {
     public enum Key: String {
         case phoneticNotation
         case chineseWritingSystem
-        
         var defaultValue: String {
             switch self {
             case .phoneticNotation:
@@ -77,4 +78,31 @@ extension UserPreferences {
     }
     
 }
+extension UserPreferences {
+    // Save/Load for the Toggle
+    public static func saveRemindersEnabled(_ enabled: Bool) {
+        Self.iCloudStore.set(enabled, forKey: Self.remindersEnabledKey)
+        Self.iCloudStore.synchronize()
+    }
 
+    public static func loadRemindersEnabled() -> Bool {
+        return Self.iCloudStore.bool(forKey: Self.remindersEnabledKey)
+    }
+}
+extension UserPreferences {
+    // 1. Save the time
+    public static func saveNotificationTime(_ date: Date) {
+        Self.iCloudStore.set(date, forKey: Self.notificationNewWordKey)
+        Self.iCloudStore.synchronize() // Force sync to iCloud
+    }
+
+    // 2. Load the time (or return 9:00 AM default)
+    public static func loadNotificationTime() -> Date {
+        if let savedDate = Self.iCloudStore.object(forKey: Self.notificationNewWordKey) as? Date {
+            return savedDate
+        }
+        
+        // Default to 9:00 AM today if nothing is saved yet
+        return Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
+    }
+}

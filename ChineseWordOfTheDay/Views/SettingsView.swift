@@ -24,10 +24,13 @@ struct SettingsView: View {
     @State private var phonetic: UserPreferences.Value = .zhuyin
     @State private var textPreference: UserPreferences.Value = .traditional
     @State private var cloudKitStatusMessage: String?
+    @State private var notificationTime: Date = Date()
+    @State private var remindersEnabled: Bool = false
 }
 extension SettingsView {
     // MARK: - Preference View
-    var body: some View {
+    // MARK: - Preference View
+        var body: some View {
             Form {
                 // MARK: - iCloud Issue Section
                 Section(header: Text("iCloud Status").font(.headline)) {
@@ -40,18 +43,19 @@ extension SettingsView {
                         Spacer()
                     }
                 }
+                
                 // MARK: - Preferred Pronunciation Section
                 Section(header: Text("Phonetic Notation")) {
                     Picker("", selection: $phonetic) {
                         Text("Zhuyin").tag(UserPreferences.Value.zhuyin)
                         Text("Pinyin").tag(UserPreferences.Value.pinyin)
-                    }.onChange(of: self.phonetic) {newPhonetic in
+                    }
+                    .onChange(of: self.phonetic) { newPhonetic in
                         self.setPhonetic(with: newPhonetic)
-                    }.onAppear(){
-                         self.loadPhonetic()
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
+                
                 // MARK: - Preferred Text Section
                 Section(header: Text("Character Set")) {
                     Picker("", selection: $textPreference) {
@@ -59,18 +63,50 @@ extension SettingsView {
                         Text("Simplified").tag(UserPreferences.Value.simplified)
                     }
                     .onChange(of: self.textPreference) { newValue in
-                         self.setHanzi(with: newValue)
-                    }
-                    .onAppear {
-                        self.loadHanzi()
+                        self.setHanzi(with: newValue)
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
-            }
+                
+                // MARK: - Daily Reminder Section
+                Section(header: Text("Daily Reminder")) {
+                    Toggle("Daily Notifications", isOn: $remindersEnabled)
+                        .onChange(of: remindersEnabled) { newValue in
+                            UserPreferences.saveRemindersEnabled(newValue)
+                            
+                            if newValue {
+                                self.requestNotificationPermission()
+                                self.scheduleNotification(at: notificationTime)
+                            } else {
+                                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                            }
+                        }
+
+                    if remindersEnabled {
+                        DatePicker("Notification Time",
+                                   selection: $notificationTime,
+                                   displayedComponents: .hourAndMinute)
+                            .onChange(of: notificationTime) { newTime in
+                                UserPreferences.saveNotificationTime(newTime)
+                                self.scheduleNotification(at: newTime)
+                            }
+                    }
+                }
+            } // End of Form
             .navigationTitle("Settings")
-            .onAppear(perform: {Task {await setCloudKitAvailability()}})
+            .onAppear {
+                // Load all preferences at once
+                self.loadPhonetic()
+                self.loadHanzi()
+                self.remindersEnabled = UserPreferences.loadRemindersEnabled()
+                self.notificationTime = UserPreferences.loadNotificationTime()
+                
+                Task {
+                    await setCloudKitAvailability()
+                }
+            }
         }
-    }
+}
 
 // MARK: - Preview
 struct SettingsView_Previews: PreviewProvider {
@@ -125,4 +161,38 @@ extension SettingsView {
 
 extension Notification.Name {
     static let settingDidChange = Notification.Name("settingDidChange")
+}
+
+// MARK: - Notification Logic
+private extension SettingsView {
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            if granted {
+                print("Notifications allowed")
+            }
+        }
+    }
+
+    func scheduleNotification(at date: Date) {
+        let center = UNUserNotificationCenter.current()
+        
+        // Remove old ones so we don't have multiple alarms
+        center.removeAllPendingNotificationRequests()
+
+        let content = UNMutableNotificationContent()
+        content.title = "Waabl"
+        content.body = "Time to learn your new word!"
+        content.sound = .default
+
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+
+        let request = UNNotificationRequest(identifier: "daily_word", content: content, trigger: trigger)
+        
+        center.add(request) { error in
+            if let error = error {
+                print("Error scheduling: \(error.localizedDescription)")
+            }
+        }
+    }
 }
