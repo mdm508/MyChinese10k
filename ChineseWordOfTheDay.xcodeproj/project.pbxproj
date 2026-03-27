@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C05B10C2DFA39E2009F6120 /* Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B10B2DFA39DD009F6120 /* Misc.swift */; };
 		0C0BDB122F67896100AA043A /* WidgetPreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB112F67896100AA043A /* WidgetPreviewData.swift */; };
 		0C0BDB182F678BEB00AA043A /* SmallWordWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB172F678BEB00AA043A /* SmallWordWidgetView.swift */; };
 		0C0BDB1A2F678D2400AA043A /* ResizingCharacterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0BDB192F678D2400AA043A /* ResizingCharacterText.swift */; };
@@ -27,7 +26,6 @@
 		0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1D67062A5DC21400EAAD30 /* ContentView.swift */; };
 		0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D67082A5DC21500EAAD30 /* Assets.xcassets */; };
 		0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */; };
-		0C27F55A2E6A402F002397A2 /* LearningProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F5592E6A402F002397A2 /* LearningProgressBar.swift */; };
 		0C45D4DD2E331E2C006AD0EF /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; };
 		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
 		0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C72A71992E00AF96C2 /* WordView.swift */; };
@@ -37,6 +35,13 @@
 		0C93C8102F76E852000F24AE /* WordShareItemSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */; };
 		0C93C8122F76EC60000F24AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8112F76EC60000F24AE /* AppDelegate.swift */; };
 		0C93C8142F76EE19000F24AE /* SpeechViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */; };
+		0C93C8182F76FD9E000F24AE /* HistoryOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8172F76FD9E000F24AE /* HistoryOld.swift */; };
+		0C93C81A2F771EB8000F24AE /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8192F771EB8000F24AE /* CardData.swift */; };
+		0C93C81C2F771FDC000F24AE /* HistoryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */; };
+		0C93C8212F772872000F24AE /* CardFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8202F772872000F24AE /* CardFace.swift */; };
+		0C93C8262F772978000F24AE /* HistoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8252F772978000F24AE /* HistoryCard.swift */; };
+		0C93C8282F772996000F24AE /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8272F772996000F24AE /* HistoryView.swift */; };
+		0C93C82A2F772D50000F24AE /* HistoryWordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8292F772D50000F24AE /* HistoryWordView.swift */; };
 		0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
 		0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */; };
@@ -152,7 +157,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0C05B10B2DFA39DD009F6120 /* Misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Misc.swift; sourceTree = "<group>"; };
 		0C0BDB112F67896100AA043A /* WidgetPreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPreviewData.swift; sourceTree = "<group>"; };
 		0C0BDB172F678BEB00AA043A /* SmallWordWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallWordWidgetView.swift; sourceTree = "<group>"; };
 		0C0BDB192F678D2400AA043A /* ResizingCharacterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingCharacterText.swift; sourceTree = "<group>"; };
@@ -174,7 +178,6 @@
 		0C1D67062A5DC21400EAAD30 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0C1D67082A5DC21500EAAD30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C1D670B2A5DC21500EAAD30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0C27F5592E6A402F002397A2 /* LearningProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningProgressBar.swift; sourceTree = "<group>"; };
 		0C4726702CAF1DB90014E288 /* WordOfTheDayWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordOfTheDayWidgetExtension.entitlements; sourceTree = "<group>"; };
 		0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryReaderCentered.swift; sourceTree = "<group>"; };
 		0C4858C72A71992E00AF96C2 /* WordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
@@ -187,6 +190,13 @@
 		0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordShareItemSource.swift; sourceTree = "<group>"; };
 		0C93C8112F76EC60000F24AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechViewModel.swift; sourceTree = "<group>"; };
+		0C93C8172F76FD9E000F24AE /* HistoryOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryOld.swift; sourceTree = "<group>"; };
+		0C93C8192F771EB8000F24AE /* CardData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardData.swift; sourceTree = "<group>"; };
+		0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryHelper.swift; sourceTree = "<group>"; };
+		0C93C8202F772872000F24AE /* CardFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFace.swift; sourceTree = "<group>"; };
+		0C93C8252F772978000F24AE /* HistoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCard.swift; sourceTree = "<group>"; };
+		0C93C8272F772996000F24AE /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		0C93C8292F772D50000F24AE /* HistoryWordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryWordView.swift; sourceTree = "<group>"; };
 		0CAE8D152CC426A9008954BB /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentFunctions.swift; sourceTree = "<group>"; };
 		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -342,6 +352,7 @@
 		0C22FF472AF56FDD00913EC3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0C93C81F2F772854000F24AE /* History */,
 				0CBF7F512F67DEDE000CA6B2 /* LoadingView.swift */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C8517A22DFA274800004774 /* Components */,
@@ -356,17 +367,37 @@
 		0C8517A22DFA274800004774 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				0C27F5592E6A402F002397A2 /* LearningProgressBar.swift */,
 				0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */,
 				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
+		0C93C81F2F772854000F24AE /* History */ = {
+			isa = PBXGroup;
+			children = (
+				0C93C8172F76FD9E000F24AE /* HistoryOld.swift */,
+				0C93C8292F772D50000F24AE /* HistoryWordView.swift */,
+				0C93C8252F772978000F24AE /* HistoryCard.swift */,
+				0C93C8272F772996000F24AE /* HistoryView.swift */,
+				0C93C8202F772872000F24AE /* CardFace.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		0C93C8222F772898000F24AE /* History */ = {
+			isa = PBXGroup;
+			children = (
+				0C93C8192F771EB8000F24AE /* CardData.swift */,
+				0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
 		0CB6B3732B2BCE060008DC54 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				0C05B10B2DFA39DD009F6120 /* Misc.swift */,
+				0C93C8222F772898000F24AE /* History */,
 				0C93C8112F76EC60000F24AE /* AppDelegate.swift */,
 				0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */,
 				0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */,
@@ -660,21 +691,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C93C8262F772978000F24AE /* HistoryCard.swift in Sources */,
+				0C93C82A2F772D50000F24AE /* HistoryWordView.swift in Sources */,
 				0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */,
+				0C93C8212F772872000F24AE /* CardFace.swift in Sources */,
 				0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */,
 				0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */,
 				0C93C8122F76EC60000F24AE /* AppDelegate.swift in Sources */,
 				0C93C8142F76EE19000F24AE /* SpeechViewModel.swift in Sources */,
+				0C93C8282F772996000F24AE /* HistoryView.swift in Sources */,
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
 				0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
-				0C27F55A2E6A402F002397A2 /* LearningProgressBar.swift in Sources */,
 				0C93C8102F76E852000F24AE /* WordShareItemSource.swift in Sources */,
 				0C85179D2DF76CD600004774 /* WordDetail.swift in Sources */,
 				0C7461EB2EECA26100475537 /* WordService.swift in Sources */,
 				0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */,
-				0C05B10C2DFA39E2009F6120 /* Misc.swift in Sources */,
 				0CBF7F522F67DEDE000CA6B2 /* LoadingView.swift in Sources */,
+				0C93C81A2F771EB8000F24AE /* CardData.swift in Sources */,
+				0C93C81C2F771FDC000F24AE /* HistoryHelper.swift in Sources */,
+				0C93C8182F76FD9E000F24AE /* HistoryOld.swift in Sources */,
 				0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

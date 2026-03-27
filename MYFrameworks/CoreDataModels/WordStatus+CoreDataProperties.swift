@@ -48,3 +48,20 @@ public extension Word {
         }
     }
 }
+extension WordStatus {
+    /** Dynamically provides a section identifier based on the user's current preference.
+     This is used as the 'sectionNameKeyPath' in the FRC.
+     */
+    @objc public var monthSection: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy" // e.g., "October 2023"
+        return formatter.string(from: lastModified ?? Date())
+    }
+    
+    @objc public var weekSection: String {
+        let calendar = Calendar.current
+        let week = calendar.component(.weekOfYear, from: lastModified ?? Date())
+        let year = calendar.component(.year, from: lastModified ?? Date())
+        return "Week \(week), \(year)"
+    }
+}

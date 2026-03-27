@@ -12,7 +12,7 @@ import CoreDataModels
 import Persistence
 
 
-/*
+/**
  Development reminder:
  call this after changing the Core Data model if the local store
  was created from an older schema.

@@ -27,7 +27,7 @@ struct WordOfTheDayProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<WordEntry>) -> Void) {
         let now = Date()
         let word = MockWord.readFromUserDefaults() ?? MockWord.placeholder
-        let meanings = Self.cleanedMeanings(from: word)
+        let meanings = word.cleanedMeanings()
         guard !meanings.isEmpty else {
             let entry = WordEntry(date: now, word: word, selectedMeaning: nil)
             completion(Timeline(entries: [entry], policy: .never))
@@ -50,22 +50,7 @@ struct WordOfTheDayProvider: TimelineProvider {
         }
         completion(Timeline(entries: entries, policy: .atEnd))
     }
-    static func cleanedMeanings(from word: WordRepresentable) -> [String] {
-        var result: [String] = []
 
-        for meaning in word.meanings {
-            let pieces = meaning
-                .split(separator: ";")
-                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                .map { $0.replacingOccurrences(of: #"\s*\([^)]*\)"#, with: "", options: .regularExpression) }
-            
-                .filter { !$0.isEmpty }
-
-            result.append(contentsOf: pieces)
-        }
-
-        return result
-    }
 }
 
 @main

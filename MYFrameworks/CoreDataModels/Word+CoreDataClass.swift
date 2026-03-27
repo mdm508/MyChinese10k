@@ -61,39 +61,5 @@ public class Word: NSManagedObject, @unchecked Sendable {
             return nil
         }
     }
-    ///  Determines the highest priority `Word` by filtering out any `Word` with a
-    ///  `WordStatus` entry in iCloud. Just the fact of a `WordStatus` existing on the cloud.
-    ///   indicates that the `Word` has already been seen.
-    /// - Parameter context:
-    /// - Returns: Highest priority unseen `Word`.
-//    @MainActor public static func fetchHigestPriorityUnseenWord() -> Word? {
-//        /// Constructs a compound predicate that filters out all the words on the iCloud.
-//        /// - Note: Return value of `nil` indicates there are no word statuses that we need to filter
-//        let context = PersistenceController.shared.context
-//        func constructPredicate() -> NSCompoundPredicate? {
-//            if let s = Word.fetchSeenAndKnown(context: context){
-//                let traditionalArray = s.compactMap{wordStatus in wordStatus.traditional}
-//                let orPredicate = NSCompoundPredicate(orPredicateWithSubpredicates: traditionalArray.map{NSPredicate(format: "traditional == %@", $0)})
-//                return NSCompoundPredicate(notPredicateWithSubpredicate: orPredicate)
-//            }
-//            return nil
-//        }
-//        let request: NSFetchRequest<Word> = Word.fetchRequest()
-//        request.predicate = constructPredicate()
-//        //request.sortDescriptors = [NSSortDescriptor(key: #keyPath(WordStatus.status), ascending: false)]
-//        request.sortDescriptors = [
-//            NSSortDescriptor(key: #keyPath(Word.status), ascending: false),  // Primary sort (descending order)
-//            NSSortDescriptor(key: #keyPath(Word.index), ascending: true)    // Secondary sort (ascending order)
-//        ]
-//
-//        request.fetchLimit = 1
-//        do {
-//            return try context.fetch(request).first
-//        } catch {
-//            print("Error fetching word: \(error)")
-//            return nil
-//        }
-//    }
 }
-
 

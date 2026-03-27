@@ -9,56 +9,72 @@ import SwiftUI
 import CoreDataModels
 import CoreData
 
-struct ContentView {
+struct ContentView: View {
     @EnvironmentObject private var ws: WordService
-}
-
-extension ContentView: View {
+    @Environment(\.managedObjectContext) var context
     var body: some View {
         NavigationView {
             WordDetail()
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: SettingsView()) {
-                            Image(systemName: "gearshape.fill")
-                                .foregroundColor(.primary)
+                        HStack(spacing: 18) {
+                            historyButton
+                            shareButton
+                            settingsButton
                         }
                     }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        HStack {
-                            // The Share Button
-                            Button(action: {
-                                shareWord(word: ws.currentWord)
-                            }) {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                        }
-                    }
-                    
-  
                 }
-        }.navigationViewStyle(.stack)
+        }
+        .navigationViewStyle(.stack)
+    }
+}
+
+// MARK: - Toolbar Components
+private extension ContentView {
+    
+    var historyButton: some View {
+        NavigationLink(destination: HistoryView(context: context)) {
+            Image(systemName: "clock.arrow.circlepath")
+                .foregroundColor(.primary)
+        }
     }
     
+    var shareButton: some View {
+        Button(action: {
+            shareWord(word: ws.currentWord)
+        }) {
+            Image(systemName: "square.and.arrow.up")
+                .foregroundColor(.primary)
+        }
+    }
+    
+    var settingsButton: some View {
+        NavigationLink(destination: SettingsView()) {
+            Image(systemName: "gearshape.fill")
+                .foregroundColor(.primary)
+        }
+    }
+}
+
+// MARK: - Sharing Logic
+private extension ContentView {
     func shareWord(word cw: Word) {
         let url = URL(string: "https://apps.apple.com/us/app/waabl/id1671041620")!
-        let word = cw.characters
-        let pinyin = cw.phonetic
-        let definition = cw.meanings.first?.description ?? ""
-        // Create our rich metadata provider
         let itemSource = WordShareItemSource(
-            word: word,
-            pinyin: pinyin,
-            definition: definition,
+            word: cw.characters,
+            pinyin: cw.phonetic,
+            definition: cw.meanings.first?.description ?? "",
             appURL: url
         )
-        // We pass the itemSource to the share sheet
-        let activityVC = UIActivityViewController(activityItems: [itemSource,ws.currentWord.shareText], applicationActivities: nil)
-        // Standard UIKit presentation logic
+        
+        let activityVC = UIActivityViewController(
+            activityItems: [itemSource, ws.currentWord.shareText],
+            applicationActivities: nil
+        )
+        
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootVC = windowScene.windows.first?.rootViewController {
             rootVC.present(activityVC, animated: true)
         }
     }
-    
 }

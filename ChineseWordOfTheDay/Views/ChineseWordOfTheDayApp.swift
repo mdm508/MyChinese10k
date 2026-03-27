@@ -33,6 +33,7 @@ extension ChineseWordOfTheDayApp {
                 if p.isReady {
                     ContentView()
                     .environmentObject(ws)
+                    .environment(\.managedObjectContext, PersistenceController.shared.context)
                     .transition(.opacity)
                 } else {
                     LoadingView()
