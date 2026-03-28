@@ -46,7 +46,9 @@ public extension Word {
             let sharedDefaults = UserDefaults(suiteName: appGroupId)
             sharedDefaults?.set(encodedWord, forKey: mockWordKey)
         }
+        #if os(iOS)
         WidgetCenter.shared.reloadTimelines(ofKind: "WordOfTheDayWidget")
+        #endif
     }
 }
 

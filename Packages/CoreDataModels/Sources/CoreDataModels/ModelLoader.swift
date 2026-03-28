@@ -15,6 +15,9 @@ public enum ModelLoader {
         guard let model = NSManagedObjectModel(contentsOf: url) else {
             fatalError("Could not load model at \(url)")
         }
+        // --- PRINT THE LOCATION HERE ---
+                print("📂 Managed Object Model Location:")
+                print(url.path)
         return model
     }
 }
