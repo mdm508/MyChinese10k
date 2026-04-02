@@ -9,45 +9,47 @@ import Foundation
 import CoreDataModels
 
 
-enum GroupingStyle {
-    case day
-    case month
-    case none
-}
-
 struct CardData: Identifiable, Equatable {
-    let statusID: NSManagedObjectID
-    var id: NSManagedObjectID { statusID }
-    var wordIndex: Int64
-    // UI Properties
+    let id: NSManagedObjectID // Directly using the Core Data ID
+    
+    // Metadata (from WordStatus)
+    let lastModified: Date
+    let masteryStatus: Int64
+    
+    // Content (from Word)
+    let wordIndex: Int64
     let characters: String
     let phonetic: String
-    let status: Int64
     let meanings: [String]
     
-    /// LITERATE NOTE:
-    /// This property uses the already-filtered meanings from your Word extension.
+    // Computed helper for the UI
     var displayMeaning: String {
-        meanings.first ?? "No definition"
+        meanings.first ?? ""
     }
     
-    /// The Composite Initializer
-    /// This pulls the 'content' from Word and 'metadata' from WordStatus.
     init(status: WordStatus, word: Word) {
-        self.statusID = status.objectID
-        self.status = status.status
-        // Use 'characters' for the main display (horse, etc.)
-        self.characters = word.characters
-        self.phonetic = word.phonetic
+        // 1. Link the ID
+        self.id = status.objectID
         
-        // Accessing the filtered meanings array you already built in the Word extension
-        self.meanings = word.cleanedMeanings()
+        // 2. Capture the timestamp for "Recent" sorting
+        // We fallback to distantPast so nil dates don't break the sort
+        self.lastModified = status.lastModified ?? Date.distantPast
+        self.masteryStatus = status.status
+        
+        // 3. Capture Word content
+        self.characters = word.characters
+        print(self.characters)
+        self.phonetic = word.phonetic
         self.wordIndex = word.index
+        
+        // 4. Use your existing Word extension method for clean meanings
+        self.meanings = word.cleanedMeanings()
     }
-}
-
-struct HistorySection: Identifiable {
-    let id = UUID()
-    let title: String
-    let cards: [CardData]
+    
+    // Equatable conformance to help SwiftUI animate moves/shuffles
+    static func == (lhs: CardData, rhs: CardData) -> Bool {
+        lhs.id == rhs.id &&
+        lhs.lastModified == rhs.lastModified &&
+        lhs.masteryStatus == rhs.masteryStatus
+    }
 }

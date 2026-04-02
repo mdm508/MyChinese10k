@@ -31,11 +31,15 @@ struct ContentView: View {
 
 // MARK: - Toolbar Components
 private extension ContentView {
-    
     var historyButton: some View {
-        NavigationLink(destination: HistoryView(context: context)) {
+        NavigationLink {
+            // We initialize the Helper here, passing the context
+            HistoryView(helper: HistoryHelper(context: context))
+        } label: {
             Image(systemName: "clock.arrow.circlepath")
+                .font(.system(size: 18, weight: .medium)) // Makes the icon match standard nav buttons
                 .foregroundColor(.primary)
+                .padding(8) // Increases the tap target area
         }
     }
     

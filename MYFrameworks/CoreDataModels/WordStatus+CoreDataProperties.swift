@@ -49,19 +49,42 @@ public extension Word {
     }
 }
 extension WordStatus {
-    /** Dynamically provides a section identifier based on the user's current preference.
-     This is used as the 'sectionNameKeyPath' in the FRC.
-     */
+    
+    private static let dayFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        df.doesRelativeDateFormatting = true
+        return df
+    }()
+    
+    private static let monthFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "MMMM yyyy"
+        return df
+    }()
+
+    @objc public var daySection: String {
+        return Self.dayFormatter.string(from: lastModified ?? Date())
+    }
+
     @objc public var monthSection: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy" // e.g., "October 2023"
-        return formatter.string(from: lastModified ?? Date())
+        return Self.monthFormatter.string(from: lastModified ?? Date())
     }
     
     @objc public var weekSection: String {
         let calendar = Calendar.current
-        let week = calendar.component(.weekOfYear, from: lastModified ?? Date())
-        let year = calendar.component(.year, from: lastModified ?? Date())
+        let date = lastModified ?? Date()
+        
+        // Find the start and end of the week for a better UI string
+        if let weekInterval = calendar.dateInterval(of: .weekOfYear, for: date) {
+            let start = Self.dayFormatter.string(from: weekInterval.start)
+            let end = Self.dayFormatter.string(from: calendar.date(byAdding: .day, value: -1, to: weekInterval.end) ?? weekInterval.end)
+            return "\(start) - \(end)"
+        }
+        
+        // Fallback to simple week number if interval fails
+        let week = calendar.component(.weekOfYear, from: date)
+        let year = calendar.component(.year, from: date)
         return "Week \(week), \(year)"
     }
 }

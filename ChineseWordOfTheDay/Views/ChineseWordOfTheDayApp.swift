@@ -21,7 +21,9 @@ struct ChineseWordOfTheDayApp: App {
     @State private var p = PersistenceController.shared
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     init(){
+//        PersistenceController.shared.deleteAllCloud()
 //        deleteDatabase()
+//        DataSeeder.seedMockHistory(context: PersistenceController.shared.context)
         _ws = StateObject(wrappedValue: WordService(context: PersistenceController.shared.context))
         
     }

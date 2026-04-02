@@ -7,3 +7,5 @@ This Core Data seeding tool performs the following seven functions to prepare yo
 6. **WAL Flattening**: The tool forces a checkpoint that merges the Write-Ahead Logging files (`-wal` and `-shm`) into the main `.sqlite` file, creating a single, portable database.
 7. **Automated Deployment**: It automatically moves the finalized, optimized SQLite binary to your project's persistence framework folder, making it ready to be bundled with the app.
 
+Notes
+- You need to compile from 'WordBuilder 1'

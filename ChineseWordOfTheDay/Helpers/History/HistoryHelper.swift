@@ -1,64 +1,99 @@
 import SwiftUI
 import CoreData
 import CoreDataModels
+import Combine
 
-import SwiftUI
-import CoreData
-import CoreDataModels
-
-import SwiftUI
-import CoreData
-import CoreDataModels
+struct HistorySection: Identifiable {
+    let id = UUID()
+    let monthTitle: String
+    let cards: [CardData]
+}
 
 class HistoryHelper: ObservableObject {
-    @Published var sections: [HistorySection] = []
-    private let context: NSManagedObjectContext
+    @Published var sections: [HistorySection] = [] // View now loops through this
+    private var allCards: [CardData] = []
+    @Published var searchText: String = ""
     
+    let flipTrigger = PassthroughSubject<FlipAction, Never>()
+    private var currentSort: SortMode = .recent
+    
+    enum FlipAction { case allFront, allBack, random }
+    enum SortMode { case recent, indexAsc, indexDesc, shuffle }
+    private let context: NSManagedObjectContext
+    private var cancellables = Set<AnyCancellable>()
+
     init(context: NSManagedObjectContext) {
         self.context = context
+        self.reload()
+        
+        // Settings/Search observers same as before...
+        $searchText
+            .removeDuplicates()
+            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
+            .sink { [weak self] _ in self?.applyFilterAndSort() }
+            .store(in: &cancellables)
     }
-    
-    func reload(groupingStyle: GroupingStyle = .month) {
-        // 1. Fetch all WordStatus entries sorted by date
-        let statusRequest: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
-        statusRequest.sortDescriptors = [NSSortDescriptor(key: "lastModified", ascending: false)]
+
+    func reload() {
+        let request: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "lastModified", ascending: false)]
         
         do {
-            let statusResults = try context.fetch(statusRequest)
-            
-            // 2. Extract unique traditional strings to fetch the actual 'Word' objects
-            let allTraditionalStrings = Set(statusResults.map { $0.traditional })
-            
-            // 3. Batch Fetch all corresponding Words in ONE database hit
-            let wordRequest: NSFetchRequest<Word> = Word.fetchRequest()
-            wordRequest.predicate = NSPredicate(format: "traditional IN %@", allTraditionalStrings)
-            let wordResults = try context.fetch(wordRequest)
-            
-            // 4. Create a Lookup Dictionary [TraditionalString : Word] for O(1) access
-            let wordLookup = Dictionary(uniqueKeysWithValues: wordResults.map { ($0.traditional, $0) })
-            
-            // 5. Group the WordStatus results using your computed properties
-            let groupedDict = Dictionary(grouping: statusResults) { $0.monthSection }
-            
-            // 6. Map to CardData by joining the Status and the Looked-up Word
-            let rawSections = groupedDict.map { (title, statuses) in
-                let cards = statuses.compactMap { status -> CardData? in
-                    // Find the matching word in our pre-fetched dictionary
-                    guard let matchedWord = wordLookup[status.traditional] else { return nil }
-                    return CardData(status: status, word: matchedWord)
-                }
-                return HistorySection(title: title, cards: cards)
+            let statuses = try context.fetch(request)
+            let strings = Set(statuses.compactMap { $0.traditional })
+            let wordReq: NSFetchRequest<Word> = Word.fetchRequest()
+            wordReq.predicate = NSPredicate(format: "traditional IN %@", strings)
+            let words = try context.fetch(wordReq)
+            let lookup = Dictionary(uniqueKeysWithValues: words.map { ($0.traditional, $0) })
+
+            self.allCards = statuses.compactMap { status -> CardData? in
+                guard let word = lookup[status.traditional] else { return nil }
+                return CardData(status: status, word: word)
             }
-            
-            // 7. Final Sort for sections
-            self.sections = rawSections.sorted { sectionA, sectionB in
-                let dateA = (statusResults.first { $0.monthSection == sectionA.title })?.lastModified ?? Date.distantPast
-                let dateB = (statusResults.first { $0.monthSection == sectionB.title })?.lastModified ?? Date.distantPast
-                return dateA > dateB
-            }
-            
-        } catch {
-            print("Batch Fetch Failed: \(error)")
+            applyFilterAndSort()
+        } catch { print("❌ Reload Failed: \(error)") }
+    }
+
+    private func applyFilterAndSort() {
+        let query = searchText.lowercased().trimmingCharacters(in: .whitespaces)
+        
+        // 1. Filter
+        let filtered = query.isEmpty ? allCards : allCards.filter { card in
+            card.characters.contains(query) ||
+            card.phonetic.lowercased().contains(query) ||
+            card.displayMeaning.lowercased().contains(query) ||
+            String(card.wordIndex).contains(query)
+        }
+
+        // 2. Sort the entire pool first
+        let sorted: [CardData]
+        switch currentSort {
+        case .recent:    sorted = filtered.sorted { $0.lastModified > $1.lastModified }
+        case .indexAsc:  sorted = filtered.sorted { $0.wordIndex < $1.wordIndex }
+        case .indexDesc: sorted = filtered.sorted { $0.wordIndex > $1.wordIndex }
+        case .shuffle:   sorted = filtered.shuffled()
+        }
+
+        // 3. Group by Month (Preserving the sort order we just created)
+        // We use a helper to format the date into "October 2023"
+        let grouped = Dictionary(grouping: sorted) { card in
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMMM yyyy"
+            return formatter.string(from: card.lastModified)
+        }
+        
+        // 4. Map to sections (We must re-sort the sections by date so October comes before September)
+        self.sections = grouped.map { (key, value) in
+            HistorySection(monthTitle: key, cards: value)
+        }.sorted { sectionA, sectionB in
+            // Sort sections by the date of the first card in each
+            (sectionA.cards.first?.lastModified ?? Date()) > (sectionB.cards.first?.lastModified ?? Date())
         }
     }
+    
+    // Public APIs...
+    func bulkFlip(_ action: FlipAction) { flipTrigger.send(action) }
+    func sortByRecent() { currentSort = .recent; applyFilterAndSort() }
+    func sortByIndex(ascending: Bool) { currentSort = ascending ? .indexAsc : .indexDesc; applyFilterAndSort() }
+    func shuffleCards() { currentSort = .shuffle; applyFilterAndSort() }
 }

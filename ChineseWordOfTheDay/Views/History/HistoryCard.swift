@@ -1,76 +1,64 @@
-//
-//  HistoryCard.swift
-//  ChineseWordOfTheDay
-//
-//  Created by Matthew McLaughlin on 3/27/26.
-//
-
-
 import SwiftUI
+import Combine
 
-/// `HistoryCard` coordinates the 3D flip interaction.
-/// It takes `CardData` as an input and maintains its own
-/// internal @State for the "flipped" orientation.
 struct HistoryCard: View {
     let card: CardData
+    let flipPublisher: PassthroughSubject<HistoryHelper.FlipAction, Never>
     @State private var isFlipped: Bool = false
     
     var body: some View {
         ZStack {
-            // FRONT: The "Character" Side
-            frontSide
-                .opacity(isFlipped ? 0 : 1)
-            
-            // BACK: The "Meaning" Side
-            backSide
-                .opacity(isFlipped ? 1 : 0)
-                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+            frontSide.opacity(isFlipped ? 0 : 1)
+            backSide.opacity(isFlipped ? 1 : 0)
+                .rotation3DEffect(.degrees(180), axis: (0, 1, 0))
         }
         .aspectRatio(1, contentMode: .fit)
-        .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+        .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (0, 1, 0))
         .onTapGesture {
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
                 isFlipped.toggle()
             }
         }
+        // Listen for Bulk Commands
+        .onReceive(flipPublisher) { action in
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                switch action {
+                case .allFront: isFlipped = false
+                case .allBack:  isFlipped = true
+                case .random:   isFlipped = Bool.random()
+                }
+            }
+
+        }
+        .onChange(of: card.id) { _ in
+            isFlipped = false
+        }
     }
     
-    // MARK: - Subviews
-    
     private var frontSide: some View {
-        CardFace(color: .blue.opacity(0.1)) {
-            VStack(spacing: 0) {
-                // Our new Specialist View handles the padding and scaling
+        CardFace(color: .blue.opacity(0.05)) {
+            VStack {
+                Spacer()
                 HistoryWordView(text: card.characters)
-                
-                // Secondary info stays small at the bottom
-                Text(card.phonetic)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-                    .padding(.bottom, 12) // Matches the 12pt internal padding
+                Spacer()
             }
         }
     }
     
     private var backSide: some View {
-        CardFace(color: .orange.opacity(0.1)) {
+        CardFace(color: .orange.opacity(0.05)) {
             VStack(spacing: 8) {
+                Spacer()
+                Text(card.characters)
                 Text(card.displayMeaning)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .font(.subheadline).bold()
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                
-                // Mastery Badge
-                Text("Level \(card.status)")
-                    .font(.system(size: 10, weight: .black))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.2))
-                    .cornerRadius(4)
+                    .padding(.horizontal, 4)
+                Text("\(card.phonetic)")
+                    .font(.system(size: 8, weight: .black))
+                    .padding(4).background(Color.secondary.opacity(0.1)).cornerRadius(4)
+                Spacer()
             }
-            .padding(12) // Consistent padding across both sides
         }
     }
 }

@@ -7,38 +7,52 @@
 
 import SwiftUI
 
-/// `CardFace` is a layout primitive.
-/// It handles the "Physical" attributes: shadows, borders, and background.
-/// It uses a `@ViewBuilder` closure to allow any content to be injected.
+
+/// A reusable shell that provides a consistent "Physical Card" look.
+/// Handles background, borders, shadows, and clipping.
 struct CardFace<Content: View>: View {
     let color: Color
-    @ViewBuilder let content: () -> Content
+    let content: Content
+    
+    /// The initializer uses @ViewBuilder so you can pass in VStacks/HStacks directly.
+    init(color: Color = .clear, @ViewBuilder content: () -> Content) {
+        self.color = color
+        self.content = content()
+    }
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 16, style: .continuous)
-            .fill(color)
-            .overlay(
-                // A subtle stroke provides depth and separation in Dark Mode
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(Color.primary.opacity(0.1), lineWidth: 1)
-            )
-            .overlay(content())
-            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+        ZStack {
+            // 1. The main background color (System level)
+            Color(uiColor: .secondarySystemGroupedBackground)
+            
+            // 2. The tinted overlay (The subtle blue/orange hint)
+            color
+            
+            // 3. The actual text/icons
+            content
+        }
+        // Ensure the card fills the square but stays clipped
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        // Subtle border to define the card against the background
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+        // Soft shadow for depth
+        .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
     }
 }
 
-/// A standardized header for our sections.
-/// We use `.ultraThinMaterial` to give a "glass" effect that
-/// blurs the cards beneath it as they scroll under the pinned header.
-struct SectionHeader: View {
-    let title: String
-    
-    var body: some View {
-        Text(title)
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(8)
-            .padding(.horizontal)
-            .background(.ultraThinMaterial)
+// MARK: - Preview
+struct CardFace_Previews: PreviewProvider {
+    static var previews: some View {
+        CardFace(color: .blue.opacity(0.1)) {
+            Text("Preview")
+        }
+        .frame(width: 150, height: 150)
+        .padding()
+        .previewLayout(.sizeThatFits)
     }
 }
+
