@@ -13,7 +13,7 @@ struct DataSeeder {
         wordRequest.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
         
         // Limit to 1000 for a solid performance test
-        wordRequest.fetchLimit = 1000
+        wordRequest.fetchLimit = 13810
 
         do {
             let words = try context.fetch(wordRequest)

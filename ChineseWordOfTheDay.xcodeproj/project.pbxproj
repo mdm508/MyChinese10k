@@ -390,6 +390,7 @@
 		0C93C8222F772898000F24AE /* History */ = {
 			isa = PBXGroup;
 			children = (
+				0C22974C2F777EC3009E5D27 /* DataSeeder.swift */,
 				0C93C8192F771EB8000F24AE /* CardData.swift */,
 				0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */,
 			);
@@ -406,7 +407,6 @@
 				0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */,
 				0CAE8D152CC426A9008954BB /* UserDefaults.swift */,
 				0C7461EA2EECA26000475537 /* WordService.swift */,
-				0C22974C2F777EC3009E5D27 /* DataSeeder.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";

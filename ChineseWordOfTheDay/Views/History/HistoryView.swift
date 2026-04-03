@@ -5,17 +5,19 @@ import CoreDataModels
 struct HistoryView: View {
     @StateObject var helper: HistoryHelper
     
-    // Grid layout: 3 columns with 12pt spacing
-    private let columns = [
+    // Grid layout configuration
+    internal let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12)
     ]
 
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
+            // Horizontal Month Filter Bar
+            monthFilterBar
+            
             ScrollView {
-                // pinnedViews makes the Month headers stick to the top as you scroll
                 LazyVGrid(columns: columns, spacing: 12, pinnedViews: [.sectionHeaders]) {
                     ForEach(helper.sections) { section in
                         Section(header: monthHeader(section.monthTitle)) {
@@ -25,64 +27,120 @@ struct HistoryView: View {
                         }
                     }
                 }
-                .padding()
-            }
-            .background(Color(uiColor: .systemGroupedBackground))
-            .navigationTitle("History")
-            .searchable(text: $helper.searchText, prompt: "Search index, pinyin, or meaning")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    mainMenu
-                }
+                .padding(.horizontal)
+                .padding(.top, 8)
             }
         }
-        .navigationViewStyle(.stack)
+        .background(Color(UIColor.systemGroupedBackground))
+        .navigationTitle("History")
+        .navigationBarTitleDisplayMode(.inline)
+        // iOS 15 compliant searchable
+        .searchable(text: $helper.searchText, prompt: "Search index, pinyin, or meaning")
+        .toolbar {
+            // iOS 15 uses navigationBarTrailing instead of topBarTrailing
+            ToolbarItem(placement: .navigationBarTrailing) {
+                mainMenu
+            }
+        }
     }
+}
 
-    // MARK: - Subviews
+// MARK: - Extension: Filter Bar Components
+extension HistoryView {
+    private var monthFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(helper.allAvailableMonths, id: \.self) { month in
+                    monthToggleChip(for: month)
+                }
+                
+                if !helper.selectedMonths.isEmpty {
+                    clearFilterButton
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+        }
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .overlay(
+            VStack {
+                Spacer()
+                Divider()
+            }
+        )
+    }
+    
+    private func monthToggleChip(for month: String) -> some View {
+        let isSelected = helper.selectedMonths.contains(month)
+        
+        return Text(month)
+            // iOS 15 safe font weight
+            .font(.system(size: 12, weight: .bold, design: .rounded))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(isSelected ? Color.blue : Color.secondary.opacity(0.12))
+            .foregroundColor(isSelected ? .white : .primary)
+            .clipShape(Capsule())
+            .onTapGesture {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    helper.toggleMonthFilter(month)
+                }
+            }
+    }
+    
+    private var clearFilterButton: some View {
+        Button {
+            withAnimation { helper.clearMonthFilters() }
+        } label: {
+            Image(systemName: "xmark.circle.fill")
+                .foregroundColor(.secondary) // Replaced foregroundStyle
+                .font(.body)
+        }
+    }
+}
 
-    private var mainMenu: some View {
+// MARK: - Extension: Menu & Navigation
+extension HistoryView {
+    internal var mainMenu: some View {
         Menu {
-            Section("Bulk Flip") {
+            Section {
                 Button { helper.bulkFlip(.allFront) } label: {
-                    Label("Show Characters", systemImage: "a.square")
+                    Label("Characters", systemImage: "a.square")
                 }
                 Button { helper.bulkFlip(.allBack) } label: {
-                    Label("Show Meanings", systemImage: "character.book.closed")
+                    Label("Meanings", systemImage: "character.book.closed")
                 }
                 Button { helper.bulkFlip(.random) } label: {
-                    Label("Random Flip", systemImage: "dice")
+                    Label("Random", systemImage: "dice")
                 }
             }
             
-            Section("Sort & Shuffle") {
+            Section {
                 Button { helper.sortByRecent() } label: {
-                    Label("Most Recent", systemImage: "clock")
-                }
-                Button { helper.sortByIndex(ascending: true) } label: {
-                    Label("Index: Low to High", systemImage: "arrow.up")
-                }
-                Button { helper.sortByIndex(ascending: false) } label: {
-                    Label("Index: High to Low", systemImage: "arrow.down")
+                    Label("Recent", systemImage: "clock")
                 }
                 Button { helper.shuffleCards() } label: {
-                    Label("Shuffle All", systemImage: "shuffle")
+                    Label("Shuffle", systemImage: "shuffle")
                 }
             }
         } label: {
             Image(systemName: "ellipsis.circle")
-                .font(.title3)
+                .font(.system(size: 18, weight: .semibold)) // Safe weight
         }
     }
+}
 
-    private func monthHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.subheadline.bold())
+// MARK: - Extension: Section Headers
+extension HistoryView {
+    internal func monthHeader(_ title: String) -> some View {
+        Text(title.uppercased())
+            .font(.system(size: 11, weight: .black, design: .rounded))
             .foregroundColor(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Capsule().fill(Color(UIColor.systemGroupedBackground)))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 8)
-            .padding(.horizontal, 4)
-            // Use a background with a blur or opacity to make the "pinned" effect look native
-            .background(Color(uiColor: .systemGroupedBackground).opacity(0.95))
+            .background(Color(UIColor.systemGroupedBackground).opacity(0.9))
     }
 }
