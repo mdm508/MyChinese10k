@@ -186,7 +186,7 @@ private extension SettingsView {
 
         let content = UNMutableNotificationContent()
         content.title = "Waabl"
-        content.body = "Time to learn your new word!"
+        content.body = "Tap button for \(self.ws.currentWord.characters)"
         content.sound = .default
 
         let components = Calendar.current.dateComponents([.hour, .minute], from: date)
