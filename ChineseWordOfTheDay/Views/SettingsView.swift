@@ -26,6 +26,7 @@ struct SettingsView: View {
     @State private var cloudKitStatusMessage: String?
     @State private var notificationTime: Date = Date()
     @State private var remindersEnabled: Bool = false
+    @EnvironmentObject private var ws: WordService
 }
 extension SettingsView {
     // MARK: - Preference View
@@ -93,7 +94,11 @@ extension SettingsView {
                     }
                 }
             } // End of Form
-            .navigationTitle("Settings")
+            .navigationTitle("Settings").toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    self.shareButton
+                }
+            }
             .onAppear {
                 // Load all preferences at once
                 self.loadPhonetic()
@@ -193,6 +198,38 @@ private extension SettingsView {
             if let error = error {
                 print("Error scheduling: \(error.localizedDescription)")
             }
+        }
+    }
+}
+
+
+// MARK: - Sharing Logic
+private extension SettingsView {
+    func shareWord(word cw: Word) {
+        let url = URL(string: "https://apps.apple.com/us/app/waabl/id1671041620")!
+        let itemSource = WordShareItemSource(
+            word: cw.characters,
+            pinyin: cw.phonetic,
+            definition: cw.meanings.first?.description ?? "",
+            appURL: url
+        )
+        
+        let activityVC = UIActivityViewController(
+            activityItems: [itemSource, ws.currentWord.shareText],
+            applicationActivities: nil
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(activityVC, animated: true)
+        }
+    }
+    var shareButton: some View {
+        Button(action: {
+            shareWord(word: ws.currentWord)
+        }) {
+            Image(systemName: "square.and.arrow.up")
+                .foregroundColor(.primary)
         }
     }
 }
