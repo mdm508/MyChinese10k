@@ -8,7 +8,7 @@ struct HistoryWordView: View {
     
     var body: some View {
         Text(text)
-            .font(.system(size: idealFontSize, weight: .bold, design: .monospaced))
+            .font(.system(size: idealFontSize, weight: .regular, design: .monospaced))
             .multilineTextAlignment(.center)
             .minimumScaleFactor(0.2)
             .lineLimit(1)

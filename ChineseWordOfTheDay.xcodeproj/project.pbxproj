@@ -30,13 +30,14 @@
 		0C45D4DD2E331E2C006AD0EF /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; };
 		0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
 		0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C72A71992E00AF96C2 /* WordView.swift */; };
+		0C629A782F7F5B8D0058ED5F /* HistoryCardDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C629A772F7F5B8D0058ED5F /* HistoryCardDetail.swift */; };
+		0C629A7B2F7F5E6B0058ED5F /* HistoryStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C629A7A2F7F5E6B0058ED5F /* HistoryStreamView.swift */; };
 		0C7461EB2EECA26100475537 /* WordService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7461EA2EECA26000475537 /* WordService.swift */; };
 		0C85179D2DF76CD600004774 /* WordDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C85179C2DF76CD600004774 /* WordDetail.swift */; };
 		0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8517A02DF79EA500004774 /* SettingsView.swift */; };
 		0C93C8102F76E852000F24AE /* WordShareItemSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */; };
 		0C93C8122F76EC60000F24AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8112F76EC60000F24AE /* AppDelegate.swift */; };
 		0C93C8142F76EE19000F24AE /* SpeechViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */; };
-		0C93C8182F76FD9E000F24AE /* HistoryOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8172F76FD9E000F24AE /* HistoryOld.swift */; };
 		0C93C81A2F771EB8000F24AE /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8192F771EB8000F24AE /* CardData.swift */; };
 		0C93C81C2F771FDC000F24AE /* HistoryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */; };
 		0C93C8212F772872000F24AE /* CardFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8202F772872000F24AE /* CardFace.swift */; };
@@ -183,6 +184,8 @@
 		0C4726702CAF1DB90014E288 /* WordOfTheDayWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WordOfTheDayWidgetExtension.entitlements; sourceTree = "<group>"; };
 		0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryReaderCentered.swift; sourceTree = "<group>"; };
 		0C4858C72A71992E00AF96C2 /* WordView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
+		0C629A772F7F5B8D0058ED5F /* HistoryCardDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCardDetail.swift; sourceTree = "<group>"; };
+		0C629A7A2F7F5E6B0058ED5F /* HistoryStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStreamView.swift; sourceTree = "<group>"; };
 		0C7461EA2EECA26000475537 /* WordService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordService.swift; sourceTree = "<group>"; };
 		0C7462012EECA4F100475537 /* ChineseWordOfTheDayTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChineseWordOfTheDayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C7914132DA58E3E00C4883D /* CoreDataModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CoreDataModels; path = Packages/CoreDataModels; sourceTree = "<group>"; };
@@ -192,7 +195,6 @@
 		0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordShareItemSource.swift; sourceTree = "<group>"; };
 		0C93C8112F76EC60000F24AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechViewModel.swift; sourceTree = "<group>"; };
-		0C93C8172F76FD9E000F24AE /* HistoryOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryOld.swift; sourceTree = "<group>"; };
 		0C93C8192F771EB8000F24AE /* CardData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardData.swift; sourceTree = "<group>"; };
 		0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryHelper.swift; sourceTree = "<group>"; };
 		0C93C8202F772872000F24AE /* CardFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFace.swift; sourceTree = "<group>"; };
@@ -335,6 +337,7 @@
 				0CEBE9C32B17C21500650626 /* Info.plist */,
 				0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */,
 				0C1D670A2A5DC21500EAAD30 /* Preview Content */,
+				0C93C8222F772898000F24AE /* History */,
 				0C22FF472AF56FDD00913EC3 /* Views */,
 				0CB6B3732B2BCE060008DC54 /* Helpers */,
 				0CEEEE642A70571400262651 /* Resources */,
@@ -354,7 +357,6 @@
 		0C22FF472AF56FDD00913EC3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				0C93C81F2F772854000F24AE /* History */,
 				0CBF7F512F67DEDE000CA6B2 /* LoadingView.swift */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
 				0C8517A22DFA274800004774 /* Components */,
@@ -375,16 +377,17 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
-		0C93C81F2F772854000F24AE /* History */ = {
+		0C93C81F2F772854000F24AE /* HistoryViews */ = {
 			isa = PBXGroup;
 			children = (
-				0C93C8172F76FD9E000F24AE /* HistoryOld.swift */,
-				0C93C8292F772D50000F24AE /* HistoryWordView.swift */,
-				0C93C8252F772978000F24AE /* HistoryCard.swift */,
 				0C93C8272F772996000F24AE /* HistoryView.swift */,
+				0C93C8252F772978000F24AE /* HistoryCard.swift */,
+				0C629A772F7F5B8D0058ED5F /* HistoryCardDetail.swift */,
+				0C93C8292F772D50000F24AE /* HistoryWordView.swift */,
 				0C93C8202F772872000F24AE /* CardFace.swift */,
+				0C629A7A2F7F5E6B0058ED5F /* HistoryStreamView.swift */,
 			);
-			path = History;
+			path = HistoryViews;
 			sourceTree = "<group>";
 		};
 		0C93C8222F772898000F24AE /* History */ = {
@@ -393,6 +396,7 @@
 				0C22974C2F777EC3009E5D27 /* DataSeeder.swift */,
 				0C93C8192F771EB8000F24AE /* CardData.swift */,
 				0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */,
+				0C93C81F2F772854000F24AE /* HistoryViews */,
 			);
 			path = History;
 			sourceTree = "<group>";
@@ -400,7 +404,6 @@
 		0CB6B3732B2BCE060008DC54 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				0C93C8222F772898000F24AE /* History */,
 				0C93C8112F76EC60000F24AE /* AppDelegate.swift */,
 				0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */,
 				0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */,
@@ -694,6 +697,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C629A782F7F5B8D0058ED5F /* HistoryCardDetail.swift in Sources */,
 				0C93C8262F772978000F24AE /* HistoryCard.swift in Sources */,
 				0C93C82A2F772D50000F24AE /* HistoryWordView.swift in Sources */,
 				0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */,
@@ -704,6 +708,7 @@
 				0C93C8142F76EE19000F24AE /* SpeechViewModel.swift in Sources */,
 				0C93C8282F772996000F24AE /* HistoryView.swift in Sources */,
 				0C4858C82A71992E00AF96C2 /* WordView.swift in Sources */,
+				0C629A7B2F7F5E6B0058ED5F /* HistoryStreamView.swift in Sources */,
 				0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */,
 				0C22974D2F777F48009E5D27 /* DataSeeder.swift in Sources */,
 				0C1D67052A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift in Sources */,
@@ -714,7 +719,6 @@
 				0CBF7F522F67DEDE000CA6B2 /* LoadingView.swift in Sources */,
 				0C93C81A2F771EB8000F24AE /* CardData.swift in Sources */,
 				0C93C81C2F771FDC000F24AE /* HistoryHelper.swift in Sources */,
-				0C93C8182F76FD9E000F24AE /* HistoryOld.swift in Sources */,
 				0C8517A12DF79EA500004774 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
