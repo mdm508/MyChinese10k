@@ -26,7 +26,8 @@ struct CardData: Identifiable, Equatable {
     var displayMeaning: String {
         meanings.first ?? ""
     }
-    
+    // Needed by the view to determine which side of the card to show.
+    var isFlipped: Bool = false
     init(status: WordStatus, word: Word) {
         // 1. Link the ID
         self.id = status.objectID
@@ -38,7 +39,6 @@ struct CardData: Identifiable, Equatable {
         
         // 3. Capture Word content
         self.characters = word.characters
-        print(self.characters)
         self.phonetic = word.phonetic
         self.wordIndex = word.index
         

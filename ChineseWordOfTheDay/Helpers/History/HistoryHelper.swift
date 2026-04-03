@@ -6,7 +6,7 @@ import Combine
 struct HistorySection: Identifiable {
     let id = UUID()
     let monthTitle: String
-    let cards: [CardData]
+    var cards: [CardData]
 }
 
 class HistoryHelper: ObservableObject {
@@ -91,8 +91,27 @@ class HistoryHelper: ObservableObject {
         }
     }
     
-    // Public APIs...
-    func bulkFlip(_ action: FlipAction) { flipTrigger.send(action) }
+    // MARK: Public API
+    
+    /// flip all cards to some side based on the given `action`. 
+    func bulkFlip(_ action: FlipAction) {
+            // 1. Update the 'isFlipped' state on the actual data
+            for sectionIndex in sections.indices {
+                for cardIndex in sections[sectionIndex].cards.indices {
+                    switch action {
+                    case .allFront:
+                        sections[sectionIndex].cards[cardIndex].isFlipped = false
+                    case .allBack:
+                        sections[sectionIndex].cards[cardIndex].isFlipped = true
+                    case .random:
+                        sections[sectionIndex].cards[cardIndex].isFlipped = Bool.random()
+                    }
+                }
+            }
+            
+            // 2. We still send the trigger for the animation of visible cards
+            flipTrigger.send(action)
+        }
     func sortByRecent() { currentSort = .recent; applyFilterAndSort() }
     func sortByIndex(ascending: Bool) { currentSort = ascending ? .indexAsc : .indexDesc; applyFilterAndSort() }
     func shuffleCards() { currentSort = .shuffle; applyFilterAndSort() }
