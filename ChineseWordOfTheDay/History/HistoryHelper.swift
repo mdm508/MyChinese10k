@@ -1,113 +1,38 @@
 import SwiftUI
-import CoreData
-import CoreDataModels
 import Combine
 
-// MARK: - Supporting Types
-struct HistorySection: Identifiable {
-    let id = UUID()
-    let monthTitle: String
-    var cards: [CardData]
-}
-
-// MARK: - Main Class Declaration
 class HistoryHelper: ObservableObject {
-    // Persistent Properties
-    internal let context: NSManagedObjectContext
-    internal var cancellables = Set<AnyCancellable>()
-    internal var allCards: [CardData] = []
-    
-    // UI State Properties
-    @Published var sections: [HistorySection] = []
     @Published var searchText: String = ""
-    @Published var allAvailableMonths: [String] = []
     @Published var selectedMonths: Set<String> = []
+    @Published var allCards: [CardData] = []
     
-    // Commands & Logic State
-    internal var currentSort: SortMode = .recent
     let flipTrigger = PassthroughSubject<FlipAction, Never>()
-    
     enum FlipAction { case allFront, allBack, random }
-    enum SortMode { case recent, indexAsc, indexDesc, shuffle }
 
-    init(context: NSManagedObjectContext) {
-        self.context = context
-        self.setupSearchObserver()
-        self.reload()
-    }
-}
-
-// MARK: - Extension: Data Loading
-extension HistoryHelper {
-    func reload() {
-        let request: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "lastModified", ascending: false)]
+    // 🎯 GRID DATA: Respects Search AND Month Filters
+    var sections: [CardSection] {
+        let filtered = applySearch(to: allCards)
+        let grouped = Dictionary(grouping: filtered) { $0.monthTitle }
         
-        do {
-            let statuses = try context.fetch(request)
-            let strings = Set(statuses.compactMap { $0.traditional })
-            
-            let wordReq: NSFetchRequest<Word> = Word.fetchRequest()
-            wordReq.predicate = NSPredicate(format: "traditional IN %@", strings)
-            let words = try context.fetch(wordReq)
-            
-            // Dictionary grouping with the specific iOS 15 compatible label
-            let lookup = Dictionary(words.map { ($0.traditional, $0) },
-                                   uniquingKeysWith: { first, _ in first })
-
-            self.allCards = statuses.compactMap { status -> CardData? in
-                guard let word = lookup[status.traditional] else { return nil }
-                return CardData(status: status, word: word)
+        return grouped.map { CardSection(monthTitle: $0.key, cards: $0.value) }
+            .filter { section in
+                selectedMonths.isEmpty || selectedMonths.contains(section.monthTitle)
             }
-            
-            self.updateAvailableMonths()
-            self.applyFilterAndSort()
-            
-        } catch {
-            print("❌ Reload Failed: \(error)")
-        }
-    }
-}
-
-// MARK: - Extension: Filtering & Search
-extension HistoryHelper {
-    internal func setupSearchObserver() {
-        $searchText
-            .removeDuplicates()
-            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
-            .sink { [weak self] _ in self?.applyFilterAndSort() }
-            .store(in: &cancellables)
+            .sorted { $0.date > $1.date }
     }
 
-    internal func applyFilterAndSort() {
-        let query = searchText.lowercased().trimmingCharacters(in: .whitespaces)
+    // 🌊 STREAM DATA: Respects Search but IGNORES Month Filters (for infinite scroll)
+    var streamSections: [CardSection] {
+        let filtered = applySearch(to: allCards)
+        let grouped = Dictionary(grouping: filtered) { $0.monthTitle }
         
-        // 1. Filter: Check against Search and Compact Month (Aug, '26)
-        let filtered = allCards.filter { card in
-            let compactMonth = formatForFilter(card.lastModified)
-            let matchesMonth = selectedMonths.isEmpty || selectedMonths.contains(compactMonth)
-            
-            let matchesSearch = query.isEmpty || (
-                card.characters.contains(query) ||
-                card.phonetic.lowercased().contains(query) ||
-                card.displayMeaning.lowercased().contains(query) ||
-                String(card.wordIndex).contains(query)
-            )
-            return matchesMonth && matchesSearch
-        }
+        return grouped.map { CardSection(monthTitle: $0.key, cards: $0.value) }
+            .sorted { $0.date > $1.date }
+    }
 
-        // 2. Sort the pool
-        let sorted = performSort(on: filtered)
-
-        // 3. Group into Sections using Full Month (August 2026)
-        let grouped = Dictionary(grouping: sorted) { formatForHeader($0.lastModified) }
-        
-        self.sections = grouped.map { HistorySection(monthTitle: $0.key, cards: $0.value) }
-            .sorted { (sectionA, sectionB) in
-                let dateA = sectionA.cards.first?.lastModified ?? Date.distantPast
-                let dateB = sectionB.cards.first?.lastModified ?? Date.distantPast
-                return dateA > dateB
-            }
+    var allAvailableMonths: [String] {
+        let months = Set(allCards.map { $0.monthTitle })
+        return months.sorted { monthSortDate(for: $0) > monthSortDate(for: $1) }
     }
 
     func toggleMonthFilter(_ month: String) {
@@ -116,81 +41,40 @@ extension HistoryHelper {
         } else {
             selectedMonths.insert(month)
         }
-        applyFilterAndSort()
     }
-    
+
     func clearMonthFilters() {
         selectedMonths.removeAll()
-        applyFilterAndSort()
     }
-}
 
-// MARK: - Extension: Sorting Logic
-extension HistoryHelper {
-    private func performSort(on cards: [CardData]) -> [CardData] {
-        switch currentSort {
-        case .recent:    return cards.sorted { $0.lastModified > $1.lastModified }
-        case .indexAsc:  return cards.sorted { $0.wordIndex < $1.wordIndex }
-        case .indexDesc: return cards.sorted { $0.wordIndex > $1.wordIndex }
-        case .shuffle:   return cards.shuffled()
+    private func applySearch(to cards: [CardData]) -> [CardData] {
+        if searchText.isEmpty { return cards }
+        return cards.filter {
+            $0.characters.contains(searchText) ||
+            $0.phonetic.lowercased().contains(searchText.lowercased()) ||
+            $0.displayMeaning.lowercased().contains(searchText.lowercased())
         }
-    }
-
-    func sortByRecent() {
-        currentSort = .recent
-        applyFilterAndSort()
     }
     
-    func sortByIndex(ascending: Bool) {
-        currentSort = ascending ? .indexAsc : .indexDesc
-        applyFilterAndSort()
+    private func monthSortDate(for title: String) -> Date {
+        let df = DateFormatter()
+        df.dateFormat = "MMMM yyyy"
+        return df.date(from: title) ?? Date.distantPast
     }
-    
-    func shuffleCards() {
-        currentSort = .shuffle
-        applyFilterAndSort()
-    }
+
+    // Standard Helper Methods
+    func sortByRecent() { allCards.sort { $0.lastModified > $1.lastModified } }
+    func shuffleCards() { allCards.shuffle() }
+    func bulkFlip(_ action: FlipAction) { flipTrigger.send(action) }
 }
 
-// MARK: - Extension: Batch Actions
-extension HistoryHelper {
-    func bulkFlip(_ action: FlipAction) {
-        for sIdx in sections.indices {
-            for cIdx in sections[sIdx].cards.indices {
-                switch action {
-                case .allFront: sections[sIdx].cards[cIdx].isFlipped = false
-                case .allBack:  sections[sIdx].cards[cIdx].isFlipped = true
-                case .random:   sections[sIdx].cards[cIdx].isFlipped = Bool.random()
-                }
-            }
-        }
-        flipTrigger.send(action)
-    }
-}
-
-// MARK: - Extension: Helpers & Formatting
-extension HistoryHelper {
-    private func updateAvailableMonths() {
-        // Use the compact format for the filter chips
-        let months = allCards.map { formatForFilter($0.lastModified) }
-        var uniqueMonths: [String] = []
-        for month in months where !uniqueMonths.contains(month) {
-            uniqueMonths.append(month)
-        }
-        self.allAvailableMonths = uniqueMonths
-    }
-
-    /// For the small filter chips: Aug, '26
-    internal func formatForFilter(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM, ''yy"
-        return formatter.string(from: date)
-    }
-
-    /// For the large sticky section headers: August 2026
-    internal func formatForHeader(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        return formatter.string(from: date)
+struct CardSection: Identifiable {
+    let id = UUID()
+    let monthTitle: String
+    let cards: [CardData]
+    var date: Date {
+        let df = DateFormatter()
+        df.dateFormat = "MMMM yyyy"
+        return df.date(from: monthTitle) ?? Date()
     }
 }

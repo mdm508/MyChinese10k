@@ -1,52 +1,53 @@
-//
-//  CardData.swift
-//  ChineseWordOfTheDay
-//
-//  Created by Matthew McLaughlin on 3/27/26.
-//
 import CoreData
 import Foundation
 import CoreDataModels
 
-
 struct CardData: Identifiable, Equatable {
-    let id: NSManagedObjectID // Directly using the Core Data ID
+    let id: NSManagedObjectID
     
-    // Metadata (from WordStatus)
+    // Metadata
     let lastModified: Date
     let masteryStatus: Int64
     
-    // Content (from Word)
+    // Content
     let wordIndex: Int64
     let characters: String
     let phonetic: String
     let meanings: [String]
     
+    // --- 🏷️ NEW FOR HISTORY FILTERING ---
+    /// Returns a string like "August 2025" for grouping in History
+    var monthTitle: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: lastModified)
+    }
+
     // Computed helper for the UI
     var displayMeaning: String {
         meanings.first ?? ""
     }
-    // Needed by the view to determine which side of the card to show.
+    
+    // UI State (Not persisted, just for the session)
     var isFlipped: Bool = false
+    
     init(status: WordStatus, word: Word) {
-        // 1. Link the ID
         self.id = status.objectID
         
-        // 2. Capture the timestamp for "Recent" sorting
-        // We fallback to distantPast so nil dates don't break the sort
+        // Capture the timestamp for "Recent" sorting
         self.lastModified = status.lastModified ?? Date.distantPast
         self.masteryStatus = status.status
         
-        // 3. Capture Word content
-        self.characters = word.characters
-        self.phonetic = word.phonetic
+        // Capture Word content
+        self.characters = word.characters ?? ""
+        self.phonetic = word.phonetic ?? ""
         self.wordIndex = word.index
         
-        // 4. Use your existing Word extension method for clean meanings
+        // Use the Word extension method for clean meanings
         self.meanings = word.cleanedMeanings()
     }
     
-    // Equatable conformance to help SwiftUI animate moves/shuffles
+    // Equatable conformance
     static func == (lhs: CardData, rhs: CardData) -> Bool {
         lhs.id == rhs.id &&
         lhs.lastModified == rhs.lastModified &&

@@ -8,13 +8,12 @@ struct HistoryStreamView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(helper.sections) { section in
-                        // The Date Header
+                    // 🔥 ALWAYS use streamSections here so the scroll isn't cut off
+                    ForEach(helper.streamSections) { section in
                         monthDivider(section.monthTitle)
                             .id(section.monthTitle)
                         
                         ForEach(section.cards) { card in
-                            // 🔥 Streaming the exact same Detail view!
                             HistoryCardDetail(card: card, isStreamMode: true)
                                 .id(card.id)
                         }
@@ -22,9 +21,14 @@ struct HistoryStreamView: View {
                 }
             }
             .background(Color(UIColor.systemGroupedBackground))
-            .navigationTitle("History Stream")
+            .navigationTitle("Study Stream")
             .onAppear {
-                proxy.scrollTo(startMonth, anchor: .top)
+                // Smoothly snap to the month tapped in the main grid
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut) {
+                        proxy.scrollTo(startMonth, anchor: .top)
+                    }
+                }
             }
         }
     }
@@ -32,10 +36,11 @@ struct HistoryStreamView: View {
     private func monthDivider(_ title: String) -> some View {
         VStack {
             Text(title.uppercased())
-                .font(.system(size: 14, weight: .black))
+                .font(.system(size: 14, weight: .black, design: .rounded))
                 .foregroundColor(.blue)
-                .padding(.vertical, 60)
-            Divider()
+                .padding(.top, 60)
+                .padding(.bottom, 20)
+            Divider().padding(.horizontal)
         }
     }
 }

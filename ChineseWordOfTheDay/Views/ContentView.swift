@@ -34,7 +34,7 @@ private extension ContentView {
     var historyButton: some View {
         NavigationLink {
             // We initialize the Helper here, passing the context
-            HistoryView(helper: HistoryHelper(context: context))
+            HistoryView(helper: HistoryHelper())
         } label: {
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 18, weight: .medium)) // Makes the icon match standard nav buttons
