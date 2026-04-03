@@ -13,7 +13,6 @@ struct HistoryWordView: View {
             .minimumScaleFactor(0.2)
             .lineLimit(1)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .textSelection(.enabled)
             .padding(13)
     }
 }
