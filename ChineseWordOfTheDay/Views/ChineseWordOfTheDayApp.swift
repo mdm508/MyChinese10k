@@ -17,6 +17,8 @@ import Combine
 @main
 struct ChineseWordOfTheDayApp: App {
     @StateObject var ws: WordService
+    @StateObject var historyHelper: HistoryHelper
+
     @State private var ready = false
     @State private var p = PersistenceController.shared
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -25,6 +27,7 @@ struct ChineseWordOfTheDayApp: App {
 //        PersistenceController.shared.deleteAllCloud()
 //        DataSeeder.seedMockHistory(context: PersistenceController.shared.context)
         _ws = StateObject(wrappedValue: WordService(context: PersistenceController.shared.context))
+        _historyHelper = StateObject(wrappedValue: HistoryHelper(context: PersistenceController.shared.context))
         
     }
 }
@@ -35,6 +38,7 @@ extension ChineseWordOfTheDayApp {
                 if p.isReady {
                     ContentView()
                     .environmentObject(ws)
+                    .environmentObject(historyHelper) // Global History Logic
                     .environment(\.managedObjectContext, PersistenceController.shared.context)
                     .transition(.opacity)
                 } else {

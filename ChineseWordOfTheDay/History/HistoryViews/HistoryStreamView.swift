@@ -4,9 +4,8 @@ import CoreDataModels
 
 struct HistoryStreamView: View {
     @ObservedObject var helper: HistoryHelper
-    let startMonth: String
+    let startMonth: String // Expecting "yyyy-MM" format
     
-    // We need the context to pass it down to HistoryCardDetail for its internal Word fetch
     @Environment(\.managedObjectContext) var viewContext
     
     var body: some View {
@@ -14,20 +13,22 @@ struct HistoryStreamView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(helper.sections, id: \.name) { section in
-                        // The Date Header (section.name is "2026-04")
+                        // Section Header (e.g., APRIL 2026)
                         monthDivider(section.name)
                             .id(section.name)
                         
                         let statuses = section.objects as? [WordStatus] ?? []
                         
-                        ForEach(statuses, id: \.objectID) { (status: WordStatus) in
-                            // 🔥 Streaming the updated Detail view!
-                            HistoryCardDetail(
-                                status: status,
-                                context: viewContext,
-                                isStreamMode: true
-                            )
-                            .id(status.objectID)
+                        ForEach(statuses, id: \.objectID) { status in
+                            // 🎯 The Stream Bridge: Fetch the word for this row
+                            if let word = fetchWord(for: status) {
+                                HistoryCardDetail(
+                                    status: status,
+                                    word: word,
+                                    isStreamMode: true
+                                )
+                                .id(status.objectID)
+                            }
                         }
                     }
                 }
@@ -35,22 +36,39 @@ struct HistoryStreamView: View {
             .background(Color(UIColor.systemGroupedBackground))
             .navigationTitle("History Stream")
             .onAppear {
-                // Scroll to the specific month the user tapped from the grid
-                proxy.scrollTo(startMonth, anchor: .top)
+                // Slight delay for iOS 15 ScrollViewReader reliability
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.spring()) {
+                        proxy.scrollTo(startMonth, anchor: .top)
+                    }
+                }
             }
         }
     }
     
+    // MARK: - Internal Helper
+    
+    private func fetchWord(for status: WordStatus) -> Word? {
+        let request: NSFetchRequest<Word> = Word.fetchRequest()
+        request.predicate = NSPredicate(format: "index == %d", status.index)
+        request.fetchLimit = 1
+        return try? viewContext.fetch(request).first
+    }
+    
+    // MARK: - Subviews
+    
     private func monthDivider(_ identifier: String) -> some View {
         let displayTitle = formatFullMonth(identifier)
         
-        return VStack {
+        return VStack(spacing: 0) {
             Text(displayTitle)
                 .font(.system(size: 14, weight: .black, design: .rounded))
                 .foregroundColor(.blue)
                 .kerning(2)
-                .padding(.vertical, 60)
+                .padding(.vertical, 80)
+            
             Divider()
+                .padding(.horizontal, 40)
         }
     }
 
