@@ -45,8 +45,8 @@
 		0C93C8262F772978000F24AE /* HistoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8252F772978000F24AE /* HistoryCard.swift */; };
 		0C93C8282F772996000F24AE /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8272F772996000F24AE /* HistoryView.swift */; };
 		0C93C82A2F772D50000F24AE /* HistoryWordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C93C8292F772D50000F24AE /* HistoryWordView.swift */; };
-		0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
-		0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* UserDefaults.swift */; };
+		0CAE8D162CC426A9008954BB /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* Colors.swift */; };
+		0CAE8D172CC426A9008954BB /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE8D152CC426A9008954BB /* Colors.swift */; };
 		0CB6B3512B2B84220008DC54 /* DevelopmentFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */; };
 		0CBAF4A22D95ED8D00488D5A /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; };
 		0CBAF4A32D95ED8D00488D5A /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBAF48F2D95ED8D00488D5A /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -203,7 +203,7 @@
 		0C93C8252F772978000F24AE /* HistoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCard.swift; sourceTree = "<group>"; };
 		0C93C8272F772996000F24AE /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		0C93C8292F772D50000F24AE /* HistoryWordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryWordView.swift; sourceTree = "<group>"; };
-		0CAE8D152CC426A9008954BB /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		0CAE8D152CC426A9008954BB /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentFunctions.swift; sourceTree = "<group>"; };
 		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataModels.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -366,6 +366,7 @@
 				0C8517A02DF79EA500004774 /* SettingsView.swift */,
 				0C85179C2DF76CD600004774 /* WordDetail.swift */,
 				0C4858C72A71992E00AF96C2 /* WordView.swift */,
+				0CAE8D152CC426A9008954BB /* Colors.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -411,7 +412,6 @@
 				0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */,
 				0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */,
 				0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */,
-				0CAE8D152CC426A9008954BB /* UserDefaults.swift */,
 				0C7461EA2EECA26000475537 /* WordService.swift */,
 			);
 			path = Helpers;
@@ -688,7 +688,7 @@
 				0C0BDB1C2F678D3200AA043A /* MediumWordWidgetView.swift in Sources */,
 				0C0BDB262F679AA000AA043A /* WordOfTheDayWidgetEntryView.swift in Sources */,
 				0CBF7EF72F61F451000CA6B2 /* WordView.swift in Sources */,
-				0CAE8D172CC426A9008954BB /* UserDefaults.swift in Sources */,
+				0CAE8D172CC426A9008954BB /* Colors.swift in Sources */,
 				0C15E86B2C8BDA6400D7B51B /* WordOfTheDayWidgetBundle.swift in Sources */,
 				0C0BDB1A2F678D2400AA043A /* ResizingCharacterText.swift in Sources */,
 				0C0BDB122F67896100AA043A /* WidgetPreviewData.swift in Sources */,
@@ -705,7 +705,7 @@
 				0C93C82A2F772D50000F24AE /* HistoryWordView.swift in Sources */,
 				0C4858C62A71992100AF96C2 /* GeometryReaderCentered.swift in Sources */,
 				0C93C8212F772872000F24AE /* CardFace.swift in Sources */,
-				0CAE8D162CC426A9008954BB /* UserDefaults.swift in Sources */,
+				0CAE8D162CC426A9008954BB /* Colors.swift in Sources */,
 				0C1D67072A5DC21400EAAD30 /* ContentView.swift in Sources */,
 				0C93C8122F76EC60000F24AE /* AppDelegate.swift in Sources */,
 				0C93C8142F76EE19000F24AE /* SpeechViewModel.swift in Sources */,

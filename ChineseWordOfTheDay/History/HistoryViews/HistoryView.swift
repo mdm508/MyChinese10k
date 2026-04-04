@@ -3,7 +3,6 @@ import CoreData
 import CoreDataModels
 
 struct HistoryView: View {
-    // 🎯 Use EnvironmentObject - injected at App level
     @EnvironmentObject var helper: HistoryHelper
     @Environment(\.managedObjectContext) var viewContext
     
@@ -12,56 +11,50 @@ struct HistoryView: View {
     ]
     
     var body: some View {
-            ZStack {
-                Color(UIColor.systemGroupedBackground).ignoresSafeArea()
-                
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 20) {
-                        
-                        // 1. Month Chips
-                        monthFilterBar
-                        
-                        // 2. The Main Grid
-                        LazyVGrid(columns: columns, spacing: 16, pinnedViews: [.sectionHeaders]) {
-                            ForEach(helper.sections, id: \.name) { section in
-                                Section(header: sectionHeader(section.name)) {
-                                    
-                                    let statuses = section.objects as? [WordStatus] ?? []
-                                    
-                                    ForEach(statuses, id: \.objectID) { status in
-                                        HistoryCard(
-                                            status: status,
-                                            flipPublisher: helper.flipTrigger
-                                        )
-                                    }
+        ZStack {
+            Color(UIColor.systemGroupedBackground).ignoresSafeArea()
+            
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 20) {
+                    monthFilterBar
+                    
+                    LazyVGrid(columns: columns, spacing: 16, pinnedViews: [.sectionHeaders]) {
+                        // 🛠️ FIX: Added 'id: \.name' to satisfy the compiler
+                        ForEach(helper.sections, id: \.name) { section in
+                            Section(header: sectionHeader(section.name)) {
+                                
+                                let statuses = section.objects as? [WordStatus] ?? []
+                                
+                                ForEach(statuses, id: \.objectID) { status in
+                                    // 🛠️ FIX: Removed flipPublisher (Card now gets it from Environment)
+                                    HistoryCard(status: status)
                                 }
                             }
                         }
-                        .padding(.horizontal)
                     }
-                    .padding(.top)
+                    .padding(.horizontal)
                 }
-            }// ... inside HistoryView body, attached to the ZStack ...
-            .navigationBarTitleDisplayMode(.inline) // 🎯 Keep the bar slim
-            .toolbar {
-                // 🛠️ CENTER: The Title (Locked on the same line as the back button)
-                ToolbarItem(placement: .principal) {
-                    Text("HISTORY")
-                        .font(.system(size: 12, weight: .black))
-                        .foregroundColor(.terracotta.opacity(0.7))
-                        .kerning(2)
-                }
-
-                // 🛠️ RIGHT: Your Tools
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    HStack(spacing: 16) {
-                        bulkFlipMenu
-                        sortMenu
-                    }
-                    .foregroundColor(.forestGreen)
-                }
+                .padding(.top)
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("HISTORY")
+                    .font(.system(size: 12, weight: .black))
+                    .foregroundColor(.terracotta.opacity(0.7))
+                    .kerning(2)
+            }
+
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                HStack(spacing: 16) {
+                    bulkFlipMenu
+                    sortMenu
+                }
+                .foregroundColor(.forestGreen)
+            }
+        }
+    }
 }
 
 // MARK: - Subviews Extension
@@ -70,7 +63,6 @@ extension HistoryView {
     private var monthFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                // FIXED: Direct access to helper.allAvailableMonths (no $)
                 ForEach(helper.allAvailableMonths, id: \.self) { month in
                     let isSelected = helper.selectedMonths.contains(month)
                     
@@ -93,7 +85,6 @@ extension HistoryView {
     }
     
     private func sectionHeader(_ title: String) -> some View {
-        // 🔗 THE HEADER LINK: Pointing to the Streamer
         NavigationLink(destination: HistoryStreamView(helper: helper, startMonth: title)) {
             HStack {
                 Text(helper.formatFullMonth(title))
@@ -103,7 +94,6 @@ extension HistoryView {
                 
                 Spacer()
                 
-                // ⚡️ The "Stream" Indicator
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 10))
                     .foregroundColor(.terracotta.opacity(0.5))
@@ -114,16 +104,17 @@ extension HistoryView {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color.pastelGreen.opacity(0.15)) // Sexy subtle bar
-            .contentShape(Rectangle()) // 🛡️ Makes the WHOLE bar tappable, not just the text
+            .background(Color.pastelGreen.opacity(0.15))
+            .contentShape(Rectangle())
         }
-        .buttonStyle(PlainButtonStyle()) // 🛡️ Stops the header from turning blue
+        .buttonStyle(PlainButtonStyle())
     }
 
     private var bulkFlipMenu: some View {
         Menu {
-            Button("Characters Only") { helper.bulkFlip(.allFront) }
-            Button("Meanings Only") { helper.bulkFlip(.allBack) }
+            // 🛠️ FIX: Updated enum cases to .front and .back
+            Button("Characters Only") { helper.bulkFlip(.front) }
+            Button("Meanings Only") { helper.bulkFlip(.back) }
             Button("Random Mix") { helper.bulkFlip(.random) }
         } label: {
             Image(systemName: "square.stack.3d.down.right")

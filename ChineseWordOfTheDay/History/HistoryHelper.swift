@@ -11,9 +11,11 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
     @Published var selectedMonths: Set<String> = []
     @Published var allAvailableMonths: [String] = []
     
-    let flipTrigger = PassthroughSubject<FlipAction, Never>()
+    // 🎯 THE MASTER LEDGER
+    // Maps each WordStatus ID to its current flipped state
+    @Published var flipStates: [NSManagedObjectID: Bool] = [:]
     
-    enum FlipAction { case allFront, allBack, random }
+    enum FlipMode { case front, back, random }
     enum SortMode { case recent, indexAsc, indexDesc }
 
     init(context: NSManagedObjectContext) {
@@ -21,6 +23,7 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
         super.init()
         setupFRC()
         updateAvailableMonths()
+        syncLedger() // Initial sync
     }
 
     private func setupFRC() {
@@ -46,10 +49,44 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         DispatchQueue.main.async {
             self.sections = self.frc.sections ?? []
+            self.syncLedger() // 🔄 Keep the ledger in sync when data changes
         }
     }
 
-    // MARK: - Logic & Filtering
+    // MARK: - 🛠️ Ledger Logic
+    
+    /// Ensures every fetched object has an entry in our dictionary
+    func syncLedger() {
+        let allObjects = frc.fetchedObjects ?? []
+        for object in allObjects {
+            if flipStates[object.objectID] == nil {
+                flipStates[object.objectID] = false // Default to front
+            }
+        }
+    }
+
+    /// Toggles a specific card - only notifies that specific card's listener
+    func toggleFlip(for id: NSManagedObjectID) {
+        flipStates[id]?.toggle()
+    }
+
+    /// ⚡️ THE BULK OPERATION
+    func bulkFlip(_ mode: FlipMode) {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+            // Copy dictionary, modify, then push back once for performance
+            var newStates = flipStates
+            for id in newStates.keys {
+                switch mode {
+                case .front:  newStates[id] = false
+                case .back:   newStates[id] = true
+                case .random: newStates[id] = Bool.random()
+                }
+            }
+            self.flipStates = newStates
+        }
+    }
+
+    // MARK: - Filtering & Sorting
     
     func applyFilters() {
         var predicates: [NSPredicate] = []
@@ -60,6 +97,7 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
         
         try? frc.performFetch()
         self.sections = frc.sections ?? []
+        syncLedger() // Re-sync after fetch
     }
 
     func toggleMonthFilter(_ month: String) {
@@ -85,10 +123,6 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
         self.sections = frc.sections ?? []
     }
 
-    func bulkFlip(_ action: FlipAction) {
-        flipTrigger.send(action)
-    }
-
     private func updateAvailableMonths() {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "WordStatus")
         request.resultType = .dictionaryResultType
@@ -99,7 +133,7 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
         self.allAvailableMonths = results?.compactMap { $0["sectionIdentifier"] }.sorted(by: >) ?? []
     }
 
-    // MARK: - Date Formatting Helpers
+    // MARK: - Date Helpers
     
     func formatFullMonth(_ id: String) -> String {
         let formatter = DateFormatter()
