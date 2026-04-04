@@ -5,28 +5,29 @@ import CoreDataModels
 struct HistoryView: View {
     @EnvironmentObject var helper: HistoryHelper
     @Environment(\.managedObjectContext) var viewContext
-    
+
     private let columns = [
         GridItem(.adaptive(minimum: 100), spacing: 16)
     ]
     
     var body: some View {
         ZStack {
+            // Background color for the whole gallery
             Color(UIColor.systemGroupedBackground).ignoresSafeArea()
             
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 20) {
+                    // 1. The Month Chips
                     monthFilterBar
                     
+                    // 2. The Main Grid
                     LazyVGrid(columns: columns, spacing: 16, pinnedViews: [.sectionHeaders]) {
-                        // 🛠️ FIX: Added 'id: \.name' to satisfy the compiler
                         ForEach(helper.sections, id: \.name) { section in
-                            Section(header: sectionHeader(section.name)) {
-                                
+                            // Only show headers in Timeline mode. Index modes show one giant list.
+                            Section(header: helper.currentSort == .recent ? sectionHeader(section.name) : nil) {
                                 let statuses = section.objects as? [WordStatus] ?? []
                                 
                                 ForEach(statuses, id: \.objectID) { status in
-                                    // 🛠️ FIX: Removed flipPublisher (Card now gets it from Environment)
                                     HistoryCard(status: status)
                                 }
                             }
@@ -39,6 +40,7 @@ struct HistoryView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            // 🛠️ CENTER: Title
             ToolbarItem(placement: .principal) {
                 Text("HISTORY")
                     .font(.system(size: 12, weight: .black))
@@ -46,12 +48,23 @@ struct HistoryView: View {
                     .kerning(2)
             }
 
+            // 🛠️ RIGHT: The Action Cluster (Reset + Bulk + Sort)
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                HStack(spacing: 16) {
+                HStack(spacing: 12) {
+                    
+                    // 🔄 RESET: Pops in when any filter/sort is applied
+                    if helper.isFiltered {
+                        Button(action: { helper.resetToDefaults() }) {
+                            Image(systemName: "arrow.counterclockwise.circle.fill")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(.terracotta)
+                        }
+                        .transition(.scale.combined(with: .opacity))
+                    }
+
                     bulkFlipMenu
                     sortMenu
                 }
-                .foregroundColor(.forestGreen)
             }
         }
     }
@@ -70,11 +83,11 @@ extension HistoryView {
                         .font(.system(size: 13, weight: .bold, design: .rounded))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(isSelected ? Color.blue : Color(UIColor.secondarySystemGroupedBackground))
-                        .foregroundColor(isSelected ? .white : .blue)
+                        .background(isSelected ? Color.forestGreen : Color(UIColor.secondarySystemGroupedBackground))
+                        .foregroundColor(isSelected ? .white : .forestGreen)
                         .cornerRadius(12)
                         .onTapGesture {
-                            withAnimation(.spring()) {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 helper.toggleMonthFilter(month)
                             }
                         }
@@ -91,13 +104,10 @@ extension HistoryView {
                     .font(.system(size: 14, weight: .black, design: .rounded))
                     .foregroundColor(.forestGreen.opacity(0.7))
                     .kerning(2)
-                
                 Spacer()
-                
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 10))
                     .foregroundColor(.terracotta.opacity(0.5))
-                
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.forestGreen.opacity(0.3))
@@ -112,22 +122,36 @@ extension HistoryView {
 
     private var bulkFlipMenu: some View {
         Menu {
-            // 🛠️ FIX: Updated enum cases to .front and .back
-            Button("Characters Only") { helper.bulkFlip(.front) }
-            Button("Meanings Only") { helper.bulkFlip(.back) }
-            Button("Random Mix") { helper.bulkFlip(.random) }
+            Button { helper.bulkFlip(.front) } label: {
+                Label("Show All Characters", systemImage: "character.cursor.ibeam")
+            }
+            Button { helper.bulkFlip(.back) } label: {
+                Label("Show All Meanings", systemImage: "doc.text.magnifyingglass")
+            }
+            Divider()
+            Button { helper.bulkFlip(.random) } label: {
+                Label("Random Flips", systemImage: "shuffle")
+            }
         } label: {
-            Image(systemName: "square.stack.3d.down.right")
+            Image(systemName: "square.3.layers.3d.down.right")
+                .foregroundColor(.forestGreen)
         }
     }
 
     private var sortMenu: some View {
         Menu {
-            Button("Time Learned") { helper.updateSort(.recent) }
-            Button("Index Asc (0-9)") { helper.updateSort(.indexAsc) }
-            Button("Index Desc (9-0)") { helper.updateSort(.indexDesc) }
+            Button { helper.updateSort(.recent) } label: {
+                Label("Timeline", systemImage: "calendar.badge.clock")
+            }
+            Button { helper.updateSort(.indexAsc) } label: {
+                Label("Number (1-9)", systemImage: "textformat.123")
+            }
+            Button { helper.updateSort(.indexDesc) } label: {
+                Label("Number (9-1)", systemImage: "arrow.down.to.line")
+            }
         } label: {
             Image(systemName: "arrow.up.arrow.down")
+                .foregroundColor(.forestGreen)
         }
     }
 }

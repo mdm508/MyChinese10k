@@ -10,72 +10,129 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
     @Published var sections: [NSFetchedResultsSectionInfo] = []
     @Published var selectedMonths: Set<String> = []
     @Published var allAvailableMonths: [String] = []
+    @Published var currentSort: SortMode = .recent
     
     // 🎯 THE MASTER LEDGER
-    // Maps each WordStatus ID to its current flipped state
     @Published var flipStates: [NSManagedObjectID: Bool] = [:]
     
     enum FlipMode { case front, back, random }
     enum SortMode { case recent, indexAsc, indexDesc }
+
+    // MARK: - Filter Status
+    var isFiltered: Bool {
+        currentSort != .recent || !selectedMonths.isEmpty
+    }
 
     init(context: NSManagedObjectContext) {
         self.context = context
         super.init()
         setupFRC()
         updateAvailableMonths()
-        syncLedger() // Initial sync
+        syncLedger()
     }
 
+    // MARK: - 🔄 The Shapeshifter Logic
+    
     private func setupFRC() {
         let request: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
-        request.sortDescriptors = [
-            NSSortDescriptor(key: "sectionIdentifier", ascending: false),
-            NSSortDescriptor(key: "lastModified", ascending: false)
-        ]
+        
+        let descriptors: [NSSortDescriptor]
+        let sectionKey: String?
+        
+        switch currentSort {
+        case .recent:
+            descriptors = [
+                NSSortDescriptor(key: "sectionIdentifier", ascending: false),
+                NSSortDescriptor(key: "lastModified", ascending: false)
+            ]
+            sectionKey = "sectionIdentifier"
+            
+        case .indexAsc:
+            descriptors = [NSSortDescriptor(key: "index", ascending: true)]
+            sectionKey = nil
+            
+        case .indexDesc:
+            descriptors = [NSSortDescriptor(key: "index", ascending: false)]
+            sectionKey = nil
+        }
+        
+        request.sortDescriptors = descriptors
         request.fetchBatchSize = 60
+        
+        if !selectedMonths.isEmpty {
+            request.predicate = NSPredicate(format: "sectionIdentifier IN %@", selectedMonths)
+        }
         
         frc = NSFetchedResultsController(
             fetchRequest: request,
             managedObjectContext: context,
-            sectionNameKeyPath: "sectionIdentifier",
+            sectionNameKeyPath: sectionKey,
             cacheName: nil
         )
         frc.delegate = self
         
-        try? frc.performFetch()
-        self.sections = frc.sections ?? []
+        do {
+            try frc.performFetch()
+            self.sections = frc.sections ?? []
+            self.syncLedger()
+        } catch {
+            print("❌ FRC Fetch Failed: \(error)")
+        }
     }
 
+    func updateSort(_ newSort: SortMode) {
+        withAnimation(.easeInOut) {
+            self.currentSort = newSort
+            setupFRC()
+        }
+    }
+
+    func resetToDefaults() {
+        withAnimation(.spring()) {
+            self.currentSort = .recent
+            self.selectedMonths.removeAll()
+            setupFRC()
+        }
+    }
+
+    // MARK: -  delegado
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         DispatchQueue.main.async {
             self.sections = self.frc.sections ?? []
-            self.syncLedger() // 🔄 Keep the ledger in sync when data changes
+            self.updateAvailableMonths() // 🔄 Keep filter chips updated
+            self.syncLedger()
         }
     }
 
-    // MARK: - 🛠️ Ledger Logic
+    // MARK: - 🛠️ Ledger & Bulk Logic
     
-    /// Ensures every fetched object has an entry in our dictionary
     func syncLedger() {
         let allObjects = frc.fetchedObjects ?? []
+        var hasNewItems = false
+        
         for object in allObjects {
             if flipStates[object.objectID] == nil {
-                flipStates[object.objectID] = false // Default to front
+                flipStates[object.objectID] = false
+                hasNewItems = true
             }
+        }
+        
+        // Only trigger UI update if we actually added something
+        if hasNewItems {
+            self.objectWillChange.send()
         }
     }
 
-    /// Toggles a specific card - only notifies that specific card's listener
     func toggleFlip(for id: NSManagedObjectID) {
         flipStates[id]?.toggle()
     }
 
-    /// ⚡️ THE BULK OPERATION
     func bulkFlip(_ mode: FlipMode) {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-            // Copy dictionary, modify, then push back once for performance
             var newStates = flipStates
-            for id in newStates.keys {
+            let currentlyVisibleIDs = frc.fetchedObjects?.map { $0.objectID } ?? []
+            
+            for id in currentlyVisibleIDs {
                 switch mode {
                 case .front:  newStates[id] = false
                 case .back:   newStates[id] = true
@@ -86,18 +143,10 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
         }
     }
 
-    // MARK: - Filtering & Sorting
+    // MARK: - Filtering
     
     func applyFilters() {
-        var predicates: [NSPredicate] = []
-        if !selectedMonths.isEmpty {
-            predicates.append(NSPredicate(format: "sectionIdentifier IN %@", selectedMonths))
-        }
-        frc.fetchRequest.predicate = predicates.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        
-        try? frc.performFetch()
-        self.sections = frc.sections ?? []
-        syncLedger() // Re-sync after fetch
+        setupFRC()
     }
 
     func toggleMonthFilter(_ month: String) {
@@ -109,20 +158,6 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
         applyFilters()
     }
 
-    func updateSort(_ mode: SortMode) {
-        let sectionSort = NSSortDescriptor(key: "sectionIdentifier", ascending: false)
-        switch mode {
-        case .recent:
-            frc.fetchRequest.sortDescriptors = [sectionSort, NSSortDescriptor(key: "lastModified", ascending: false)]
-        case .indexAsc:
-            frc.fetchRequest.sortDescriptors = [sectionSort, NSSortDescriptor(key: "index", ascending: true)]
-        case .indexDesc:
-            frc.fetchRequest.sortDescriptors = [sectionSort, NSSortDescriptor(key: "index", ascending: false)]
-        }
-        try? frc.performFetch()
-        self.sections = frc.sections ?? []
-    }
-
     private func updateAvailableMonths() {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "WordStatus")
         request.resultType = .dictionaryResultType
@@ -130,12 +165,17 @@ class HistoryHelper: NSObject, ObservableObject, NSFetchedResultsControllerDeleg
         request.propertiesToFetch = ["sectionIdentifier"]
         
         let results = try? context.fetch(request) as? [[String: String]]
-        self.allAvailableMonths = results?.compactMap { $0["sectionIdentifier"] }.sorted(by: >) ?? []
+        let newMonths = results?.compactMap { $0["sectionIdentifier"] }.sorted(by: >) ?? []
+        
+        if self.allAvailableMonths != newMonths {
+            self.allAvailableMonths = newMonths
+        }
     }
 
     // MARK: - Date Helpers
     
     func formatFullMonth(_ id: String) -> String {
+        if id.isEmpty || currentSort != .recent { return "" }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM"
         guard let date = formatter.date(from: id) else { return id }
