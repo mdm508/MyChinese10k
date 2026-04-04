@@ -30,11 +30,12 @@ struct HistoryCard: View {
         Group {
             if let word = word {
                 ZStack {
-                    if !isFlipped {
                         frontView(word: word)
-                    } else {
+                            .rotation3DEffect(.degrees(isFlipped ? 0 : -180), axis: (x: 0, y: 1, z: 0))
+                            .opacity(isFlipped ? 1 : 0)
                         backView(word: word)
-                    }
+                            .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+                            .opacity(isFlipped ? 0 : 1)
                 }
                 .onTapGesture {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
@@ -67,19 +68,13 @@ extension HistoryCard {
     private func frontView(word: Word) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(red: 0.92, green: 0.96, blue: 1.0)) // Icey Blue
-            
+                .fill(Color.orangeDream) // Soft Peach/Orange
             VStack {
                 // Fallback check for empty .characters
-                Text(word.characters.isEmpty ? word.traditional : word.characters)
-                    .font(.system(size: 36, weight: .bold, design: .serif))
-                    .foregroundColor(Color(red: 0.2, green: 0.3, blue: 0.5))
+                Text(word.characters)
+                    .font(.system(.largeTitle))
+                    .foregroundColor(Color.terracotta)
                 
-                Text("LVL \(status.status)")
-                    .font(.system(size: 8, weight: .black))
-                    .padding(4)
-                    .background(Color.black.opacity(0.05))
-                    .cornerRadius(4)
             }
         }
     }
@@ -87,27 +82,50 @@ extension HistoryCard {
     private func backView(word: Word) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(red: 0.94, green: 0.98, blue: 0.94)) // Pastel Green
+                .fill(Color.pastelGreen)
             
-            VStack(spacing: 4) {
-                Text(word.phonetic.isEmpty ? word.pinyin : word.phonetic)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.2))
-                
-                // Horizontal meanings scroller
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(word.meanings, id: \.self) { m in
-                            Text(m)
-                                .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .padding(.horizontal, 8)
-                        }
+            VStack(alignment: .leading, spacing: 4) {
+                let syllables = word.phonetic.components(separatedBy: " ").filter { !$0.isEmpty }
+                VStack(spacing: -2) { // Tight spacing for a professional "block" look
+                    ForEach(syllables, id: \.self) { syllable in
+                        Text(syllable)
+                            .font(.title2)
+                            .foregroundColor(Color.forestGreen)
+                            .bold()
+                            .padding(.vertical, 2)
                     }
                 }
-                
-                Text("#\(status.index)")
-                    .font(.system(size: 9, weight: .black, design: .monospaced))
-                    .opacity(0.2)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .minimumScaleFactor(0.5) // 🛡️ Shrinks the whole stack if there are too many syllables
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(word.meanings, id: \.self) { m in
+                            Text(m)
+                                .font(.footnote)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 4)
+                                .cornerRadius(8)
+                                .background(
+                                                Capsule()
+                                                    .fill(Color.white.opacity(0.6))
+                                                    .shadow(color: .black.opacity(0.05), radius: 1, x: 0, y: 1)
+                                            )
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                }
+                .mask(
+                    HStack(spacing: 0) {
+                        // Left fade
+                        LinearGradient(gradient: Gradient(colors: [.clear, .black]), startPoint: .leading, endPoint: .trailing)
+                            .frame(width: 15)
+                        // Solid middle
+                        Rectangle().fill(Color.black)
+                        // Right fade
+                        LinearGradient(gradient: Gradient(colors: [.black, .clear]), startPoint: .leading, endPoint: .trailing)
+                            .frame(width: 15)
+                    }
+                )
             }
             .padding(8)
         }
@@ -128,4 +146,14 @@ extension HistoryCard {
             }
         }
     }
+}
+
+extension Color {
+    // --- Front Card (Warm/Peach) ---
+    static let orangeDream = Color(red: 1.0, green: 0.96, blue: 0.92)
+    static let terracotta = Color(red: 0.7, green: 0.35, blue: 0.15)
+    
+    // --- Back Card (Cool/Green) ---
+    static let pastelGreen = Color(red: 0.94, green: 0.98, blue: 0.94)
+    static let forestGreen = Color(red: 0.1, green: 0.3, blue: 0.1)
 }
