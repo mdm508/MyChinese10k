@@ -16,8 +16,8 @@ public protocol WordRepresentable {
     var simplified: String { get }
     var traditional: String { get }
     var zhuyin: String { get }
-    var characters: String { get set}
-    var phonetic: String { get set}
+    var characters: String { get}
+    var phonetic: String { get}
 }
 
 public extension WordRepresentable {
