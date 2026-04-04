@@ -31,6 +31,12 @@ struct HistoryCard: View {
                     frontView(word: word)
                         .rotation3DEffect(.degrees(isShowingFront ? 0 : -180), axis: (x: 0, y: 1, z: 0))
                         .opacity(isShowingFront ? 1 : 0)
+                        .overlay(alignment: .topLeading) {
+                            Text("\(status.index)")
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                .foregroundColor(isShowingFront ? Color.terracotta.opacity(0.3) : Color.forestGreen.opacity(0.3))
+                                .padding([.top, .leading], 10)
+                        }
                     
                     backView(word: word)
                         .rotation3DEffect(.degrees(isShowingFront ? 180 : 0), axis: (x: 0, y: 1, z: 0))
@@ -84,8 +90,9 @@ extension HistoryCard {
                 let syllables = word.phonetic.components(separatedBy: " ").filter { !$0.isEmpty }
                 
                 VStack(spacing: -2) {
-                    ForEach(syllables, id: \.self) { syllable in
-                        Text(syllable)
+                    // 🛠️ FIX: Use indices instead of \.self to handle duplicate sounds
+                    ForEach(syllables.indices, id: \.self) { index in
+                        Text(syllables[index])
                             .font(.title2)
                             .foregroundColor(Color.forestGreen)
                             .bold()
@@ -95,11 +102,11 @@ extension HistoryCard {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .minimumScaleFactor(0.5)
                 
-                // Meanings ScrollView
+                // Do the same for meanings just in case!
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
-                        ForEach(word.meanings, id: \.self) { m in
-                            Text(m)
+                        ForEach(word.meanings.indices, id: \.self) { index in
+                            Text(word.meanings[index])
                                 .font(.system(size: 10, weight: .bold))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
