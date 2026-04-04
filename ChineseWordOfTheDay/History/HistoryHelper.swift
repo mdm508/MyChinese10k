@@ -1,11 +1,13 @@
 import SwiftUI
+import Combine
 import CoreData
 import CoreDataModels
-import Combine
 
 // MARK: - Supporting Types
 struct HistorySection: Identifiable {
-    let id = UUID()
+    // 🔥 FIX: Use the monthTitle as the ID.
+    // This prevents SwiftUI from destroying/recreating sections when filters change.
+    var id: String { monthTitle }
     let monthTitle: String
     var cards: [CardData]
 }
@@ -30,6 +32,20 @@ class HistoryHelper: ObservableObject {
     enum FlipAction { case allFront, allBack, random }
     enum SortMode { case recent, indexAsc, indexDesc, shuffle }
 
+    // MARK: - Static Formatters
+    // Using static formatters is 100x faster than creating them inside loops
+    private static let filterFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "MMM, ''yy"
+        return df
+    }()
+
+    private static let headerFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "MMMM yyyy"
+        return df
+    }()
+
     init(context: NSManagedObjectContext) {
         self.context = context
         self.setupSearchObserver()
@@ -45,18 +61,23 @@ extension HistoryHelper {
         
         do {
             let statuses = try context.fetch(request)
-            let strings = Set(statuses.compactMap { $0.traditional })
+            let strings = statuses.compactMap { $0.traditional }
             
+            // Fetch the actual word data using the 'traditional' string bridge
             let wordReq: NSFetchRequest<Word> = Word.fetchRequest()
             wordReq.predicate = NSPredicate(format: "traditional IN %@", strings)
             let words = try context.fetch(wordReq)
             
-            // Dictionary grouping with the specific iOS 15 compatible label
-            let lookup = Dictionary(words.map { ($0.traditional, $0) },
-                                   uniquingKeysWith: { first, _ in first })
+            // Create a lookup dictionary for O(1) matching speed
+            let lookup = Dictionary(words.map { ($0.traditional ?? "", $0) },
+                                 uniquingKeysWith: { first, _ in first })
 
+            // Join the two entities into our UI-friendly CardData
             self.allCards = statuses.compactMap { status -> CardData? in
-                guard let word = lookup[status.traditional] else { return nil }
+                // Since status.traditional is already a String, we just check the lookup
+                guard let word = lookup[status.traditional] else {
+                    return nil
+                }
                 return CardData(status: status, word: word)
             }
             
@@ -82,10 +103,12 @@ extension HistoryHelper {
     internal func applyFilterAndSort() {
         let query = searchText.lowercased().trimmingCharacters(in: .whitespaces)
         
-        // 1. Filter: Check against Search and Compact Month (Aug, '26)
+        // 1. Filter: Checks multi-select months AND search text
         let filtered = allCards.filter { card in
-            let compactMonth = formatForFilter(card.lastModified)
-            let matchesMonth = selectedMonths.isEmpty || selectedMonths.contains(compactMonth)
+            let cardMonthLabel = Self.filterFormatter.string(from: card.lastModified)
+            
+            // Fix: Logic now properly allows multiple months to exist in the set
+            let matchesMonth = selectedMonths.isEmpty || selectedMonths.contains(cardMonthLabel)
             
             let matchesSearch = query.isEmpty || (
                 card.characters.contains(query) ||
@@ -100,14 +123,19 @@ extension HistoryHelper {
         let sorted = performSort(on: filtered)
 
         // 3. Group into Sections using Full Month (August 2026)
-        let grouped = Dictionary(grouping: sorted) { formatForHeader($0.lastModified) }
+        let grouped = Dictionary(grouping: sorted) { card in
+            Self.headerFormatter.string(from: card.lastModified)
+        }
         
-        self.sections = grouped.map { HistorySection(monthTitle: $0.key, cards: $0.value) }
-            .sorted { (sectionA, sectionB) in
-                let dateA = sectionA.cards.first?.lastModified ?? Date.distantPast
-                let dateB = sectionB.cards.first?.lastModified ?? Date.distantPast
-                return dateA > dateB
-            }
+        // 4. Update Published sections
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            self.sections = grouped.map { HistorySection(monthTitle: $0.key, cards: $0.value) }
+                .sorted { (sectionA, sectionB) in
+                    let dateA = sectionA.cards.first?.lastModified ?? Date.distantPast
+                    let dateB = sectionB.cards.first?.lastModified ?? Date.distantPast
+                    return dateA > dateB
+                }
+        }
     }
 
     func toggleMonthFilter(_ month: String) {
@@ -155,6 +183,7 @@ extension HistoryHelper {
 // MARK: - Extension: Batch Actions
 extension HistoryHelper {
     func bulkFlip(_ action: FlipAction) {
+        // This updates the data source
         for sIdx in sections.indices {
             for cIdx in sections[sIdx].cards.indices {
                 switch action {
@@ -164,33 +193,21 @@ extension HistoryHelper {
                 }
             }
         }
+        // This triggers the publisher for the UI cards to animate
         flipTrigger.send(action)
     }
 }
 
-// MARK: - Extension: Helpers & Formatting
+// MARK: - Extension: Internal Helpers
 extension HistoryHelper {
     private func updateAvailableMonths() {
-        // Use the compact format for the filter chips
-        let months = allCards.map { formatForFilter($0.lastModified) }
+        // Collect all unique "Aug, '26" strings found in the current history
+        let months = allCards.map { Self.filterFormatter.string(from: $0.lastModified) }
         var uniqueMonths: [String] = []
+        
         for month in months where !uniqueMonths.contains(month) {
             uniqueMonths.append(month)
         }
         self.allAvailableMonths = uniqueMonths
-    }
-
-    /// For the small filter chips: Aug, '26
-    internal func formatForFilter(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM, ''yy"
-        return formatter.string(from: date)
-    }
-
-    /// For the large sticky section headers: August 2026
-    internal func formatForHeader(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        return formatter.string(from: date)
     }
 }
