@@ -4,7 +4,7 @@ import CoreDataModels
 
 struct HistoryStreamView: View {
     @ObservedObject var helper: HistoryHelper
-    let startMonth: String // Expecting "yyyy-MM" format
+    let startMonth: String // "yyyy-MM"
     
     @Environment(\.managedObjectContext) var viewContext
     
@@ -13,62 +13,73 @@ struct HistoryStreamView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(helper.sections, id: \.name) { section in
-                        // Section Header (e.g., APRIL 2026)
+                        // 1. THE BIG DIVIDER (New Month Chapter)
                         monthDivider(section.name)
                             .id(section.name)
                         
                         let statuses = section.objects as? [WordStatus] ?? []
                         
+                        // 2. THE HOT BOY STREAM
                         ForEach(statuses, id: \.objectID) { status in
-                            // 🎯 The Stream Bridge: Fetch the word for this row
-                            if let word = fetchWord(for: status) {
+                            // Use the custom fetcher we committed earlier
+                            if let word = Word.fetchWord(at: status.index, context: viewContext) {
                                 HistoryCardDetail(
                                     status: status,
                                     word: word,
                                     isStreamMode: true
                                 )
                                 .id(status.objectID)
+                                .padding(.vertical, 12) // Space for the Pokéball pins to breathe
                             }
                         }
                     }
                 }
             }
-            .background(Color(UIColor.systemGroupedBackground))
+            .background(Color.pastelGreen.opacity(0.15).ignoresSafeArea())
             .navigationTitle("History Stream")
             .onAppear {
-                // Slight delay for iOS 15 ScrollViewReader reliability
+                // Smooth glide to the target month
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    withAnimation(.spring()) {
+                    withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
                         proxy.scrollTo(startMonth, anchor: .top)
                     }
                 }
             }
         }
     }
-    
-    // MARK: - Internal Helper
-    
-    private func fetchWord(for status: WordStatus) -> Word? {
-        let request: NSFetchRequest<Word> = Word.fetchRequest()
-        request.predicate = NSPredicate(format: "index == %d", status.index)
-        request.fetchLimit = 1
-        return try? viewContext.fetch(request).first
-    }
-    
-    // MARK: - Subviews
+}
+
+// MARK: - Subviews & Styling
+extension HistoryStreamView {
     
     private func monthDivider(_ identifier: String) -> some View {
-        let displayTitle = formatFullMonth(identifier)
-        
-        return VStack(spacing: 0) {
-            Text(displayTitle)
-                .font(.system(size: 14, weight: .black, design: .rounded))
-                .foregroundColor(.blue)
-                .kerning(2)
-                .padding(.vertical, 80)
+        VStack(spacing: 15) {
+            Text(formatFullMonth(identifier))
+                .font(.system(size: 13, weight: .black, design: .rounded))
+                .foregroundColor(.forestGreen.opacity(0.4))
+                .kerning(5)
+                .padding(.top, 120) // Give the new month plenty of room
             
-            Divider()
-                .padding(.horizontal, 40)
+            // Sexy custom line for August/September transitions
+            HStack(spacing: 10) {
+                Rectangle()
+                    .fill(
+                        LinearGradient(colors: [.clear, .terracotta.opacity(0.3)], startPoint: .leading, endPoint: .trailing)
+                    )
+                    .frame(height: 1)
+                
+                Image(systemName: "sparkles")
+                    .font(.system(size: 10))
+                    .foregroundColor(.terracotta.opacity(0.5))
+                
+                Rectangle()
+                    .fill(
+                        LinearGradient(colors: [.terracotta.opacity(0.3), .clear], startPoint: .leading, endPoint: .trailing)
+                    )
+                    .frame(height: 1)
+            }
+            .padding(.horizontal, 50)
+            .padding(.bottom, 60)
         }
     }
 

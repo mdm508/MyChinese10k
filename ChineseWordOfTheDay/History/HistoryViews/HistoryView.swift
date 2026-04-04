@@ -12,7 +12,6 @@ struct HistoryView: View {
     ]
     
     var body: some View {
-        NavigationView {
             ZStack {
                 Color(UIColor.systemGroupedBackground).ignoresSafeArea()
                 
@@ -42,17 +41,27 @@ struct HistoryView: View {
                     }
                     .padding(.top)
                 }
-            }
-            .navigationTitle("History")
+            }// ... inside HistoryView body, attached to the ZStack ...
+            .navigationBarTitleDisplayMode(.inline) // 🎯 Keep the bar slim
             .toolbar {
+                // 🛠️ CENTER: The Title (Locked on the same line as the back button)
+                ToolbarItem(placement: .principal) {
+                    Text("HISTORY")
+                        .font(.system(size: 12, weight: .black))
+                        .foregroundColor(.terracotta.opacity(0.7))
+                        .kerning(2)
+                }
+
+                // 🛠️ RIGHT: Your Tools
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    bulkFlipMenu
-                    sortMenu
+                    HStack(spacing: 16) {
+                        bulkFlipMenu
+                        sortMenu
+                    }
+                    .foregroundColor(.forestGreen)
                 }
             }
         }
-        .navigationViewStyle(.stack)
-    }
 }
 
 // MARK: - Subviews Extension
@@ -84,12 +93,31 @@ extension HistoryView {
     }
     
     private func sectionHeader(_ title: String) -> some View {
-        Text(helper.formatFullMonth(title))
-            .font(.system(size: 14, weight: .black, design: .rounded))
-            .foregroundColor(.secondary.opacity(0.7))
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(UIColor.systemGroupedBackground))
+        // 🔗 THE HEADER LINK: Pointing to the Streamer
+        NavigationLink(destination: HistoryStreamView(helper: helper, startMonth: title)) {
+            HStack {
+                Text(helper.formatFullMonth(title))
+                    .font(.system(size: 14, weight: .black, design: .rounded))
+                    .foregroundColor(.forestGreen.opacity(0.7))
+                    .kerning(2)
+                
+                Spacer()
+                
+                // ⚡️ The "Stream" Indicator
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 10))
+                    .foregroundColor(.terracotta.opacity(0.5))
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.forestGreen.opacity(0.3))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.pastelGreen.opacity(0.15)) // Sexy subtle bar
+            .contentShape(Rectangle()) // 🛡️ Makes the WHOLE bar tappable, not just the text
+        }
+        .buttonStyle(PlainButtonStyle()) // 🛡️ Stops the header from turning blue
     }
 
     private var bulkFlipMenu: some View {

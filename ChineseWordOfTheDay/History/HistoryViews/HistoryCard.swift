@@ -7,7 +7,7 @@ struct HistoryCard: View {
     let flipPublisher: PassthroughSubject<HistoryHelper.FlipAction, Never>
     
     @Environment(\.managedObjectContext) var context
-    @State private var isFlipped = false
+    @State private var isShowingFront = true
     @State private var showDetail = false
     
     // 🎯 Self-Fetching Logic with Debugging
@@ -31,15 +31,15 @@ struct HistoryCard: View {
             if let word = word {
                 ZStack {
                         frontView(word: word)
-                            .rotation3DEffect(.degrees(isFlipped ? 0 : -180), axis: (x: 0, y: 1, z: 0))
-                            .opacity(isFlipped ? 1 : 0)
+                            .rotation3DEffect(.degrees(isShowingFront ? 0 : -180), axis: (x: 0, y: 1, z: 0))
+                            .opacity(isShowingFront ? 1 : 0)
                         backView(word: word)
-                            .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
-                            .opacity(isFlipped ? 0 : 1)
+                            .rotation3DEffect(.degrees(isShowingFront ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+                            .opacity(isShowingFront ? 0 : 1)
                 }
                 .onTapGesture {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                        isFlipped.toggle()
+                        isShowingFront.toggle()
                     }
                     UISelectionFeedbackGenerator().selectionChanged()
                 }
@@ -140,9 +140,9 @@ extension HistoryCard {
     private func handleBulkFlip(_ action: HistoryHelper.FlipAction) {
         withAnimation(.spring()) {
             switch action {
-            case .allFront: isFlipped = false
-            case .allBack: isFlipped = true
-            case .random: isFlipped = Bool.random()
+            case .allFront: isShowingFront = false
+            case .allBack: isShowingFront = true
+            case .random: isShowingFront = Bool.random()
             }
         }
     }

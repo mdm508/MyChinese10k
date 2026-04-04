@@ -15,7 +15,6 @@ struct HistoryCardDetail: View {
         if isStreamMode {
             detailContent
         } else {
-            NavigationView {
                 detailContent
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
@@ -25,8 +24,6 @@ struct HistoryCardDetail: View {
                                 .foregroundColor(.forestGreen)
                         }
                     }
-            }
-            .navigationViewStyle(.stack)
         }
     }
 
