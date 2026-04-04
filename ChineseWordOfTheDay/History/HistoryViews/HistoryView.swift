@@ -1,12 +1,12 @@
 import SwiftUI
 import CoreData
+import Combine
 import CoreDataModels
 
 struct HistoryView: View {
     @StateObject var helper: HistoryHelper
     
-    // Grid layout configuration
-    internal let columns = [
+    private let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12)
@@ -14,15 +14,19 @@ struct HistoryView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Horizontal Month Filter Bar
             monthFilterBar
             
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 12, pinnedViews: [.sectionHeaders]) {
-                    ForEach(helper.sections) { section in
-                        Section(header: monthHeader(section.monthTitle)) {
-                            ForEach(section.cards) { card in
-                                HistoryCard(card: card, flipPublisher: helper.flipTrigger)
+                    ForEach(helper.sections, id: \.name) { section in
+                        Section(header: monthHeader(section.name)) {
+                            let statuses = section.objects as? [WordStatus] ?? []
+                            
+                            ForEach(statuses, id: \.objectID) { (status: WordStatus) in
+                                HistoryCardBridge(
+                                    status: status,
+                                    flipTrigger: helper.flipTrigger
+                                )
                             }
                         }
                     }
@@ -33,124 +37,106 @@ struct HistoryView: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .navigationTitle("History")
-        .navigationBarTitleDisplayMode(.inline)
-        // iOS 15 compliant searchable
-        .searchable(text: $helper.searchText, prompt: "Search index, pinyin, or meaning")
-        .toolbar {
-            // iOS 15 uses navigationBarTrailing instead of topBarTrailing
-            ToolbarItem(placement: .navigationBarTrailing) {
-                mainMenu
+        .searchable(text: $helper.searchText, prompt: "Search index or characters")
+    }
+}
+
+// MARK: - The Bridge (Fetches Word Data)
+struct HistoryCardBridge: View {
+    let status: WordStatus
+    let flipTrigger: PassthroughSubject<HistoryHelper.FlipAction, Never>
+    
+    @Environment(\.managedObjectContext) var context
+    
+    // Lazy lookup for the dictionary content
+    private var word: Word? {
+        let request: NSFetchRequest<Word> = Word.fetchRequest()
+        request.predicate = NSPredicate(format: "index == %d", status.index)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
+    }
+    
+    var body: some View {
+        HistoryCard(
+            status: status,
+            characters: word?.traditional ?? "",
+            meaning: word?.meanings.first ?? "",
+            flipPublisher: flipTrigger
+        )
+    }
+}
+
+// MARK: - Visual Card Component
+struct HistoryCard: View {
+    let status: WordStatus
+    let characters: String
+    let meaning: String
+    let flipPublisher: PassthroughSubject<HistoryHelper.FlipAction, Never>
+    
+    @State private var isFlipped = false
+    
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                .shadow(color: .black.opacity(0.05), radius: 2)
+            
+            VStack(spacing: 4) {
+                if !isFlipped {
+                    Text(characters)
+                        .font(.system(size: 28, weight: .bold, design: .serif))
+                } else {
+                    Text(meaning)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .multilineTextAlignment(.center)
+                        .padding(4)
+                }
+                
+                Text("#\(status.index)")
+                    .font(.system(size: 9, weight: .black))
+                    .opacity(0.2)
+            }
+        }
+        .aspectRatio(1, contentMode: .fit)
+        .onReceive(flipPublisher) { action in
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                switch action {
+                case .allFront: isFlipped = false
+                case .allBack: isFlipped = true
+                case .random: isFlipped = Bool.random()
+                }
             }
         }
     }
 }
 
-// MARK: - Extension: Filter Bar Components
+// MARK: - View Extensions
 extension HistoryView {
     private var monthFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(helper.allAvailableMonths, id: \.self) { month in
-                    monthToggleChip(for: month)
-                }
-                
-                if !helper.selectedMonths.isEmpty {
-                    clearFilterButton
+                ForEach(helper.allAvailableMonths, id: \.self) { monthID in
+                    let isSelected = helper.selectedMonths.contains(monthID)
+                    Text(monthID) // Simplified label
+                        .font(.system(size: 12, weight: .bold))
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(isSelected ? Color.blue : Color.secondary.opacity(0.1))
+                        .foregroundColor(isSelected ? .white : .primary)
+                        .clipShape(Capsule())
+                        .onTapGesture { helper.toggleMonthFilter(monthID) }
                 }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            .padding(8)
         }
         .background(Color(UIColor.secondarySystemGroupedBackground))
-        .overlay(
-            VStack {
-                Spacer()
-                Divider()
-            }
-        )
     }
     
-    private func monthToggleChip(for month: String) -> some View {
-        let isSelected = helper.selectedMonths.contains(month)
-        
-        return Text(month)
-            // iOS 15 safe font weight
-            .font(.system(size: 12, weight: .bold, design: .rounded))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(isSelected ? Color.blue : Color.secondary.opacity(0.12))
-            .foregroundColor(isSelected ? .white : .primary)
-            .clipShape(Capsule())
-            .onTapGesture {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                    helper.toggleMonthFilter(month)
-                }
-            }
-    }
-    
-    private var clearFilterButton: some View {
-        Button {
-            withAnimation { helper.clearMonthFilters() }
-        } label: {
-            Image(systemName: "xmark.circle.fill")
-                .foregroundColor(.secondary) // Replaced foregroundStyle
-                .font(.body)
-        }
-    }
-}
-
-// MARK: - Extension: Menu & Navigation
-extension HistoryView {
-    internal var mainMenu: some View {
-        Menu {
-            Section {
-                Button { helper.bulkFlip(.allFront) } label: {
-                    Label("Characters", systemImage: "a.square")
-                }
-                Button { helper.bulkFlip(.allBack) } label: {
-                    Label("Meanings", systemImage: "character.book.closed")
-                }
-                Button { helper.bulkFlip(.random) } label: {
-                    Label("Random", systemImage: "dice")
-                }
-            }
-            
-            Section {
-                Button { helper.sortByRecent() } label: {
-                    Label("Recent", systemImage: "clock")
-                }
-                Button { helper.shuffleCards() } label: {
-                    Label("Shuffle", systemImage: "shuffle")
-                }
-            }
-        } label: {
-            Image(systemName: "ellipsis.circle")
-                .font(.system(size: 18, weight: .semibold)) // Safe weight
-        }
-    }
-}
-
-// MARK: - Extension: Section Headers
-extension HistoryView {
-    internal func monthHeader(_ title: String) -> some View {
-        // 🔗 Tapping the header now "Dives In"
-        NavigationLink(destination: HistoryStreamView(helper: helper, startMonth: title)) {
-            HStack {
-                Text(title.uppercased())
-                    .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundColor(.blue) // Color cue that it's tappable
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.secondary.opacity(0.5))
-            }
-            .padding(.horizontal, 12)
+    private func monthHeader(_ name: String) -> some View {
+        Text(name.uppercased())
+            .font(.system(size: 11, weight: .black))
+            .foregroundColor(.blue)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 8)
-            .background(Capsule().fill(Color(UIColor.secondarySystemGroupedBackground)))
-            .padding(.vertical, 8)
-        }
-        .buttonStyle(PlainButtonStyle()) // Keeps it from looking like a standard blue button
+            .background(Color(UIColor.systemGroupedBackground))
     }
 }

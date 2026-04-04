@@ -1,11 +1,24 @@
 import SwiftUI
+import CoreData
+import CoreDataModels
 
 struct HistoryCardDetail: View {
-    let card: CardData
+    // 🔥 NEW: Pass the managed object and the context
+    let status: WordStatus
+    let context: NSManagedObjectContext
     var isStreamMode: Bool = false
     
     @Environment(\.dismiss) var dismiss
     @StateObject private var speechVM = SpeechViewModel()
+
+    // MARK: - Computed Data
+    // Fetch the word data lazily using the indexed bridge
+    private var word: Word? {
+        let request: NSFetchRequest<Word> = Word.fetchRequest()
+        request.predicate = NSPredicate(format: "index == %d", status.index)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
+    }
 
     var body: some View {
         if isStreamMode {
@@ -29,20 +42,22 @@ struct HistoryCardDetail: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
                 
-                // 1. --- 🐲 HERO SECTION (Inside the Card) ---
+                // 1. --- 🐲 HERO SECTION ---
                 VStack(spacing: 16) {
-                    Text(card.characters)
+                    let chars = word?.characters ?? ""
+                    
+                    Text(chars)
                         .font(.system(size: 110, weight: .bold, design: .serif))
                         .foregroundColor(speechVM.isSpeaking ? .blue : .primary)
                         .scaleEffect(speechVM.isSpeaking ? 1.05 : 1.0)
                         .shadow(color: speechVM.isSpeaking ? .blue.opacity(0.15) : .clear, radius: 10)
                         .onTapGesture {
-                            speechVM.speak(card.characters, .chineseTaiwan)
+                            speechVM.speak(chars, .chineseTaiwan)
                             UISelectionFeedbackGenerator().selectionChanged()
                         }
                     
                     VStack(spacing: 4) {
-                        Text(card.phonetic)
+                        Text(word?.phonetic ?? "")
                             .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundColor(.secondary)
                         
@@ -56,25 +71,24 @@ struct HistoryCardDetail: View {
                 }
                 .padding(.vertical, 50)
                 .frame(maxWidth: .infinity)
-                .background(Color.primary.opacity(0.02)) // Subtle header tint
+                .background(Color.primary.opacity(0.02))
                 
                 Divider()
 
-                // 2. --- 📝 DATA SECTION (Inside the Card) ---
+                // 2. --- 📝 DATA SECTION ---
                 VStack(alignment: .leading, spacing: 30) {
                     detailRow(title: "Meanings", content: meaningsList)
                     
                     Divider().opacity(0.5)
                     
                     HStack(alignment: .top) {
-                        detailRow(title: "Index", content: Text("#\(card.wordIndex)"))
+                        detailRow(title: "Index", content: Text("#\(status.index)"))
                         Spacer()
                         detailRow(title: "Learned", content: Text(formattedDate))
                     }
                 }
                 .padding(30)
             }
-            /* --- 🎨 THE "SINGLE CARD" STYLING --- */
             .background(Color(UIColor.secondarySystemGroupedBackground))
             .cornerRadius(32)
             .overlay(
@@ -82,7 +96,6 @@ struct HistoryCardDetail: View {
                     .stroke(Color.primary.opacity(0.05), lineWidth: 1)
             )
             .shadow(color: Color.black.opacity(0.06), radius: 20, x: 0, y: 10)
-            /* ------------------------------------ */
             .padding(.horizontal, 20)
             .padding(.top, isStreamMode ? 0 : 20)
             .padding(.bottom, isStreamMode ? 100 : 20)
@@ -94,14 +107,17 @@ struct HistoryCardDetail: View {
     // MARK: - Subviews
     
     private var meaningsList: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            ForEach(card.meanings.indices, id: \.self) { i in
+        // Assume meanings is an array of strings on your Word entity
+        let meanings = word?.meanings ?? []
+        
+        return VStack(alignment: .leading, spacing: 14) {
+            ForEach(meanings.indices, id: \.self) { i in
                 HStack(alignment: .top, spacing: 10) {
                     Text("\(i + 1).")
                         .font(.system(size: 18, weight: .black, design: .rounded))
                         .foregroundColor(.blue.opacity(0.5))
                     
-                    Text(card.meanings[i])
+                    Text(meanings[i])
                         .font(.system(size: 19, weight: .medium, design: .rounded))
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -110,9 +126,10 @@ struct HistoryCardDetail: View {
     }
     
     private var formattedDate: String {
+        guard let date = status.lastModified else { return "Unknown" }
         let df = DateFormatter()
         df.dateFormat = "MMMM d, yyyy"
-        return df.string(from: card.lastModified)
+        return df.string(from: date)
     }
 
     private func detailRow<Content: View>(title: String, content: Content) -> some View {

@@ -103,20 +103,32 @@ final class WordService: ObservableObject{
     /// Update Word Status for `word`
     private func upsertWordStatus(for word: Word, to status: LearnStatus) throws {
         let request: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
-        request.predicate = NSPredicate(format: "traditional == %@", word.traditional)
+        // Using the index is faster for the lookup
+        request.predicate = NSPredicate(format: "index == %d", word.index)
         request.fetchLimit = 1
-
         let wordStatus: WordStatus
+        let now = Date()
         if let existing = try context.fetch(request).first {
+            // --- CASE: EXISTING ---
             wordStatus = existing
+            // We do NOT update lastModified or sectionIdentifier here.
+            // This ensures the word stays in its original "Month" section.
         } else {
+            // --- CASE: NEW CREATION ---
             let newStatus = WordStatus(context: context)
-            newStatus.traditional = word.traditional
+            newStatus.index = word.index
+            
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM"
+            newStatus.sectionIdentifier = formatter.string(from: now)
+            
             wordStatus = newStatus
         }
         wordStatus.status = status.rawValue
-        wordStatus.lastModified = Date()
+        wordStatus.lastModified = now
     }
+    
     private func getOrCreateWordIndex() throws -> WordIndex {
         let request: NSFetchRequest<WordIndex> = WordIndex.fetchRequest()
         request.fetchLimit = 1

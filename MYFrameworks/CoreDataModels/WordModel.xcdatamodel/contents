@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25C56" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1.0.0">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24837" systemVersion="25D2128" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1.0.0">
     <entity name="Word" representedClassName="Word" syncable="YES">
         <attribute name="characters" optional="YES" attributeType="String"/>
         <attribute name="context" optional="YES" attributeType="Transformable" valueTransformerName="StringArrayTransformer"/>
@@ -22,9 +22,16 @@
         <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="WordStatus" representedClassName="WordStatus" syncable="YES">
+        <attribute name="index" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="lastModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="sectionIdentifier" optional="YES" attributeType="String"/>
         <attribute name="status" optional="YES" attributeType="Integer 64" defaultValueString="1" usesScalarValueType="YES"/>
-        <attribute name="traditional" attributeType="String" defaultValueString=""/>
+        <fetchIndex name="sectionIdentifier">
+            <fetchIndexElement property="sectionIdentifier" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <fetchIndex name="index">
+            <fetchIndexElement property="index" type="Binary" order="ascending"/>
+        </fetchIndex>
     </entity>
     <configuration name="cloud" usedWithCloudKit="YES">
         <memberEntity name="WordIndex"/>

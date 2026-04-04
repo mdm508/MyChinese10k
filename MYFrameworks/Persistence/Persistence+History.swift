@@ -375,7 +375,7 @@ final class PersistentHistoryTracker {
         do {
             let statusFetch: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
             let all = try context.fetch(statusFetch)
-            let grouped = Dictionary(grouping: all, by: { $0.traditional })
+            let grouped = Dictionary(grouping: all, by: { $0.index })
             for (_, group) in grouped where group.count > 1 {
                 let keep = group.max { lhs, rhs in
                     let lDate = lhs.lastModified ?? .distantPast

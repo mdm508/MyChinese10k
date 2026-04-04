@@ -1,22 +1,28 @@
 //
 //  WordStatus+CoreDataProperties.swift
-//  WordFramework
+//  CoreDataModels
 //
-//  Created by m on 12/11/23.
+//  Created by Matthew McLaughlin on 4/3/26.
 //
 //
 
-import Foundation
-import CoreData
+public import Foundation
+public import CoreData
 
 
-public extension WordStatus {
-    @nonobjc class func fetchRequest() -> NSFetchRequest<WordStatus> {
+public typealias WordStatusCoreDataPropertiesSet = NSSet
+
+extension WordStatus {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<WordStatus> {
         return NSFetchRequest<WordStatus>(entityName: "WordStatus")
     }
-    @NSManaged var status: Int64
-    @NSManaged var traditional: String
-    @NSManaged var lastModified: Date?
+
+    @NSManaged public var lastModified: Date?
+    @NSManaged public var status: Int64
+    @NSManaged public var sectionIdentifier: String?
+    @NSManaged public var index: Int64
+
 }
 
 extension WordStatus : Identifiable {
@@ -46,45 +52,5 @@ public extension Word {
             let sharedDefaults = UserDefaults(suiteName: Constants.appGroupId)
             sharedDefaults?.set(encodedWord, forKey: Constants.mockWordKey)
         }
-    }
-}
-extension WordStatus {
-    
-    private static let dayFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateStyle = .medium
-        df.doesRelativeDateFormatting = true
-        return df
-    }()
-    
-    private static let monthFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.dateFormat = "MMMM yyyy"
-        return df
-    }()
-
-    @objc public var daySection: String {
-        return Self.dayFormatter.string(from: lastModified ?? Date())
-    }
-
-    @objc public var monthSection: String {
-        return Self.monthFormatter.string(from: lastModified ?? Date())
-    }
-    
-    @objc public var weekSection: String {
-        let calendar = Calendar.current
-        let date = lastModified ?? Date()
-        
-        // Find the start and end of the week for a better UI string
-        if let weekInterval = calendar.dateInterval(of: .weekOfYear, for: date) {
-            let start = Self.dayFormatter.string(from: weekInterval.start)
-            let end = Self.dayFormatter.string(from: calendar.date(byAdding: .day, value: -1, to: weekInterval.end) ?? weekInterval.end)
-            return "\(start) - \(end)"
-        }
-        
-        // Fallback to simple week number if interval fails
-        let week = calendar.component(.weekOfYear, from: date)
-        let year = calendar.component(.year, from: date)
-        return "Week \(week), \(year)"
     }
 }

@@ -1,55 +1,57 @@
 import CoreData
+import Foundation
 import CoreDataModels
 
 struct DataSeeder {
     static func seedMockHistory(context: NSManagedObjectContext) {
-        // 1. Wipe existing statuses for a clean test run
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: WordStatus.fetchRequest())
+        // 1. Wipe existing statuses
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = WordStatus.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         _ = try? context.execute(deleteRequest)
         
-        // 2. Fetch Words (Filtered for valid characters)
-        let wordRequest: NSFetchRequest<Word> = Word.fetchRequest()
-        wordRequest.predicate = NSPredicate(format: "index <= 13810 AND traditional != nil AND traditional != ''")
-        wordRequest.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
+        print("🧹 Existing history wiped.")
+
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM" // Matches your HistoryHelper logic
         
-        // Limit to 1000 for a solid performance test
-        wordRequest.fetchLimit = 13810
+        let now = Date()
+        // Start ~28 months ago to spread out 13.8k words
+        var baseDate = calendar.date(byAdding: .month, value: -28, to: now) ?? now
 
-        do {
-            let words = try context.fetch(wordRequest)
-            print("📦 Found \(words.count) valid words to seed.")
-
-            let calendar = Calendar.current
-            let now = Date()
-            var currentDate = calendar.date(byAdding: .month, value: -10, to: now) ?? now
-            var seededChars = Set<String>()
-
-            // 3. Batch Create Statuses
-            for (i, word) in words.enumerated() {
-                let char = word.traditional
-                
-                if char.isEmpty || seededChars.contains(char) { continue }
-                seededChars.insert(char)
-
-                let status = WordStatus(context: context)
-                status.traditional = char
-                status.status = Int64.random(in: 1...5)
-                
-                // ⚠️ COMMENTED OUT until you add 'wordIndex' to the .xcdatamodeld file
-                // status.wordIndex = word.index
-                
-                // Date clustering logic
-                if i % 40 == 0 {
-                    currentDate = calendar.date(byAdding: .day, value: 14, to: currentDate) ?? now
-                }
-                
-                let jitter = Int.random(in: -3600...3600)
-                status.lastModified = calendar.date(byAdding: .second, value: jitter, to: currentDate)
-            }
-
-            try context.save()
-            print("✅ Successfully seeded \(seededChars.count) unique WordStatuses.")
+        // 2. The Big Loop
+        for i in 1...13810 {
+            let status = WordStatus(context: context)
             
+            status.index = Int64(i)
+            status.status = 2 // All set to mastered/seen
+            
+            // Increment month every 500 words
+            if i % 500 == 0 {
+                baseDate = calendar.date(byAdding: .month, value: 1, to: baseDate) ?? now
+            }
+            
+            // Randomize the specific day/time within that month block
+            let dayJitter = Int.random(in: 0...27)
+            let hourJitter = Int.random(in: 0...23)
+            
+            if let finalDate = calendar.date(byAdding: .day, value: dayJitter, to: baseDate),
+               let fullDate = calendar.date(byAdding: .hour, value: hourJitter, to: finalDate) {
+                
+                status.lastModified = fullDate
+                // ✅ CRITICAL: Set the section identifier for the FRC
+                status.sectionIdentifier = formatter.string(from: fullDate)
+            } else {
+                status.lastModified = baseDate
+                status.sectionIdentifier = formatter.string(from: baseDate)
+            }
+        }
+
+        // 3. Save to Disk
+        do {
+            try context.save()
+            print("✅ 13,810 WordStatuses seeded with Section Identifiers.")
+            print("📅 Test range: \(formatter.string(from: calendar.date(byAdding: .month, value: -28, to: now)!)) to \(formatter.string(from: now))")
         } catch {
             print("❌ Seeding failed: \(error)")
         }
