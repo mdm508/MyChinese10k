@@ -22,8 +22,6 @@ class WordShareItemSource: NSObject, UIActivityItemSource {
         self.appURL = appURL
         super.init()
     }
-
-    // This returns the actual URL to be shared
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
         return appURL
     }
@@ -31,15 +29,9 @@ class WordShareItemSource: NSObject, UIActivityItemSource {
     func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
         return appURL
     }
-
-    // This is the "Banner" magic 🪄
     func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
         let metadata = LPLinkMetadata()
-        
-        // The Large Title
         metadata.title = "Today's word is \(word) (\(pinyin))"
-        
-        // The Subtitle/Description
         metadata.originalURL = appURL
         if let image = UIImage(named: "appstore1024") {
             metadata.iconProvider = NSItemProvider(object: image)

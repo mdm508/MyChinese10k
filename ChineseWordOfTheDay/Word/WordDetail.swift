@@ -20,7 +20,6 @@ struct WordDetail {
     @State private var isProcessingNextWord = false
     @StateObject private var speechVM = SpeechViewModel()
 }
-
 // MARK: - Body Definition
 extension WordDetail: View {
     var body: some View {
@@ -32,7 +31,6 @@ extension WordDetail: View {
                     }
                 }
             } else {
-                // Fallback when all words have been completed
                 VStack{
                     Text("Congratulations")
                     Image("AppIconDisplay")
@@ -47,42 +45,33 @@ extension WordDetail: View {
 }
 // MARK: - Layout & Subviews
 private extension WordDetail {
-    /// The main content layout inside the GeometryReader.
     func content(in geo: GeometryProxy) -> some View {
         VStack(alignment: .center) {
-            // Learning progress bar
             Group {
-                Text(ws.currentWord.phonetic) // or word.phonetic if you add it to MockWord
-                    .font(.headline)
                 WordView(word: ws.currentWord.characters, size: geo.size)
                 .foregroundColor(speechVM.isSpeaking ? .blue : .terracotta)
-
+                Text(ws.currentWord.phonetic)
+                    .font(.headline)
             }.onTapGesture {
                 self.speechVM.speak(ws.currentWord.traditional, .chineseTaiwan)
             }
             meaningsList
-
             nextButton(in: geo)
-                
         }
         .padding()
         .onReceive(NotificationCenter.default.publisher(for: .settingDidChange),
                    perform: {_ in ws.settingsUpdated()})
     }
-    /// A scrollable list of the word's meanings.
     var meaningsList: some View {
         List(ws.currentWord.meanings, id: \.self) { meaning in
             Text(meaning)
-            // 1. Make the row react to a tap
                         .onTapGesture {
-                            // 2. Tell the VM to speak the specific meaning in English
                             speechVM.speak(meaning, .english)
                         }
         }
         .listStyle(.plain)
         .layoutPriority(1)
     }
-    /// The Next button centered at the bottom.
     func nextButton(in geo: GeometryProxy) -> some View {
         VStack {
             Spacer()

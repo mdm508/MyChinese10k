@@ -11,17 +11,14 @@ import CoreDataModels
 
 struct CardData: Identifiable, Equatable {
     let id: NSManagedObjectID // Directly using the Core Data ID
-    
     // Metadata (from WordStatus)
     let lastModified: Date
     let masteryStatus: Int64
-    
     // Content (from Word)
     let wordIndex: Int64
     let characters: String
     let phonetic: String
     let meanings: [String]
-    
     // Computed helper for the UI
     var displayMeaning: String {
         meanings.first ?? ""
@@ -45,7 +42,6 @@ struct CardData: Identifiable, Equatable {
         // 4. Use your existing Word extension method for clean meanings
         self.meanings = word.cleanedMeanings()
     }
-    
     // Equatable conformance to help SwiftUI animate moves/shuffles
     static func == (lhs: CardData, rhs: CardData) -> Bool {
         lhs.id == rhs.id &&

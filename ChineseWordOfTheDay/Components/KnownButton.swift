@@ -16,13 +16,11 @@ struct BigGreenButton: View {
 extension BigGreenButton{
     var body: some View {
         Button(action: {
-            // Add haptic feedback
             let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
             impactFeedback.impactOccurred()
             
             self.action()
         }, label: {
-            // Inner circle with depth effect
             ZStack {
                 Circle()
                     .foregroundStyle(Color.mint)
@@ -33,7 +31,6 @@ extension BigGreenButton{
                             y: 0
                             )
                     .overlay(
-                        // Inner highlight for 3D effect
                         Circle()
                             .fill(LinearGradient(
                                 gradient: Gradient(colors: [
@@ -46,11 +43,9 @@ extension BigGreenButton{
                             .frame(width: self.buttonSize, height: self.buttonSize)
                     )
                     .overlay(
-                        // Border for definition
                         Circle()
                             .stroke(Color.clear, lineWidth: 1.5)
                     )
-
                 Text("知道了")
                     .font(.system(size: self.buttonSize * 0.23, weight: .light))
                     .foregroundColor(.white)
@@ -68,8 +63,6 @@ extension BigGreenButton{
         )
     }
 }
-
-// Custom button style for better button feel
 struct ScaleButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -79,7 +72,7 @@ struct ScaleButtonStyle: ButtonStyle {
     }
 }
 extension BigGreenButton {
-    static let percentageOfScreen: CGFloat = 20/100 // Increased from 16/100
+    static let percentageOfScreen: CGFloat = 20/100 
     static let paddingAmount = 0.15
     var dynamicPadding: CGFloat {
         return self.buttonSize * Self.paddingAmount

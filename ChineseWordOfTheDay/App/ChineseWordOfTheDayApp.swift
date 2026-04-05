@@ -38,7 +38,7 @@ extension ChineseWordOfTheDayApp {
                 if p.isReady {
                     ContentView()
                     .environmentObject(ws)
-                    .environmentObject(historyHelper) // Global History Logic
+                    .environmentObject(historyHelper) 
                     .environment(\.managedObjectContext, PersistenceController.shared.context)
                     .transition(.opacity)
                 } else {

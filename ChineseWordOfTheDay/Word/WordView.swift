@@ -12,19 +12,15 @@ struct WordView {
     var word: String
     var size:  CGSize
 }
-
 extension WordView: View {
     var body: some View {
         Text(self.word)
             .font(.system(size: fontSize()))
             .multilineTextAlignment(.center)
-//            .lineLimit(2)
-//            .minimumScaleFactor(0.5)
             .allowsTightening(true)
             .textSelection(.enabled)
     }
 }
-
 extension WordView {
     func fontSize() -> CGFloat {
         let base = min(size.width, size.height) * 0.95

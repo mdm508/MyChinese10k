@@ -5,22 +5,16 @@ import CoreDataModels
 struct HistoryView: View {
     @EnvironmentObject var helper: HistoryHelper
     @Environment(\.managedObjectContext) var viewContext
-
     private let columns = [
         GridItem(.adaptive(minimum: 100), spacing: 16)
     ]
-    
     var body: some View {
         ZStack {
             // Background color for the whole gallery
             Color(UIColor.systemGroupedBackground).ignoresSafeArea()
-            
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 20) {
-                    // 1. The Month Chips
                     monthFilterBar
-                    
-                    // 2. The Main Grid
                     LazyVGrid(columns: columns, spacing: 16, pinnedViews: [.sectionHeaders]) {
                         ForEach(helper.sections, id: \.name) { section in
                             // Only show headers in Timeline mode. Index modes show one giant list.
@@ -40,19 +34,14 @@ struct HistoryView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            // 🛠️ CENTER: Title
             ToolbarItem(placement: .principal) {
                 Text("HISTORY")
                     .font(.system(size: 12, weight: .black))
                     .foregroundColor(.terracotta.opacity(0.7))
                     .kerning(2)
             }
-
-            // 🛠️ RIGHT: The Action Cluster (Reset + Bulk + Sort)
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 HStack(spacing: 12) {
-                    
-                    // 🔄 RESET: Pops in when any filter/sort is applied
                     if helper.isFiltered {
                         Button(action: { helper.resetToDefaults() }) {
                             Image(systemName: "arrow.counterclockwise.circle.fill")
@@ -61,7 +50,6 @@ struct HistoryView: View {
                         }
                         .transition(.scale.combined(with: .opacity))
                     }
-
                     bulkFlipMenu
                     sortMenu
                 }
@@ -69,16 +57,13 @@ struct HistoryView: View {
         }
     }
 }
-
 // MARK: - Subviews Extension
 extension HistoryView {
-    
     private var monthFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 ForEach(helper.allAvailableMonths, id: \.self) { month in
                     let isSelected = helper.selectedMonths.contains(month)
-                    
                     Text(helper.formatShortMonth(month))
                         .font(.system(size: 13, weight: .bold, design: .rounded))
                         .padding(.horizontal, 12)
@@ -96,7 +81,6 @@ extension HistoryView {
             .padding(.horizontal)
         }
     }
-    
     private func sectionHeader(_ title: String) -> some View {
         NavigationLink(destination: HistoryStreamView(helper: helper, startMonth: title)) {
             HStack {
@@ -119,7 +103,6 @@ extension HistoryView {
         }
         .buttonStyle(PlainButtonStyle())
     }
-
     private var bulkFlipMenu: some View {
         Menu {
             Button { helper.bulkFlip(.front) } label: {
@@ -137,7 +120,6 @@ extension HistoryView {
                 .foregroundColor(.forestGreen)
         }
     }
-
     private var sortMenu: some View {
         Menu {
             Button { helper.updateSort(.recent) } label: {

@@ -4,24 +4,17 @@ import CoreDataModels
 
 struct HistoryStreamView: View {
     @ObservedObject var helper: HistoryHelper
-    let startMonth: String // "yyyy-MM"
-    
+    let startMonth: String
     @Environment(\.managedObjectContext) var viewContext
-    
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(helper.sections, id: \.name) { section in
-                        // 1. THE BIG DIVIDER (New Month Chapter)
                         monthDivider(section.name)
                             .id(section.name)
-                        
                         let statuses = section.objects as? [WordStatus] ?? []
-                        
-                        // 2. THE HOT BOY STREAM
                         ForEach(statuses, id: \.objectID) { status in
-                            // Use the custom fetcher we committed earlier
                             if let word = Word.fetchWord(at: status.index, context: viewContext) {
                                 HistoryCardDetail(
                                     status: status,
@@ -29,7 +22,7 @@ struct HistoryStreamView: View {
                                     isStreamMode: true
                                 )
                                 .id(status.objectID)
-                                .padding(.vertical, 12) // Space for the Pokéball pins to breathe
+                                .padding(.vertical, 12)
                             }
                         }
                     }
@@ -38,7 +31,6 @@ struct HistoryStreamView: View {
             .background(Color.pastelGreen.opacity(0.15).ignoresSafeArea())
             .navigationTitle("History Stream")
             .onAppear {
-                // Smooth glide to the target month
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
                         proxy.scrollTo(startMonth, anchor: .top)
@@ -48,19 +40,16 @@ struct HistoryStreamView: View {
         }
     }
 }
-
 // MARK: - Subviews & Styling
 extension HistoryStreamView {
-    
     private func monthDivider(_ identifier: String) -> some View {
         VStack(spacing: 15) {
             Text(formatFullMonth(identifier))
                 .font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundColor(.forestGreen.opacity(0.4))
                 .kerning(5)
-                .padding(.top, 120) // Give the new month plenty of room
-            
-            // Sexy custom line for August/September transitions
+                .padding(.top, 120)
+            /// Sexy custom line for August/September transitions
             HStack(spacing: 10) {
                 Rectangle()
                     .fill(
@@ -82,7 +71,6 @@ extension HistoryStreamView {
             .padding(.bottom, 60)
         }
     }
-
     private func formatFullMonth(_ id: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM"

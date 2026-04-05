@@ -9,13 +9,9 @@ struct HistoryCard: View {
     @Environment(\.managedObjectContext) var context
     @State private var showDetail = false
     
-    // 🧐 SELECTIVE HEARING: The card only cares about its specific ID in the ledger
     private var isShowingFront: Bool {
-        // If the ledger doesn't have the ID yet, we default to showing the front (false = not flipped)
         !(helper.flipStates[status.objectID] ?? false)
     }
-
-    // 🎯 Self-Fetching Logic
     private var word: Word? {
         let fetched = Word.fetchWord(at: status.index, context: context)
         if fetched == nil {
@@ -23,7 +19,6 @@ struct HistoryCard: View {
         }
         return fetched
     }
-
     var body: some View {
         Group {
             if let word = word {
@@ -66,7 +61,6 @@ struct HistoryCard: View {
         }
     }
 }
-
 // MARK: - Card Faces
 extension HistoryCard {
     private func frontView(word: Word) -> some View {
@@ -80,17 +74,13 @@ extension HistoryCard {
             }
         }
     }
-    
     private func backView(word: Word) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color.pastelGreen)
-            
             VStack(alignment: .leading, spacing: 4) {
                 let syllables = word.phonetic.components(separatedBy: " ").filter { !$0.isEmpty }
-                
                 VStack(spacing: -2) {
-                    // 🛠️ FIX: Use indices instead of \.self to handle duplicate sounds
                     ForEach(syllables.indices, id: \.self) { index in
                         Text(syllables[index])
                             .font(.title2)
@@ -101,8 +91,6 @@ extension HistoryCard {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .minimumScaleFactor(0.5)
-                
-                // Do the same for meanings just in case!
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
                         ForEach(word.meanings.indices, id: \.self) { index in
@@ -120,7 +108,6 @@ extension HistoryCard {
             .padding(8)
         }
     }
-    
     private var errorPlaceholder: some View {
         RoundedRectangle(cornerRadius: 18)
             .fill(Color.red.opacity(0.1))

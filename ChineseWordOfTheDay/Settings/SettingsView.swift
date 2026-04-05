@@ -9,15 +9,15 @@ import SwiftUI
 import Persistence
 import CoreDataModels
 
-/// A view that allows users to adjust app settings related to phonetic notation and Chinese writing system.
-/// It also displays iCloud sync status with a visual indicator.
-///
-/// - Features:
-///   - iCloud connection indicator with red/green dot
-///   - Picker for selecting phonetic notation (Zhuyin or Pinyin)
-///   - Picker for selecting Chinese character set (Traditional or Simplified)
-///
-/// User preferences are saved via `UserPreferences`  that supports iCloud synchronization.
+/**
+A view that allows users to adjust app settings related to phonetic notation and Chinese writing system.
+ It also displays iCloud sync status with a visual indicator.
+ - Features:
+   - iCloud connection indicator with red/green dot
+   - Picker for selecting phonetic notation (Zhuyin or Pinyin)
+   - Picker for selecting Chinese character set (Traditional or Simplified)
+ User preferences are saved via `UserPreferences`  that supports iCloud synchronization.
+*/
 struct SettingsView: View {
     // MARK: - Preference State
     @State private var isICloudAvailable: Bool = false
@@ -29,7 +29,6 @@ struct SettingsView: View {
     @EnvironmentObject private var ws: WordService
 }
 extension SettingsView {
-    // MARK: - Preference View
     // MARK: - Preference View
         var body: some View {
             Form {
@@ -44,7 +43,6 @@ extension SettingsView {
                         Spacer()
                     }
                 }
-                
                 // MARK: - Preferred Pronunciation Section
                 Section(header: Text("Phonetic Notation")) {
                     Picker("", selection: $phonetic) {
@@ -56,7 +54,6 @@ extension SettingsView {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
-                
                 // MARK: - Preferred Text Section
                 Section(header: Text("Character Set")) {
                     Picker("", selection: $textPreference) {
@@ -68,13 +65,11 @@ extension SettingsView {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
-                
                 // MARK: - Daily Reminder Section
                 Section(header: Text("Daily Reminder")) {
                     Toggle("Daily Notifications", isOn: $remindersEnabled)
                         .onChange(of: remindersEnabled) { newValue in
                             UserPreferences.saveRemindersEnabled(newValue)
-                            
                             if newValue {
                                 self.requestNotificationPermission()
                                 self.scheduleNotification(at: notificationTime)
@@ -82,7 +77,6 @@ extension SettingsView {
                                 UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
                             }
                         }
-
                     if remindersEnabled {
                         DatePicker("Notification Time",
                                    selection: $notificationTime,
@@ -93,26 +87,23 @@ extension SettingsView {
                             }
                     }
                 }
-            } // End of Form
+            }
             .navigationTitle("Settings").toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     self.shareButton
                 }
             }
             .onAppear {
-                // Load all preferences at once
                 self.loadPhonetic()
                 self.loadHanzi()
                 self.remindersEnabled = UserPreferences.loadRemindersEnabled()
                 self.notificationTime = UserPreferences.loadNotificationTime()
-                
                 Task {
                     await setCloudKitAvailability()
                 }
             }
         }
 }
-
 // MARK: - Preview
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
@@ -156,18 +147,18 @@ extension SettingsView {
         UserPreferences.set(newValue, for: .chineseWritingSystem)
         self.postSettingsDidChangeNotification()
     }
-    /// Announces (to WordDetail) that the settings have changed.
-    /// Could be avoided if I instantiated the WordService enviorment object but I
-    /// just thought posting and reacting to notificiations is cool.
-    func postSettingsDidChangeNotification(){
+    /**
+    Announces (to WordDetail) that the settings have changed.
+     Could be avoided if I instantiated the WordService enviorment object but I
+     just thought posting and reacting to notificiations is cool.
+     */
+     func postSettingsDidChangeNotification(){
         NotificationCenter.default.post(name: .settingDidChange, object: nil)
     }
 }
-
 extension Notification.Name {
     static let settingDidChange = Notification.Name("settingDidChange")
 }
-
 // MARK: - Notification Logic
 private extension SettingsView {
     func requestNotificationPermission() {
@@ -177,23 +168,16 @@ private extension SettingsView {
             }
         }
     }
-
     func scheduleNotification(at date: Date) {
         let center = UNUserNotificationCenter.current()
-        
-        // Remove old ones so we don't have multiple alarms
         center.removeAllPendingNotificationRequests()
-
         let content = UNMutableNotificationContent()
         content.title = "Waabl"
         content.body = "Tap button for \(self.ws.currentWord.characters)"
         content.sound = .default
-
         let components = Calendar.current.dateComponents([.hour, .minute], from: date)
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-
         let request = UNNotificationRequest(identifier: "daily_word", content: content, trigger: trigger)
-        
         center.add(request) { error in
             if let error = error {
                 print("Error scheduling: \(error.localizedDescription)")
@@ -201,8 +185,6 @@ private extension SettingsView {
         }
     }
 }
-
-
 // MARK: - Sharing Logic
 private extension SettingsView {
     func shareWord(word cw: Word) {
@@ -213,7 +195,6 @@ private extension SettingsView {
             definition: cw.meanings.first?.description ?? "",
             appURL: url
         )
-        
         let activityVC = UIActivityViewController(
             activityItems: [itemSource, ws.currentWord.shareText],
             applicationActivities: nil

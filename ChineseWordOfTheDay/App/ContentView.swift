@@ -27,23 +27,18 @@ struct ContentView: View {
         .navigationViewStyle(.stack)
     }
 }
-
 // MARK: - Toolbar Components
 private extension ContentView {
     var historyButton: some View {
         NavigationLink {
-            // We initialize the Helper here, passing the context
             HistoryView()
         } label: {
             Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 18, weight: .medium)) // Makes the icon match standard nav buttons
+                .font(.system(size: 18, weight: .medium))
                 .foregroundColor(.primary)
-                .padding(8) // Increases the tap target area
+                .padding(8)
         }
     }
-    
-    
-    
     var settingsButton: some View {
         NavigationLink(destination: SettingsView()) {
             Image(systemName: "gearshape.fill")

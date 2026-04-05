@@ -7,19 +7,15 @@ import WidgetKit
 
 final class WordService: ObservableObject {
     private let context: NSManagedObjectContext
-    
     @Published var currentIndex: Int64!
     @Published var currentWord: Word!
     private var cancellables: Set<AnyCancellable> = []
-    
     var maxIndex: Int64 {
         (Word.maxIndex(context: context) ?? 0) 
     }
-
     init(context: NSManagedObjectContext) {
         self.context = context
         self.fetchAndSetCurrentWordAndIndex()
-        
         // Listen for CloudKit/Remote changes
         NotificationCenter.default.publisher(for: .cdcksStoreDidChange)
             .receive(on: DispatchQueue.main)
@@ -28,7 +24,6 @@ final class WordService: ObservableObject {
             }
             .store(in: &cancellables)
     }
-
     /// Marks the word as seen, moves to next index, and refreshes state.
     @discardableResult
     func markWordAsSeen() -> Bool {
@@ -44,7 +39,6 @@ final class WordService: ObservableObject {
             return false
         }
     }
-
     /// Refreshes the local published properties.
     private func fetchAndSetCurrentWordAndIndex() {
         let index = self.fetchCurrentIndex()
@@ -58,9 +52,7 @@ final class WordService: ObservableObject {
             print("⚠️ No word found at index \(index)")
         }
     }
-
     // MARK: - Internal Logic
-
     private func fetchCurrentIndex() -> Int64 {
         let request: NSFetchRequest<WordIndex> = WordIndex.fetchRequest()
         request.fetchLimit = 1
@@ -80,33 +72,27 @@ final class WordService: ObservableObject {
             return 1
         }
     }
-
     private func upsertWordStatus(for word: Word, to status: LearnStatus) throws {
         let request: NSFetchRequest<WordStatus> = WordStatus.fetchRequest()
         request.predicate = NSPredicate(format: "index == %d", word.index)
         request.fetchLimit = 1
-        
         let wordStatus = try context.fetch(request).first ?? WordStatus(context: context)
         let now = Date()
-        
         if wordStatus.isInserted {
             wordStatus.index = word.index
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM"
             wordStatus.sectionIdentifier = formatter.string(from: now)
         }
-        
         wordStatus.status = status.rawValue
         wordStatus.lastModified = now
     }
-
     private func incrementCurrentWordIndex() throws {
         let request: NSFetchRequest<WordIndex> = WordIndex.fetchRequest()
         let indexObject = try context.fetch(request).first ?? WordIndex(context: context)
         indexObject.current += 1
         indexObject.lastModified = Date()
     }
-
     private func syncWidget() {
         // Because MockWord/Widget data uses the protocol,
         // writeToUserDefaults will now grab the dynamic characters automatically.
@@ -114,7 +100,6 @@ final class WordService: ObservableObject {
         WidgetCenter.shared.reloadAllTimelines()
     }
 }
-
 extension WordService {
     /// Views can call this to force a refresh if necessary (e.g., manual settings toggle)
     public func settingsUpdated() {

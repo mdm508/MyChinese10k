@@ -56,7 +56,6 @@
 		0CBF7EF72F61F451000CA6B2 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C72A71992E00AF96C2 /* WordView.swift */; };
 		0CBF7EF82F61F54E000CA6B2 /* GeometryReaderCentered.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */; };
 		0CBF7F522F67DEDE000CA6B2 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBF7F512F67DEDE000CA6B2 /* LoadingView.swift */; };
-		0CE372942E6A72D60046AB6F /* output.json in Resources */ = {isa = PBXBuildFile; fileRef = 0CE372932E6A72D60046AB6F /* output.json */; };
 		0CECCDAB2B6D79DA000DF958 /* KnownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */; };
 /* End PBXBuildFile section */
 
@@ -206,7 +205,6 @@
 		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CBF39372DA59E5100E6C867 /* CoreDataModels.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataModels.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CBF7F512F67DEDE000CA6B2 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
-		0CE372932E6A72D60046AB6F /* output.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = output.json; sourceTree = "<group>"; };
 		0CEB89B62E6BA7FB001F1E67 /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
 		0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChineseWordOfTheDay.entitlements; sourceTree = "<group>"; };
 		0CEBE9C32B17C21500650626 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -337,10 +335,11 @@
 				0CEBE9C32B17C21500650626 /* Info.plist */,
 				0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */,
 				0C1D670A2A5DC21500EAAD30 /* Preview Content */,
+				0C6F49A02F8208E800166087 /* App */,
+				0C6F49A42F820E1A00166087 /* Settings */,
 				0C93C8222F772898000F24AE /* History */,
-				0C22FF472AF56FDD00913EC3 /* Views */,
-				0CB6B3732B2BCE060008DC54 /* Helpers */,
-				0CEEEE642A70571400262651 /* Resources */,
+				0C8517A22DFA274800004774 /* Components */,
+				0C6F49A12F82093E00166087 /* Word */,
 				0C1D67082A5DC21500EAAD30 /* Assets.xcassets */,
 			);
 			path = ChineseWordOfTheDay;
@@ -354,26 +353,54 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		0C22FF472AF56FDD00913EC3 /* Views */ = {
+		0C6F49A02F8208E800166087 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				0CBF7F512F67DEDE000CA6B2 /* LoadingView.swift */,
 				0C1D67042A5DC21400EAAD30 /* ChineseWordOfTheDayApp.swift */,
-				0C8517A22DFA274800004774 /* Components */,
+				0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */,
+				0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */,
+				0C93C8112F76EC60000F24AE /* AppDelegate.swift */,
+				0CBF7F512F67DEDE000CA6B2 /* LoadingView.swift */,
 				0C1D67062A5DC21400EAAD30 /* ContentView.swift */,
-				0C8517A02DF79EA500004774 /* SettingsView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		0C6F49A12F82093E00166087 /* Word */ = {
+			isa = PBXGroup;
+			children = (
 				0C85179C2DF76CD600004774 /* WordDetail.swift */,
 				0C4858C72A71992E00AF96C2 /* WordView.swift */,
-				0CAE8D152CC426A9008954BB /* Colors.swift */,
+				0C7461EA2EECA26000475537 /* WordService.swift */,
 			);
-			path = Views;
+			path = Word;
+			sourceTree = "<group>";
+		};
+		0C6F49A32F820B4D00166087 /* HistoryHelpers */ = {
+			isa = PBXGroup;
+			children = (
+				0C22974C2F777EC3009E5D27 /* DataSeeder.swift */,
+				0C93C8192F771EB8000F24AE /* CardData.swift */,
+				0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */,
+			);
+			path = HistoryHelpers;
+			sourceTree = "<group>";
+		};
+		0C6F49A42F820E1A00166087 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				0C8517A02DF79EA500004774 /* SettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		0C8517A22DFA274800004774 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */,
 				0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */,
 				0C4858C52A71992100AF96C2 /* GeometryReaderCentered.swift */,
+				0CAE8D152CC426A9008954BB /* Colors.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -394,24 +421,10 @@
 		0C93C8222F772898000F24AE /* History */ = {
 			isa = PBXGroup;
 			children = (
-				0C22974C2F777EC3009E5D27 /* DataSeeder.swift */,
-				0C93C8192F771EB8000F24AE /* CardData.swift */,
-				0C93C81B2F771FDC000F24AE /* HistoryHelper.swift */,
+				0C6F49A32F820B4D00166087 /* HistoryHelpers */,
 				0C93C81F2F772854000F24AE /* HistoryViews */,
 			);
 			path = History;
-			sourceTree = "<group>";
-		};
-		0CB6B3732B2BCE060008DC54 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				0C93C8112F76EC60000F24AE /* AppDelegate.swift */,
-				0C93C80F2F76E852000F24AE /* WordShareItemSource.swift */,
-				0C93C8132F76EE19000F24AE /* SpeechViewModel.swift */,
-				0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */,
-				0C7461EA2EECA26000475537 /* WordService.swift */,
-			);
-			path = Helpers;
 			sourceTree = "<group>";
 		};
 		0CBF39432DA59E5700E6C867 /* MYFrameworks */ = {
@@ -431,14 +444,6 @@
 				0C15E8672C8BDA6400D7B51B /* SwiftUI.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		0CEEEE642A70571400262651 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				0CE372932E6A72D60046AB6F /* output.json */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -642,7 +647,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CE372942E6A72D60046AB6F /* output.json in Resources */,
 				0C1D670C2A5DC21500EAAD30 /* Preview Assets.xcassets in Resources */,
 				0C1D67092A5DC21500EAAD30 /* Assets.xcassets in Resources */,
 			);

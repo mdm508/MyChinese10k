@@ -1,7 +1,6 @@
 import SwiftUI
 
 /// `HistoryWordView` is a specialized renderer for the History Grid.
-/// It uses 'greedy' scaling to fill the card face without needing GeometryReader.
 struct HistoryWordView: View {
     let text: String
     let idealFontSize: CGFloat = 80
@@ -16,7 +15,6 @@ struct HistoryWordView: View {
             .padding(13)
     }
 }
-
 // MARK: - Preview
 struct HistoryWordView_Previews: PreviewProvider {
     static var previews: some View {
