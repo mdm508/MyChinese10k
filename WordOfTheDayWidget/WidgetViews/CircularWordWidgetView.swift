@@ -11,7 +11,6 @@ import WidgetKit
 
 struct CircularWordWidgetView: View {
     let entry: WordEntry
-
     var body: some View {
         Text(entry.word.characters)
             .font(.system(size: fontSizeForCharacterCount(), weight: .bold))
@@ -19,10 +18,8 @@ struct CircularWordWidgetView: View {
             .minimumScaleFactor(0.4)
             .multilineTextAlignment(.center)
     }
-
     private func fontSizeForCharacterCount() -> CGFloat {
         let count = max(entry.word.characters.count, 1)
-
         switch count {
         case 1: return 22
         case 2: return 18
@@ -31,8 +28,6 @@ struct CircularWordWidgetView: View {
         }
     }
 }
-
-
 struct CircularWordWidgetView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -44,13 +39,11 @@ struct CircularWordWidgetView_Previews: PreviewProvider {
             }
         }
     }
-
     @available(iOSApplicationExtension 16.0, *)
     static func preview(entry: WordEntry, name: String) -> some View {
         let view = CircularWordWidgetView(entry: entry)
             .previewContext(WidgetPreviewContext(family: .accessoryCircular))
             .previewDisplayName(name)
-
         if #available(iOS 17.0, *) {
             return AnyView(
                 view.containerBackground(for: .widget) {

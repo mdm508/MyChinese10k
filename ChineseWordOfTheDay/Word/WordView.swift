@@ -26,7 +26,7 @@ extension WordView {
         let base = min(size.width, size.height) * 0.95
         switch word.count {
         case 1:
-            return base
+            return base / 1.5
         case 2:
             return (base / 2)
         case 3:

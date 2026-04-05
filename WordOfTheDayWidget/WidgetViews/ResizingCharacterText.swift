@@ -10,7 +10,6 @@ import SwiftUI
 
 struct ResizingCharacterText: View {
     let characters: String
-
     var body: some View {
         Text(characters)
             .font(.system(size: fontSizeForCharacterCount(), weight: .bold, design: .default))
@@ -19,7 +18,6 @@ struct ResizingCharacterText: View {
             .allowsTightening(true)
             .frame(maxWidth: .infinity, alignment: .center)
     }
-
     private func fontSizeForCharacterCount() -> CGFloat {
         let count = max(characters.count, 1)
 

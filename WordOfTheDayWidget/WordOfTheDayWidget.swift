@@ -13,7 +13,7 @@ import SwiftUI
 
 
 struct WordOfTheDayProvider: TimelineProvider {
-    static let refreshFreqMinutes = 1
+    static let refreshFreqMinutes = 15
     func placeholder(in context: Context) -> WordEntry {
         return WordEntry(date: Date(), word: MockWord.placeholder, selectedMeaning: MockWord.placeholder.meanings[0])
     }
@@ -41,10 +41,11 @@ struct WordOfTheDayProvider: TimelineProvider {
             } else {
                 meaning = meanings[step % meanings.count]
             }
-//            let entryDate = Calendar.current.date(byAdding: .minute,
-//                                                  value: step * Self.refreshFreqMinutes,
-//                                                  to: now)!
-            let entryDate = now.addingTimeInterval(Double(step) * 5.0)
+            let entryDate = Calendar.current.date(byAdding: .minute,
+                                                  value: step * Self.refreshFreqMinutes,
+                                                  to: now)!
+            // use this line if you want to test
+            //            let entryDate = now.addingTimeInterval(Double(step) * 5.0)
             let entry = WordEntry(date: entryDate, word: word, selectedMeaning: meaning)
             entries.append(entry)
         }
@@ -56,7 +57,6 @@ struct WordOfTheDayProvider: TimelineProvider {
 @main
 struct WordOfTheDayWidget: Widget {
     let kind: String = "WordOfTheDayWidget"
-
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WordOfTheDayProvider()) { entry in
             if #available(iOS 17.0, *) {

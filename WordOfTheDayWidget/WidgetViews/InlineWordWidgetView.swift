@@ -11,13 +11,11 @@ import WidgetKit
 
 struct InlineWordWidgetView: View {
     let entry: WordEntry
-
     var body: some View {
         Text(entry.word.characters)
             .lineLimit(1)
     }
 }
-
 struct InlineWordWidgetView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -29,7 +27,6 @@ struct InlineWordWidgetView_Previews: PreviewProvider {
             }
         }
     }
-
     @available(iOSApplicationExtension 16.0, *)
     static func preview(entry: WordEntry, name: String) -> some View {
         let view = InlineWordWidgetView(entry: entry)

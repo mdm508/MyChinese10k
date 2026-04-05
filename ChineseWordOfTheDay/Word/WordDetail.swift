@@ -74,7 +74,6 @@ private extension WordDetail {
     }
     func nextButton(in geo: GeometryProxy) -> some View {
         VStack {
-            Spacer()
             BigGreenButton(parentSize: geo.size) {
                 ws.markWordAsSeen()
             }
