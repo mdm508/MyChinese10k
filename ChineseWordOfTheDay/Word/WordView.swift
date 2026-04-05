@@ -23,11 +23,9 @@ extension WordView: View {
 }
 extension WordView {
     func fontSize() -> CGFloat {
-        let base = min(size.width, size.height) * 0.95
+        let base = min(size.width, size.height) * 0.9
         switch word.count {
-        case 1:
-            return base / 1.5
-        case 2:
+        case 1,2:
             return (base / 2)
         case 3:
             return base / 3

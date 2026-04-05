@@ -52,9 +52,11 @@ private extension WordDetail {
                 .foregroundColor(speechVM.isSpeaking ? .blue : .terracotta)
                 Text(ws.currentWord.phonetic)
                     .font(.headline)
-            }.onTapGesture {
+            }
+            .onTapGesture {
                 self.speechVM.speak(ws.currentWord.traditional, .chineseTaiwan)
             }
+            Spacer()
             meaningsList
             nextButton(in: geo)
         }
