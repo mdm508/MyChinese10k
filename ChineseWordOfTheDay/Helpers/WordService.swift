@@ -13,7 +13,7 @@ final class WordService: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     
     var maxIndex: Int64 {
-        (Word.maxIndex(context: context) ?? 0) + 1
+        (Word.maxIndex(context: context) ?? 0) 
     }
 
     init(context: NSManagedObjectContext) {

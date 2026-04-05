@@ -33,10 +33,14 @@ extension WordDetail: View {
                 }
             } else {
                 // Fallback when all words have been completed
-                Text("Congratulations! You've learned all the words!")
-                    .font(.title2)
-                    .multilineTextAlignment(.center)
-                    .padding()
+                VStack{
+                    Text("Congratulations")
+                    Image("AppIconDisplay")
+                        .resizable()
+                        .frame(width: 96, height: 96)
+                        .cornerRadius(22)
+                    Text("You learned \(ws.maxIndex) words")
+                }
             }
         }
     }
@@ -50,7 +54,9 @@ private extension WordDetail {
             Group {
                 Text(ws.currentWord.phonetic) // or word.phonetic if you add it to MockWord
                     .font(.headline)
-                WordView(word: ws.currentWord.characters, size: geo.size) // or word.characters if you add it
+                WordView(word: ws.currentWord.characters, size: geo.size)
+                .foregroundColor(speechVM.isSpeaking ? .blue : .terracotta)
+
             }.onTapGesture {
                 self.speechVM.speak(ws.currentWord.traditional, .chineseTaiwan)
             }

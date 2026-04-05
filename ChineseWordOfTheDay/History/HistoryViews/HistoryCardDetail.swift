@@ -40,6 +40,8 @@ struct HistoryCardDetail: View {
                         VStack(spacing: 0) {
                             Text(word.characters)
                                 .font(.system(size: 110, weight: .bold, design: .serif))
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.3)
                                 .foregroundColor(speechVM.isSpeaking ? .blue : .terracotta)
                                 .scaleEffect(speechVM.isSpeaking ? 1.05 : 1.0)
                                 .padding(.top, 60) // Extra room for the pin
@@ -49,9 +51,7 @@ struct HistoryCardDetail: View {
                                 }
                             
                             VStack(spacing: 4) {
-                                Text(word.phonetic)
-                                    .font(.system(size: 26, weight: .bold, design: .rounded))
-                                    .foregroundColor(.terracotta.opacity(0.7))
+                                phoneticView
                             }
                             .padding(.bottom, 40)
                         }
@@ -129,7 +129,7 @@ extension HistoryCardDetail {
 
     private var meaningsList: some View {
         // Handle optionality safely
-        let meanings = word.meanings ?? []
+        let meanings = word.meanings
         
         return VStack(alignment: .leading, spacing: 16) {
             ForEach(meanings.indices, id: \.self) { i in
@@ -159,5 +159,36 @@ extension HistoryCardDetail {
         let formatter = DateFormatter()
         formatter.dateStyle = .full // Friday, April 3, 2026
         return formatter.string(from: date)
+    }
+    private var phoneticLines: [String] {
+        let count = word.characters.count
+        
+        // 1–2 characters → 1 line
+        if count <= 2 {
+            return [word.phonetic]
+        }
+        
+        // 3+ characters → split into 2 lines
+        let parts = word.phonetic.split(separator: " ").map(String.init)
+        
+        guard parts.count > 1 else {
+            return [word.phonetic]
+        }
+        
+        let mid = parts.count / 2
+        let first = parts.prefix(mid).joined(separator: " ")
+        let second = parts.suffix(from: mid).joined(separator: " ")
+        
+        return [first, second]
+    }
+    private var phoneticView: some View {
+        VStack(spacing: 2) {
+            ForEach(phoneticLines, id: \.self) { line in
+                Text(line)
+            }
+        }
+        .font(.system(size: 26, weight: .bold, design: .rounded))
+        .foregroundColor(.terracotta.opacity(0.7))
+        .multilineTextAlignment(.center)
     }
 }

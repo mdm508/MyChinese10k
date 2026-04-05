@@ -15,7 +15,6 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             WordDetail()
-                .disableSwipeBack()
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         HStack(spacing: 18) {

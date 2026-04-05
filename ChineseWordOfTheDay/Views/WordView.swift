@@ -16,32 +16,30 @@ struct WordView {
 extension WordView: View {
     var body: some View {
         Text(self.word)
-            .font(.system(size: 100))
-            .multilineTextAlignment(.center) // Center-align the text
+            .font(.system(size: fontSize()))
+            .multilineTextAlignment(.center)
+//            .lineLimit(2)
+//            .minimumScaleFactor(0.5)
+            .allowsTightening(true)
             .textSelection(.enabled)
-
     }
 }
 
 extension WordView {
-    static let scalingFactor: CGFloat = 0.5
     func fontSize() -> CGFloat {
-        let spaceAvailable = min(self.size.width, self.size.height) * Self.scalingFactor
-        let sizePerCharacter = spaceAvailable / CGFloat(self.word.count)
-        return sizePerCharacter
+        let base = min(size.width, size.height) * 0.95
+        switch word.count {
+        case 1:
+            return base
+        case 2:
+            return (base / 2)
+        case 3:
+            return base / 3
+        case 4:
+            return base / 4
+        default:
+            return base / 5
+        }
     }
 }
 
-struct ChineseCharacter_Previews: PreviewProvider {
-    struct PreviewWrapper: View {
-        @State var mockWord = MockWord.placeholder.traditional
-        var body: some View {
-            GeometryReaderCentered { geo in
-                WordView(word: mockWord, size: geo.size)
-            }
-        }
-    }
-    static var previews: some View {
-        PreviewWrapper()
-    }
-}

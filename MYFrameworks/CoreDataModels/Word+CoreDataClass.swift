@@ -18,6 +18,7 @@ public class Word: NSManagedObject, @unchecked Sendable {
         request.fetchLimit = 1
         do {
             let maxIndex = try context.fetch(request).first?.index
+            print("max index in \(maxIndex!)")
             return maxIndex
         } catch {
             print("Failded to fetch the largest index for some reason")
