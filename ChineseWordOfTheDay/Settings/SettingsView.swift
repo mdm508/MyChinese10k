@@ -49,7 +49,7 @@ extension SettingsView {
                         Text("Zhuyin").tag(UserPreferences.Value.zhuyin)
                         Text("Pinyin").tag(UserPreferences.Value.pinyin)
                     }
-                    .onChange(of: self.phonetic) { newPhonetic in
+                    .onChange(of: self.phonetic) { _, newPhonetic in
                         self.setPhonetic(with: newPhonetic)
                     }
                     .pickerStyle(SegmentedPickerStyle())
@@ -60,7 +60,7 @@ extension SettingsView {
                         Text("Traditional").tag(UserPreferences.Value.traditional)
                         Text("Simplified").tag(UserPreferences.Value.simplified)
                     }
-                    .onChange(of: self.textPreference) { newValue in
+                    .onChange(of: self.textPreference) { _, newValue in
                         self.setHanzi(with: newValue)
                     }
                     .pickerStyle(SegmentedPickerStyle())
@@ -68,7 +68,7 @@ extension SettingsView {
                 // MARK: - Daily Reminder Section
                 Section(header: Text("Daily Reminder")) {
                     Toggle("Daily Notifications", isOn: $remindersEnabled)
-                        .onChange(of: remindersEnabled) { newValue in
+                        .onChange(of: remindersEnabled) { _, newValue in
                             UserPreferences.saveRemindersEnabled(newValue)
                             if newValue {
                                 self.requestNotificationPermission()
@@ -81,7 +81,7 @@ extension SettingsView {
                         DatePicker("Notification Time",
                                    selection: $notificationTime,
                                    displayedComponents: .hourAndMinute)
-                            .onChange(of: notificationTime) { newTime in
+                            .onChange(of: notificationTime) { _, newTime in
                                 UserPreferences.saveNotificationTime(newTime)
                                 self.scheduleNotification(at: newTime)
                             }
