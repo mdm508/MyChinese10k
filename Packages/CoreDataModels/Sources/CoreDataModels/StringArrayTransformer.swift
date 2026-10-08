@@ -10,7 +10,7 @@ import Foundation
 
 @objc(StringArrayTransformer)
 public final class StringArrayTransformer: NSSecureUnarchiveFromDataTransformer {
-    static let name = NSValueTransformerName(rawValue: "StringArrayTransformer")
+    public static let name = NSValueTransformerName(rawValue: "StringArrayTransformer")
 
     override public static var allowedTopLevelClasses: [AnyClass] {
         return [NSArray.self, NSString.self]
