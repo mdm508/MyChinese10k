@@ -223,7 +223,8 @@ xcuserdata/
 #
 # WordBuilder writes the seed store to MYFrameworks/Persistence/WordModel.sqlite,
 # which the Persistence framework bundles, so that one stays tracked.
-# Stray copies at the repo root and SQLite sidecar files are not needed.
+# Stray copies at the repo root and SQLite sidecar files are not needed
+# (the seed store is exported in DELETE journal mode, so it has none).
 /WordModel.sqlite
 *.sqlite-shm
 *.sqlite-wal
