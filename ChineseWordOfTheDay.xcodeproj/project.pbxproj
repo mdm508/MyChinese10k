@@ -174,7 +174,6 @@
 		0CB6B3502B2B84220008DC54 /* DevelopmentFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevelopmentFunctions.swift; sourceTree = "<group>"; };
 		0CBAF48F2D95ED8D00488D5A /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CBF7F512F67DEDE000CA6B2 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
-		0CEB89B62E6BA7FB001F1E67 /* WordModel.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = WordModel.sqlite; sourceTree = "<group>"; };
 		0CEBE9C22B17BF5400650626 /* ChineseWordOfTheDay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChineseWordOfTheDay.entitlements; sourceTree = "<group>"; };
 		0CEBE9C32B17C21500650626 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0CECCDAA2B6D79DA000DF958 /* KnownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownButton.swift; sourceTree = "<group>"; };
@@ -246,7 +245,6 @@
 		0C1D66F82A5DC21300EAAD30 = {
 			isa = PBXGroup;
 			children = (
-				0CEB89B62E6BA7FB001F1E67 /* WordModel.sqlite */,
 				0C4726702CAF1DB90014E288 /* WordOfTheDayWidgetExtension.entitlements */,
 				0C7E2DB32B3283690005224E /* ChineseWordOfTheDay.xctestplan */,
 				0C1D67032A5DC21400EAAD30 /* ChineseWordOfTheDay */,
