@@ -1,22 +1,28 @@
 //
 //  WordStatus+CoreDataProperties.swift
-//  WordFramework
+//  CoreDataModels
 //
-//  Created by m on 12/11/23.
+//  Created by Matthew McLaughlin on 4/3/26.
 //
 //
 
-import Foundation
-import CoreData
+public import Foundation
+public import CoreData
 
 
-public extension WordStatus {
-    @nonobjc class func fetchRequest() -> NSFetchRequest<WordStatus> {
+public typealias WordStatusCoreDataPropertiesSet = NSSet
+
+extension WordStatus {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<WordStatus> {
         return NSFetchRequest<WordStatus>(entityName: "WordStatus")
     }
-    @NSManaged var status: Int64
-    @NSManaged var traditional: String
-    @NSManaged var lastModified: Date?
+
+    @NSManaged public var lastModified: Date?
+    @NSManaged public var status: Int64
+    @NSManaged public var sectionIdentifier: String?
+    @NSManaged public var index: Int64
+
 }
 
 extension WordStatus : Identifiable {
@@ -31,24 +37,20 @@ public extension Word {
             pinyin: self.pinyin,
             simplified: self.simplified,
             traditional: self.traditional,
-            zhuyin: self.zhuyin
-        )
+            zhuyin: self.zhuyin,
+            characters: self.characters,
+            phonetic: self.phonetic
+            )
     }
-    /// Writes self to user defaults. Needed because the widget reads from user defaults in order to
-    /// determine what word to display
+    /// Writes self to user defaults.
     /// - Parameters:
     ///   - appGroupId:
     ///   - mockWordKey:
-    func writeToUserDefaults(appGroupId: String=Constants.appGroupId,
-                             mockWordKey: String=Constants.mockWordKey) {
+    func writeToUserDefaults() {
         let mockWord = self.toMockWord()
         if let encodedWord = try? JSONEncoder().encode(mockWord) {
-            let sharedDefaults = UserDefaults(suiteName: appGroupId)
-            sharedDefaults?.set(encodedWord, forKey: mockWordKey)
+            let sharedDefaults = UserDefaults(suiteName: Constants.appGroupId)
+            sharedDefaults?.set(encodedWord, forKey: Constants.mockWordKey)
         }
-        #if os(iOS)
-        WidgetCenter.shared.reloadTimelines(ofKind: "WordOfTheDayWidget")
-        #endif
     }
 }
-

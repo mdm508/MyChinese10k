@@ -10,8 +10,11 @@ let package = Package(
         .macOS(.v10_15) // Ensures macOS 10.15+ compatibility
     ],
     products: [
+        // Dynamic so the app, the widget and Persistence.framework all share one copy
+        // of the Core Data classes instead of each linking its own.
         .library(
             name: "CoreDataModels",
+            type: .dynamic,
             targets: ["CoreDataModels"]
         ),
     ],
@@ -22,5 +25,6 @@ let package = Package(
                 .process("WordModel.xcdatamodel")
             ]
         )
-    ]
+    ],
+    swiftLanguageModes: [.v5]
 )
