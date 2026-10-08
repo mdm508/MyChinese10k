@@ -5,6 +5,7 @@
 //  Created by m on 3/15/26.
 //
 
+import Foundation
 import CoreDataModels
 
 enum WidgetPreviewWords {
