@@ -57,6 +57,7 @@
 		0CC1A0062F9A000100C0DE01 /* CoreDataModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0CC1A0032F9A000100C0DE01 /* CoreDataModels */; };
 		0CC1A0072F9A000100C0DE01 /* CoreDataModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0CC1A0042F9A000100C0DE01 /* CoreDataModels */; };
 		0CC1A0082F9A000100C0DE01 /* CoreDataModels in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 0CC1A0022F9A000100C0DE01 /* CoreDataModels */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		0CC1A00B2F9A000100C0DE01 /* ExampleSentences in Frameworks */ = {isa = PBXBuildFile; productRef = 0CC1A00A2F9A000100C0DE01 /* ExampleSentences */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -212,6 +213,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0CC1A0052F9A000100C0DE01 /* CoreDataModels in Frameworks */,
+				0CC1A00B2F9A000100C0DE01 /* ExampleSentences in Frameworks */,
 				0CBAF4A22D95ED8D00488D5A /* Persistence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -449,6 +451,7 @@
 			name = ChineseWordOfTheDay;
 			packageProductDependencies = (
 				0CC1A0022F9A000100C0DE01 /* CoreDataModels */,
+				0CC1A00A2F9A000100C0DE01 /* ExampleSentences */,
 			);
 			productName = ChineseWordOfTheDay;
 			productReference = 0C1D67012A5DC21400EAAD30 /* ChineseWordOfTheDay.app */;
@@ -512,6 +515,7 @@
 			packageReferences = (
 				0C7850DE2D8CB0CF00741F38 /* XCLocalSwiftPackageReference "Packages/WordBuilder" */,
 				0CC1A0012F9A000100C0DE01 /* XCLocalSwiftPackageReference "Packages/CoreDataModels" */,
+				0CC1A0092F9A000100C0DE01 /* XCLocalSwiftPackageReference "Packages/ExampleSentences" */,
 			);
 			productRefGroup = 0C1D67022A5DC21400EAAD30 /* Products */;
 			projectDirPath = "";
@@ -1002,6 +1006,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/CoreDataModels;
 		};
+		0CC1A0092F9A000100C0DE01 /* XCLocalSwiftPackageReference "Packages/ExampleSentences" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/ExampleSentences;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1019,6 +1027,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0CC1A0012F9A000100C0DE01 /* XCLocalSwiftPackageReference "Packages/CoreDataModels" */;
 			productName = CoreDataModels;
+		};
+		0CC1A00A2F9A000100C0DE01 /* ExampleSentences */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CC1A0092F9A000100C0DE01 /* XCLocalSwiftPackageReference "Packages/ExampleSentences" */;
+			productName = ExampleSentences;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
