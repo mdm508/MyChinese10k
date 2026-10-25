@@ -31,10 +31,28 @@ let word = TargetWord(
     meanings: ["to hit; to strike", "to play (a game)", "to make (a phone call)"]
 )
 
-let result = await ExampleSentenceGenerator().generate(for: word)
+// Readings for the other words in each sentence come from the dataset when it's
+// there; otherwise they get ICU's most common reading of each character.
+struct DatasetWord: Decodable, WordRepresentable {
+    let context: [String]
+    let index: Int64
+    let meanings: [String]
+    let pinyin: String
+    let simplified: String
+    let traditional: String
+    let zhuyin: String
+    var characters: String { traditional }
+    var phonetic: String { pinyin }
+}
+let datasetPath = NSString(string: "~/Developer/chineseWordOfTheDayDataSet/output.json").expandingTildeInPath
+let dataset = (try? Data(contentsOf: URL(fileURLWithPath: datasetPath)))
+    .flatMap { try? JSONDecoder().decode([DatasetWord].self, from: $0) } ?? []
+print("Reading dictionary: \(dataset.count) words")
+
+let result = await ExampleSentenceGenerator(dictionary: ReadingDictionary(dataset)).generate(for: word)
 print(result.report)
 
-// Each sentence is a plain struct:
+// Each sentence is a plain struct of word-aligned arrays:
 if let first = result.sentences.first {
     print("traditional:", first.traditional)
     print("simplified: ", first.simplified)

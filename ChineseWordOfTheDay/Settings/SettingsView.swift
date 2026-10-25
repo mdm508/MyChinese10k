@@ -9,6 +9,7 @@ import SwiftUI
 import Persistence
 import CoreDataModels
 #if DEBUG
+import CoreData
 import ExampleSentences
 #endif
 
@@ -95,7 +96,10 @@ extension SettingsView {
                 // MARK: - Developer Section
                 Section(header: Text("Developer")) {
                     NavigationLink("AI Example Sentences") {
-                        ExampleSentencesDebugView(words: self.exampleSentenceWords())
+                        ExampleSentencesDebugView(
+                            words: self.exampleSentenceWords(),
+                            loadDictionary: self.readingDictionary
+                        )
                     }
                 }
                 #endif
@@ -180,6 +184,12 @@ private extension SettingsView {
         let upcoming = (start..<start + 10).compactMap { Word.fetchWord(at: $0, context: self.context) }
         let samples = TargetWord.samples.filter { sample in !upcoming.contains { $0.index == sample.index } }
         return upcoming.map { TargetWord($0) } + samples
+    }
+
+    /// Every word in the store, so sentence words get their dictionary readings.
+    func readingDictionary() -> ReadingDictionary {
+        let request: NSFetchRequest<Word> = Word.fetchRequest()
+        return ReadingDictionary((try? self.context.fetch(request)) ?? [])
     }
 }
 #endif

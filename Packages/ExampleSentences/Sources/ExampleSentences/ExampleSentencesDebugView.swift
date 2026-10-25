@@ -7,20 +7,30 @@ import SwiftUI
 
 /// A screen for checking generated example sentences by eye.
 ///
-/// Pick a word and tap Generate. Each sentence shows its characters with pinyin
-/// above and zhuyin below, then the simplified sentence and the English.
+/// Pick a word and tap Generate. Each sentence shows its words with pinyin
+/// above and zhuyin below (words found in the dictionary are underlined),
+/// then the simplified sentence and the English.
 public struct ExampleSentencesDebugView: View {
     private let words: [TargetWord]
     private let generator: ExampleSentenceGenerator
+    private let loadDictionary: (@MainActor () -> ReadingDictionary)?
 
     @State private var selectedIndex: Int64?
     @State private var result: ExampleSentenceResult?
     @State private var isGenerating = false
     @State private var elapsed: Duration?
+    @State private var dictionary: ReadingDictionary?
 
-    public init(words: [TargetWord], generator: ExampleSentenceGenerator = ExampleSentenceGenerator()) {
+    /// - Parameter loadDictionary: Builds the readings dictionary, for example
+    ///   from the app's word list. Called once, the first time the screen appears.
+    public init(
+        words: [TargetWord],
+        generator: ExampleSentenceGenerator = ExampleSentenceGenerator(),
+        loadDictionary: (@MainActor () -> ReadingDictionary)? = nil
+    ) {
         self.words = words
         self.generator = generator
+        self.loadDictionary = loadDictionary
         _selectedIndex = State(initialValue: words.first?.index)
     }
 
@@ -44,6 +54,11 @@ public struct ExampleSentencesDebugView: View {
             }
         }
         .navigationTitle("AI Example Sentences")
+        .task {
+            if dictionary == nil, let loadDictionary {
+                dictionary = loadDictionary()
+            }
+        }
         .onChange(of: selectedIndex) {
             result = nil
             elapsed = nil
@@ -60,6 +75,9 @@ public struct ExampleSentencesDebugView: View {
             } else {
                 Label("On-device model ready", systemImage: "apple.intelligence")
             }
+            Text("Reading dictionary: \((dictionary ?? generator.dictionary).count) words")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -100,18 +118,20 @@ public struct ExampleSentencesDebugView: View {
         VStack(alignment: .leading, spacing: 6) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 6) {
-                    ForEach(Array(sentence.annotatedCharacters.enumerated()), id: \.offset) { _, item in
+                    ForEach(sentence.traditional.indices, id: \.self) { i in
                         VStack(spacing: 2) {
-                            Text(item.pinyin).font(.caption2).foregroundStyle(.secondary)
-                            Text(String(item.character)).font(.title2)
-                            Text(item.zhuyin).font(.caption2).foregroundStyle(.secondary)
+                            Text(sentence.pinyin[i]).font(.caption2).foregroundStyle(.secondary)
+                            Text(sentence.traditional[i])
+                                .font(.title2)
+                                .underline(sentence.dictionaryIndices[i] != nil)
+                            Text(sentence.zhuyin[i]).font(.caption2).foregroundStyle(.secondary)
                         }
                         .fixedSize()
                     }
                 }
             }
-            Text(highlighted(sentence.traditional, word: word.traditional))
-            Text(highlighted(sentence.simplified, word: word.simplified))
+            Text(highlighted(sentence.traditionalText, word: word.traditional))
+            Text(highlighted(sentence.simplifiedText, word: word.simplified))
                 .foregroundStyle(.secondary)
             Text(sentence.english)
                 .font(.subheadline)
@@ -138,6 +158,10 @@ public struct ExampleSentencesDebugView: View {
         elapsed = nil
         let clock = ContinuousClock()
         let start = clock.now
+        var generator = generator
+        if let dictionary {
+            generator.dictionary = dictionary
+        }
         let generated = await generator.generate(for: word)
         // Drop the result if the user picked another word meanwhile.
         if selectedIndex == word.index {

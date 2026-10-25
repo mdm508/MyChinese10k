@@ -5,12 +5,15 @@ Foundation Models framework (iOS 26 / macOS 26, Apple Intelligence on).
 
 Input is any `WordRepresentable` (the Core Data `Word` or a `MockWord`),
 wrapped in a `TargetWord`. Output is an `ExampleSentenceResult` holding
-`ExampleSentence`s, each with:
+`ExampleSentence`s. Each sentence is split into words, and these arrays have one
+entry per word, in order:
 
-- `traditional` and `simplified` sentences
-- `pinyin` and `zhuyin`: arrays with one syllable per Chinese character
-  (punctuation is skipped), lining up with `characters`
-- `english`
+- `traditional`, `simplified`: the word (with any punctuation after it)
+- `pinyin` (syllables run together, "wǒmen"), `zhuyin` (syllables spaced)
+- `dictionaryIndices`: the word's index in the app's word list, if it's there
+
+plus `english` for the whole sentence. For 我們要一起打足球比賽啦！ that is
+`["我們", "要", "一起", "打", "足球", "比賽", "啦！"]`.
 
 ```swift
 let result = await ExampleSentenceGenerator().generate(for: TargetWord(word))
@@ -22,17 +25,18 @@ for sentence in result.sentences {
 ## How it works
 
 The model writes only the traditional sentence and its English translation
-(`GeneratedSentence`). Everything else is derived in code (`Readings`) with
-the ICU transforms built into Foundation: `Hant-Hans` for the simplified
-sentence, `Han-Latin` for pinyin and `Latin-Bopomofo` for zhuyin. In testing
-the model got per-character pinyin and zhuyin wrong in 12 of 12 sentences,
-and these transforms were right in every case.
+(`GeneratedSentence`). Everything else is done in code (`Readings`) with
+frameworks built into the OS: NaturalLanguage's `NLTokenizer` splits the
+sentence into words, and Foundation's ICU transforms give the simplified form
+(`Hant-Hans`) and readings (`Han-Latin`, `Latin-Bopomofo`). In testing the
+model got per-character readings wrong in 12 of 12 sentences.
+
+Readings for each word come from, in order: the target word's entry, a
+`ReadingDictionary` built from the app's word list, then ICU's most common
+reading of each character (which can be wrong for 樂, 為, 了 and the like).
 
 - The model often writes simplified characters when asked for traditional,
   so its sentence is run through `Hans-Hant` first.
-- ICU picks each character's most common reading, which can be wrong for
-  characters with several readings (行, 了, 長). Readings for the target
-  word itself come from its dictionary entry.
 - Sentences that don't contain the word are dropped and topped up, up to
   three model calls.
 

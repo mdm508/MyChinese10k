@@ -6,42 +6,42 @@
 import Foundation
 import FoundationModels
 
-/// One example sentence, in both scripts with readings.
+/// One example sentence, split into words.
+///
+/// `traditional`, `simplified`, `pinyin`, `zhuyin` and `dictionaryIndices` have
+/// one entry per word, in order, so index `i` is the same word in every array.
+/// Punctuation stays with the word before it: 我們 要 一起 打 足球 比賽 啦！
 public struct ExampleSentence: Sendable, Hashable, Identifiable {
     public let id = UUID()
-    public let traditional: String
-    public let simplified: String
-    /// One zhuyin syllable per Chinese character of `traditional`, in order.
-    public let zhuyin: [String]
-    /// One pinyin syllable, with tone marks, per Chinese character of `traditional`, in order.
+    public let traditional: [String]
+    public let simplified: [String]
+    /// Pinyin of each word, syllables run together ("wǒmen").
     public let pinyin: [String]
+    /// Zhuyin of each word, syllables separated by spaces ("ㄨㄛˇ ㄇㄣ˙").
+    public let zhuyin: [String]
+    /// Each word's index in the app's word list, when it is in it.
+    public let dictionaryIndices: [Int64?]
     public let english: String
 
-    /// The Chinese characters of the sentence, without punctuation.
-    /// `zhuyin` and `pinyin` line up with these.
-    public var characters: [Character] {
-        traditional.filter(Readings.isChineseCharacter).map { $0 }
-    }
+    public var traditionalText: String { traditional.joined() }
+    public var simplifiedText: String { simplified.joined() }
 
-    /// Characters paired with their readings, for display.
-    public var annotatedCharacters: [(character: Character, pinyin: String, zhuyin: String)] {
-        characters.enumerated().map { offset, character in
-            (character,
-             pinyin.indices.contains(offset) ? pinyin[offset] : "",
-             zhuyin.indices.contains(offset) ? zhuyin[offset] : "")
-        }
+    /// The words with their readings, for display.
+    public var words: [(traditional: String, simplified: String, pinyin: String, zhuyin: String)] {
+        traditional.indices.map { (traditional[$0], simplified[$0], pinyin[$0], zhuyin[$0]) }
     }
 }
 
 extension ExampleSentence {
-    /// Builds the simplified sentence and readings from the traditional one.
-    init(traditional: String, english: String, word: TargetWord) {
-        let readings = Readings.readings(of: traditional, word: word)
+    /// Splits the traditional sentence into words and derives the rest.
+    init(traditional: String, english: String, word: TargetWord, dictionary: ReadingDictionary) {
+        let segments = Readings.segments(of: traditional, word: word, dictionary: dictionary)
         self.init(
-            traditional: traditional,
-            simplified: Readings.simplified(traditional),
-            zhuyin: readings.zhuyin,
-            pinyin: readings.pinyin,
+            traditional: segments.map(\.traditional),
+            simplified: segments.map(\.simplified),
+            pinyin: segments.map(\.pinyin),
+            zhuyin: segments.map(\.zhuyin),
+            dictionaryIndices: segments.map(\.dictionaryIndex),
             english: english
         )
     }
@@ -64,10 +64,10 @@ public struct ExampleSentenceResult: Sendable, Hashable {
             lines.append("  ! \(failure)")
         }
         for sentence in sentences {
-            lines.append("  \(sentence.traditional)")
-            lines.append("  \(sentence.simplified)")
-            lines.append("  \(sentence.pinyin.joined(separator: " "))")
-            lines.append("  \(sentence.zhuyin.joined(separator: " "))")
+            lines.append("  \(sentence.traditional.joined(separator: " | "))")
+            lines.append("  \(sentence.simplified.joined(separator: " | "))")
+            lines.append("  \(sentence.pinyin.joined(separator: " | "))")
+            lines.append("  \(sentence.zhuyin.joined(separator: " | "))")
             lines.append("  \(sentence.english)")
             lines.append("")
         }
@@ -78,7 +78,7 @@ public struct ExampleSentenceResult: Sendable, Hashable {
 /// Writes example sentences for a word with Apple's on-device foundation model.
 ///
 /// The model writes only the traditional sentence and its English translation.
-/// The simplified sentence, pinyin and zhuyin are derived from it in code
+/// Splitting into words, the simplified forms and the readings are done in code
 /// (see `Readings`), because the model gets those wrong.
 public struct ExampleSentenceGenerator: Sendable {
     /// How many sentences to return.
@@ -86,11 +86,20 @@ public struct ExampleSentenceGenerator: Sendable {
     /// Model calls before giving up on getting `sentenceCount` sentences that use the word.
     public var maxAttempts: Int
     public var temperature: Double
+    /// Readings for the words of each sentence. Without one, words other than
+    /// the target get ICU's most common reading of each character.
+    public var dictionary: ReadingDictionary
 
-    public init(sentenceCount: Int = 3, maxAttempts: Int = 3, temperature: Double = 0.7) {
+    public init(
+        sentenceCount: Int = 3,
+        maxAttempts: Int = 3,
+        temperature: Double = 0.7,
+        dictionary: ReadingDictionary = ReadingDictionary()
+    ) {
         self.sentenceCount = sentenceCount
         self.maxAttempts = maxAttempts
         self.temperature = temperature
+        self.dictionary = dictionary
     }
 
     // MARK: Availability
@@ -136,11 +145,12 @@ public struct ExampleSentenceGenerator: Sendable {
                     }
                     guard traditional.contains(word.traditional),
                           Self.isFullSentence(traditional, word: word),
-                          !sentences.contains(where: { $0.traditional == traditional }) else { continue }
+                          !sentences.contains(where: { $0.traditionalText == traditional }) else { continue }
                     sentences.append(ExampleSentence(
                         traditional: traditional,
                         english: Self.clean(item.englishTranslation),
-                        word: word
+                        word: word,
+                        dictionary: dictionary
                     ))
                 }
             } catch {

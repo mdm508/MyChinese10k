@@ -73,3 +73,9 @@ public struct TargetWord: Sendable, Hashable, Identifiable {
         return notePrefixes.contains { text.hasPrefix($0) }
     }
 }
+
+extension TargetWord: WordRepresentable {
+    public var context: [String] { [] }
+    public var characters: String { traditional }
+    public var phonetic: String { pinyin }
+}

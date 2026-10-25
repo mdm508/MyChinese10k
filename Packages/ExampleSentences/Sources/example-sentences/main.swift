@@ -7,6 +7,8 @@
 //  swift run example-sentences                       # the built-in sample words
 //  swift run example-sentences --data output.json 是 學習 17
 //
+//  With --data, words in each sentence get their readings from the dataset.
+//
 //  Words can be given in either script or by their frequency index.
 //  Requires a Mac with Apple Intelligence turned on.
 //
@@ -55,17 +57,20 @@ while !arguments.isEmpty {
     }
 }
 
-var words: [TargetWord]
-if queries.isEmpty {
-    words = TargetWord.samples
-} else {
-    guard let dataURL else { fail("Looking words up needs --data <path to output.json>") }
-    let dataset: [DatasetWord]
+var dataset: [DatasetWord] = []
+if let dataURL {
     do {
         dataset = try JSONDecoder().decode([DatasetWord].self, from: Data(contentsOf: dataURL))
     } catch {
         fail("Couldn't read \(dataURL.path): \(error)")
     }
+}
+
+var words: [TargetWord]
+if queries.isEmpty {
+    words = TargetWord.samples
+} else {
+    guard let dataURL else { fail("Looking words up needs --data <path to output.json>") }
     words = queries.map { query in
         let match = dataset.first {
             $0.traditional == query || $0.simplified == query || String($0.index) == query
@@ -79,7 +84,8 @@ if let reason = ExampleSentenceGenerator.unavailableReason {
     fail(reason)
 }
 
-let generator = ExampleSentenceGenerator()
+// With --data, sentence words get readings from the dataset instead of ICU's guess.
+let generator = ExampleSentenceGenerator(dictionary: ReadingDictionary(dataset))
 var allGenerated = true
 for word in words {
     let result = await generator.generate(for: word)

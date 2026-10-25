@@ -10,30 +10,51 @@ import CoreDataModels
 struct ReadingsTests {
     private let xuexi = TargetWord(MockWord.placeholder)
 
-    @Test func readingsLineUpWithCharactersAndSkipPunctuation() {
-        let sentence = ExampleSentence(traditional: "我每天學習中文。", english: "I study Chinese every day.", word: xuexi)
-        #expect(sentence.characters.map(String.init) == ["我", "每", "天", "學", "習", "中", "文"])
-        #expect(sentence.pinyin.count == 7)
-        #expect(sentence.zhuyin.count == 7)
-        #expect(sentence.pinyin == ["wǒ", "měi", "tiān", "xué", "xí", "zhōng", "wén"])
-        #expect(sentence.zhuyin[0] == "ㄨㄛˇ")
+    @Test func sentenceIsSplitIntoAlignedWords() {
+        let sentence = ExampleSentence(traditional: "我每天學習中文。", english: "I study Chinese every day.", word: xuexi, dictionary: ReadingDictionary())
+        #expect(sentence.traditionalText == "我每天學習中文。")
+        #expect(sentence.simplifiedText == "我每天学习中文。")
+        let count = sentence.traditional.count
+        #expect(count > 1)
+        #expect(sentence.simplified.count == count)
+        #expect(sentence.pinyin.count == count)
+        #expect(sentence.zhuyin.count == count)
+        #expect(sentence.dictionaryIndices.count == count)
+        // Punctuation stays with the word before it.
+        #expect(sentence.traditional.last?.hasSuffix("。") == true)
     }
 
-    @Test func simplifiedIsDerivedFromTraditional() {
-        let sentence = ExampleSentence(traditional: "我每天學習中文。", english: "", word: xuexi)
-        #expect(sentence.simplified == "我每天学习中文。")
+    @Test func targetWordIsOneSegmentWithDictionaryReadings() {
+        let sentence = ExampleSentence(traditional: "我每天學習中文。", english: "", word: xuexi, dictionary: ReadingDictionary())
+        let position = sentence.traditional.firstIndex(of: "學習")
+        #expect(position != nil)
+        if let position {
+            #expect(sentence.pinyin[position] == xuexi.pinyin)
+            #expect(sentence.zhuyin[position] == xuexi.zhuyin)
+            #expect(sentence.dictionaryIndices[position] == xuexi.index)
+        }
+    }
+
+    @Test func otherWordsUseTheReadingDictionary() {
+        let yinyue = TargetWord(index: 42, simplified: "音乐", traditional: "音樂", pinyin: "yīnyuè", zhuyin: "ㄧㄣ ㄩㄝˋ", meanings: ["music"])
+        let dictionary = ReadingDictionary([yinyue])
+        let sentence = ExampleSentence(traditional: "我在學習音樂", english: "", word: xuexi, dictionary: dictionary)
+        if let position = sentence.traditional.firstIndex(of: "音樂") {
+            #expect(sentence.pinyin[position] == "yīnyuè")
+            #expect(sentence.dictionaryIndices[position] == 42)
+        } else {
+            Issue.record("音樂 wasn't one segment: \(sentence.traditional)")
+        }
+    }
+
+    @Test func icuReadingsFillInWordsNotInTheDictionary() {
+        let sentence = ExampleSentence(traditional: "我每天學習中文", english: "", word: xuexi, dictionary: ReadingDictionary())
+        #expect(sentence.pinyin.first == "wǒ")
+        #expect(sentence.zhuyin.first == "ㄨㄛˇ")
     }
 
     @Test func simplifiedInputIsConvertedToTraditional() {
         #expect(Readings.traditional("我每天学习中文") == "我每天學習中文")
-    }
-
-    @Test func targetWordUsesDictionaryReadings() {
-        // ICU reads 會 as huì everywhere; the dictionary entry wins for the target word.
-        let moment = TargetWord(index: 0, simplified: "会", traditional: "會", pinyin: "huǐ", zhuyin: "ㄏㄨㄟˇ", meanings: ["a moment"])
-        let sentence = ExampleSentence(traditional: "等一會。", english: "Wait a moment.", word: moment)
-        #expect(sentence.pinyin == ["děng", "yī", "huǐ"])
-        #expect(sentence.zhuyin.last == "ㄏㄨㄟˇ")
     }
 
     @Test func dictionaryNotesAreLeftOutOfThePrompt() {
