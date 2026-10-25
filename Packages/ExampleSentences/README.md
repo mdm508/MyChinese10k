@@ -38,10 +38,9 @@ print(result.report)
 
 - **In the app (Debug builds):** Settings → Developer → AI Example Sentences.
   Pick the current word, one of the next ten, or a sample word, and tap Generate.
-- **Playground (Xcode 26):** open `Package.swift` in Xcode, open
-  `Sources/ExampleSentences/ExampleSentences.playground.swift` and show the
-  canvas (⌥⌘↩). Each `#Playground` block runs a word and shows its report;
-  edit the words or meanings and it re-runs.
+- **Scratch file:** edit the word in `Sources/try-sentences/main.swift`, then
+  in Xcode pick the `try-sentences` scheme and My Mac and press ⌘R (or
+  `swift run try-sentences`). Output goes to the console.
 - **Command line (Mac):**
   ```sh
   cd Packages/ExampleSentences

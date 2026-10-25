@@ -17,6 +17,10 @@ let package = Package(
         .executable(
             name: "example-sentences",
             targets: ["example-sentences"]
+        ),
+        .executable(
+            name: "try-sentences",
+            targets: ["try-sentences"]
         )
     ],
     dependencies: [
@@ -29,6 +33,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "example-sentences",
+            dependencies: ["ExampleSentences", "CoreDataModels"]
+        ),
+        .executableTarget(
+            name: "try-sentences",
             dependencies: ["ExampleSentences", "CoreDataModels"]
         ),
         .testTarget(
