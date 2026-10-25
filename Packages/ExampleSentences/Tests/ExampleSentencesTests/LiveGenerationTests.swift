@@ -15,13 +15,16 @@ import Testing
 @Suite(.enabled(if: ExampleSentenceGenerator.isModelAvailable, "Needs Apple Intelligence"), .serialized)
 struct LiveGenerationTests {
     @Test(arguments: TargetWord.samples)
-    func everySenseGetsASentenceUsingTheWord(word: TargetWord) async {
+    func sentencesUseTheWordAndReadingsLineUp(word: TargetWord) async {
         let result = await ExampleSentenceGenerator().generate(for: word)
         print(result.report)
 
-        #expect(result.senses.count == word.senses.count)
-        for examples in result.senses {
-            #expect(examples.isCovered, "No sentence uses \(word.characters) for sense \(examples.sense.number): \(examples.sense.definition)")
+        #expect(!result.sentences.isEmpty, "No sentences for \(word.traditional)")
+        for sentence in result.sentences {
+            #expect(sentence.traditional.contains(word.traditional))
+            #expect(sentence.simplified.contains(word.simplified))
+            #expect(sentence.pinyin.count == sentence.characters.count)
+            #expect(sentence.zhuyin.count == sentence.characters.count)
         }
     }
 }

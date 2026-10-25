@@ -14,7 +14,7 @@ import ExampleSentences
 
 // Xcode's console is a pipe, so print output would otherwise wait until exit.
 setvbuf(stdout, nil, _IOLBF, 0)
-print("Generating… the on-device model takes a few seconds per meaning.")
+print("Generating… the on-device model takes a few seconds.")
 
 if let reason = ExampleSentenceGenerator.unavailableReason {
     print(reason)
@@ -27,18 +27,18 @@ let word = TargetWord(
     simplified: "打",
     traditional: "打",
     pinyin: "dǎ",
-    meanings: ["to hit; to strike", "to play (a game)", "to make (a phone call)"],
-    script: .traditional
+    zhuyin: "ㄉㄚˇ",
+    meanings: ["to hit; to strike", "to play (a game)", "to make (a phone call)"]
 )
 
-let generator = ExampleSentenceGenerator()
-
-// Sentences for every meaning.
-let result = await generator.generate(for: word)
+let result = await ExampleSentenceGenerator().generate(for: word)
 print(result.report)
-print("All meanings covered:", result.coversEverySense)
-print()
 
-// Free mode: four sentences, the model picks the meanings.
-let free = await generator.freeExamples(for: word)
-print(free.report)
+// Each sentence is a plain struct:
+if let first = result.sentences.first {
+    print("traditional:", first.traditional)
+    print("simplified: ", first.simplified)
+    print("pinyin:     ", first.pinyin)
+    print("zhuyin:     ", first.zhuyin)
+    print("english:    ", first.english)
+}

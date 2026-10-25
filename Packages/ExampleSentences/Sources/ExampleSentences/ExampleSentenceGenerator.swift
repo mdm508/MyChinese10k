@@ -6,138 +6,91 @@
 import Foundation
 import FoundationModels
 
-/// One generated example sentence.
+/// One example sentence, in both scripts with readings.
 public struct ExampleSentence: Sendable, Hashable, Identifiable {
     public let id = UUID()
-    public let chinese: String
+    public let traditional: String
+    public let simplified: String
+    /// One zhuyin syllable per Chinese character of `traditional`, in order.
+    public let zhuyin: [String]
+    /// One pinyin syllable, with tone marks, per Chinese character of `traditional`, in order.
+    public let pinyin: [String]
     public let english: String
-    /// Whether the sentence contains the target word. Sentences that don't are
-    /// only kept when no attempt produced one that does, so they can be inspected.
-    public let containsTarget: Bool
-    /// The meaning the sense check thinks the word has in this sentence,
-    /// or `nil` when it wasn't checked.
-    public var judgedSense: Int? = nil
 
-    /// The sense check agreed the word is used in `sense`.
-    public func isVerified(for sense: WordSense) -> Bool {
-        containsTarget && judgedSense == sense.number
+    /// The Chinese characters of the sentence, without punctuation.
+    /// `zhuyin` and `pinyin` line up with these.
+    public var characters: [Character] {
+        traditional.filter(Readings.isChineseCharacter).map { $0 }
+    }
+
+    /// Characters paired with their readings, for display.
+    public var annotatedCharacters: [(character: Character, pinyin: String, zhuyin: String)] {
+        characters.enumerated().map { offset, character in
+            (character,
+             pinyin.indices.contains(offset) ? pinyin[offset] : "",
+             zhuyin.indices.contains(offset) ? zhuyin[offset] : "")
+        }
     }
 }
 
-/// The sentences generated for one sense of a word.
-public struct SenseExamples: Sendable, Hashable, Identifiable {
-    public let sense: WordSense
+extension ExampleSentence {
+    /// Builds the simplified sentence and readings from the traditional one.
+    init(traditional: String, english: String, word: TargetWord) {
+        let readings = Readings.readings(of: traditional, word: word)
+        self.init(
+            traditional: traditional,
+            simplified: Readings.simplified(traditional),
+            zhuyin: readings.zhuyin,
+            pinyin: readings.pinyin,
+            english: english
+        )
+    }
+}
+
+/// Example sentences generated for a word.
+public struct ExampleSentenceResult: Sendable, Hashable {
+    public let word: TargetWord
+    /// Every sentence contains the word.
     public let sentences: [ExampleSentence]
     /// How many model calls it took.
     public let attempts: Int
-    /// Set when the model could not produce anything for this sense.
+    /// Set when the model produced nothing usable.
     public let failure: String?
 
-    public var id: Int { sense.id }
-
-    /// At least one sentence uses the target word.
-    public var isCovered: Bool {
-        sentences.contains(where: \.containsTarget)
-    }
-
-    /// At least one sentence passed the sense check. The check is a hint, not a
-    /// verdict: it often misreads compounds and near-synonymous senses.
-    public var isVerified: Bool {
-        sentences.contains { $0.isVerified(for: sense) }
-    }
-}
-
-/// Example sentences for every sense of a word.
-public struct ExampleSentenceResult: Sendable, Hashable {
-    public let word: TargetWord
-    public let senses: [SenseExamples]
-
-    /// Every sense has at least one sentence that uses the target word.
-    public var coversEverySense: Bool {
-        senses.allSatisfy(\.isCovered)
-    }
-
-    /// A plain-text summary for logs, the command line tool and tests.
+    /// A plain-text summary for logs, the command line tools and tests.
     public var report: String {
-        var title = "\(word.characters) (\(word.pinyin)) — \(senses.filter(\.isCovered).count)/\(senses.count) senses covered"
-        if senses.contains(where: { $0.sentences.contains { $0.judgedSense != nil } }) {
-            title += ", \(senses.filter(\.isVerified).count) passed the sense check"
-        }
-        var lines = [title]
-        for examples in senses {
-            let mark = examples.isVerified ? "✓" : examples.isCovered ? "?" : "✗"
-            lines.append("  \(mark) \(examples.sense.number). \(examples.sense.definition)")
-            if let failure = examples.failure {
-                lines.append("      ! \(failure)")
-            }
-            for sentence in examples.sentences {
-                var flag = sentence.containsTarget ? "" : "  [missing \(word.characters)]"
-                if let judged = sentence.judgedSense, judged != examples.sense.number {
-                    flag += "  [sense check: meaning \(judged)]"
-                }
-                lines.append("      \(sentence.chinese)\(flag)")
-                lines.append("      \(sentence.english)")
-            }
-        }
-        if !word.notes.isEmpty {
-            lines.append("  Skipped notes: \(word.notes.joined(separator: " | "))")
-        }
-        return lines.joined(separator: "\n")
-    }
-}
-
-/// Sentences the model wrote for a word without being asked for particular senses.
-public struct FreeExamples: Sendable, Hashable {
-    public let word: TargetWord
-    /// Every sentence contains the word. `judgedSense` is the sense check's
-    /// reading, when it ran.
-    public let sentences: [ExampleSentence]
-    public let failure: String?
-
-    /// The sense numbers the sentences were labelled with, in order.
-    public var sensesUsed: [Int] {
-        Array(Set(sentences.compactMap(\.judgedSense))).sorted()
-    }
-
-    public var report: String {
-        var lines = ["\(word.characters) (\(word.pinyin)) — free mode, sense check readings: \(sensesUsed.map(String.init).joined(separator: ", "))"]
+        var lines = ["\(word.traditional) / \(word.simplified) (\(word.pinyin), \(word.zhuyin)) — \(sentences.count) sentences"]
         if let failure {
             lines.append("  ! \(failure)")
         }
         for sentence in sentences {
-            let meaning = sentence.judgedSense.flatMap { number in word.senses.first { $0.number == number } }
-            lines.append("  \(sentence.chinese)")
+            lines.append("  \(sentence.traditional)")
+            lines.append("  \(sentence.simplified)")
+            lines.append("  \(sentence.pinyin.joined(separator: " "))")
+            lines.append("  \(sentence.zhuyin.joined(separator: " "))")
             lines.append("  \(sentence.english)")
-            if let meaning {
-                lines.append("    sense check: meaning \(meaning.number). \(meaning.definition)")
-            }
+            lines.append("")
         }
         return lines.joined(separator: "\n")
     }
 }
 
-/// Writes example sentences for a word with Apple's on-device foundation model,
-/// one request per sense so every sense is covered.
+/// Writes example sentences for a word with Apple's on-device foundation model.
+///
+/// The model writes only the traditional sentence and its English translation.
+/// The simplified sentence, pinyin and zhuyin are derived from it in code
+/// (see `Readings`), because the model gets those wrong.
 public struct ExampleSentenceGenerator: Sendable {
-    /// How many sentences to keep for each sense.
-    public var sentencesPerSense: Int
-    /// Model calls per sense before giving up on getting a sentence that uses the word.
-    public var maxAttemptsPerSense: Int
+    /// How many sentences to return.
+    public var sentenceCount: Int
+    /// Model calls before giving up on getting `sentenceCount` sentences that use the word.
+    public var maxAttempts: Int
     public var temperature: Double
-    /// Ask the model, in a separate call, which meaning each sentence uses,
-    /// and list sentences it agrees with first. Mismatches are flagged, not dropped.
-    public var checksSense: Bool
 
-    public init(
-        sentencesPerSense: Int = 2,
-        maxAttemptsPerSense: Int = 3,
-        temperature: Double = 0.7,
-        checksSense: Bool = true
-    ) {
-        self.sentencesPerSense = sentencesPerSense
-        self.maxAttemptsPerSense = maxAttemptsPerSense
+    public init(sentenceCount: Int = 3, maxAttempts: Int = 3, temperature: Double = 0.7) {
+        self.sentenceCount = sentenceCount
+        self.maxAttempts = maxAttempts
         self.temperature = temperature
-        self.checksSense = checksSense
     }
 
     // MARK: Availability
@@ -158,175 +111,68 @@ public struct ExampleSentenceGenerator: Sendable {
 
     // MARK: Generation
 
-    /// Writes four sentences letting the model pick the meanings (usually the
-    /// most common ones). Sentences missing the word are dropped and topped up,
-    /// up to `maxAttemptsPerSense` calls. With `checksSense` on, each sentence is
-    /// then labelled by the sense check, as a hint.
-    public func freeExamples(for word: TargetWord) async -> FreeExamples {
-        let wanted = 4
+    /// Generates sentences that use `word`. Sentences missing the word are dropped
+    /// and topped up with another call, up to `maxAttempts`.
+    public func generate(for word: TargetWord) async -> ExampleSentenceResult {
         var sentences: [ExampleSentence] = []
         var failure: String?
         var attempts = 0
-        while sentences.count < wanted, attempts < maxAttemptsPerSense {
+
+        while sentences.count < sentenceCount, attempts < maxAttempts {
             attempts += 1
             do {
-                let session = LanguageModelSession(instructions: Self.instructions(for: word.script))
+                let session = LanguageModelSession(instructions: Self.instructions)
                 let response = try await session.respond(
-                    to: Self.freePrompt(for: word),
-                    generating: GeneratedFreeSentences.self,
+                    to: Self.prompt(for: word, count: sentenceCount - sentences.count),
+                    generating: GeneratedSentences.self,
                     options: GenerationOptions(temperature: temperature)
                 )
                 failure = nil
-                for item in response.content.sentences where sentences.count < wanted {
-                    let chinese = Self.clean(item.chinese)
-                    guard word.isUsed(in: chinese),
-                          !sentences.contains(where: { $0.chinese == chinese }) else { continue }
-                    var sentence = ExampleSentence(chinese: chinese, english: Self.clean(item.english), containsTarget: true)
-                    if checksSense, word.senses.count > 1 {
-                        sentence.judgedSense = try? await judgeSense(of: chinese, for: word)
-                    }
-                    sentences.append(sentence)
-                }
-            } catch {
-                failure = Self.describe(error)
-            }
-        }
-        return FreeExamples(word: word, sentences: sentences, failure: sentences.isEmpty ? failure : nil)
-    }
-
-    /// Generates sentences for every sense of `word`.
-    public func generate(for word: TargetWord) async -> ExampleSentenceResult {
-        var senses: [SenseExamples] = []
-        for sense in word.senses {
-            senses.append(await examples(for: sense, of: word))
-        }
-        return ExampleSentenceResult(word: word, senses: senses)
-    }
-
-    /// Generates sentences for one sense, retrying while too few sentences use the word.
-    public func examples(for sense: WordSense, of word: TargetWord) async -> SenseExamples {
-        var kept: [ExampleSentence] = []
-        var rejected: [ExampleSentence] = []
-        var failure: String?
-        var attempts = 0
-
-        while kept.count < sentencesPerSense, attempts < maxAttemptsPerSense {
-            attempts += 1
-            do {
-                let generated = try await requestSentences(for: sense, of: word)
-                failure = nil
-                for item in generated.sentences {
-                    let chinese = Self.clean(item.chinese)
-                    guard !chinese.isEmpty,
-                          !kept.contains(where: { $0.chinese == chinese }) else { continue }
-                    var sentence = ExampleSentence(
-                        chinese: chinese,
-                        english: Self.clean(item.english),
-                        containsTarget: word.isUsed(in: chinese)
-                    )
-                    if sentence.containsTarget, checksSense, word.senses.count > 1 {
-                        sentence.judgedSense = try? await judgeSense(of: chinese, for: word)
-                    }
-                    if sentence.containsTarget {
-                        kept.append(sentence)
-                    } else {
-                        rejected.append(sentence)
-                    }
+                for item in response.content.sentences where sentences.count < sentenceCount {
+                    // The model often writes simplified characters when asked for traditional.
+                    let traditional = Readings.traditional(Self.clean(item.traditionalSentence))
+                    guard traditional.contains(word.traditional),
+                          !sentences.contains(where: { $0.traditional == traditional }) else { continue }
+                    sentences.append(ExampleSentence(
+                        traditional: traditional,
+                        english: Self.clean(item.englishTranslation),
+                        word: word
+                    ))
                 }
             } catch {
                 failure = Self.describe(error)
             }
         }
 
-        // Sentences that passed the sense check come first.
-        let ordered = kept.filter { $0.isVerified(for: sense) } + kept.filter { !$0.isVerified(for: sense) }
-        let sentences = kept.isEmpty ? rejected : Array(ordered.prefix(sentencesPerSense))
-        return SenseExamples(sense: sense, sentences: sentences, attempts: attempts, failure: failure)
-    }
-
-    private func requestSentences(for sense: WordSense, of word: TargetWord) async throws -> GeneratedSentences {
-        // A fresh session per request keeps earlier senses from leaking into this one.
-        let session = LanguageModelSession(instructions: Self.instructions(for: word.script))
-        let response = try await session.respond(
-            to: Self.prompt(for: sense, of: word),
-            generating: GeneratedSentences.self,
-            options: GenerationOptions(temperature: temperature)
+        return ExampleSentenceResult(
+            word: word,
+            sentences: sentences,
+            attempts: attempts,
+            failure: sentences.isEmpty ? failure : nil
         )
-        return response.content
-    }
-
-    /// Asks which of the word's meanings `sentence` uses.
-    private func judgeSense(of sentence: String, for word: TargetWord) async throws -> Int? {
-        let session = LanguageModelSession(instructions: """
-            You are a Chinese dictionary editor. You decide which dictionary meaning \
-            a word has in a sentence.
-            """)
-        let response = try await session.respond(
-            to: Self.judgePrompt(for: sentence, of: word),
-            generating: SenseJudgement.self,
-            options: GenerationOptions(sampling: .greedy)
-        )
-        let number = response.content.meaningNumber
-        return word.senses.indices.contains(number - 1) ? number : nil
     }
 
     // MARK: Prompting
 
-    static func instructions(for script: ChineseScript) -> String {
-        """
+    static let instructions = """
         You are a Chinese teacher writing example sentences for a learner \
         at an intermediate level.
-        Write short, natural, everyday sentences in \(script.displayName) only.
+        Write short, natural, everyday sentences in Traditional Chinese.
         Every sentence must contain the target word exactly as it is written. \
         Never replace it with a synonym.
         Give a faithful English translation of each sentence.
         """
-    }
 
-    static func prompt(for sense: WordSense, of word: TargetWord) -> String {
-        let allSenses = word.senses
-            .map { "\($0.number). \(promptDefinition($0.definition))" }
-            .joined(separator: "\n")
+    static func prompt(for word: TargetWord, count: Int) -> String {
+        let definitions = word.definitions.map { "- \(promptDefinition($0))" }.joined(separator: "\n")
         return """
-        Target word: \(word.characters) (\(word.pinyin))
+        Target word: \(word.traditional) (\(word.pinyin))
 
-        Dictionary meanings of \(word.characters):
-        \(allSenses)
+        Meanings:
+        \(definitions)
 
-        Write two different example sentences that use \(word.characters) \
-        in meaning \(sense.number) only: "\(promptDefinition(sense.definition))". \
-        Do not use \(word.characters) in any of its other meanings, \
-        so that a reader can tell which meaning it is from the sentence.
-        """
-    }
-
-    static func freePrompt(for word: TargetWord) -> String {
-        let allSenses = word.senses
-            .map { "\($0.number). \(promptDefinition($0.definition))" }
-            .joined(separator: "\n")
-        return """
-        Target word: \(word.characters) (\(word.pinyin))
-
-        Dictionary meanings of \(word.characters):
-        \(allSenses)
-
-        Write four different example sentences that use \(word.characters) \
-        the way people most often use it in everyday Chinese. \
+        Write \(count) different example sentences that use \(word.traditional). \
         Start each sentence differently and give each one a different topic.
-        """
-    }
-
-    static func judgePrompt(for sentence: String, of word: TargetWord) -> String {
-        let allSenses = word.senses
-            .map { "\($0.number). \(promptDefinition($0.definition))" }
-            .joined(separator: "\n")
-        return """
-        Sentence: \(sentence)
-
-        Meanings of \(word.characters):
-        \(allSenses)
-
-        Which meaning does \(word.characters) have in this sentence? Answer with its number.
         """
     }
 
@@ -373,27 +219,15 @@ public struct ExampleSentenceGenerator: Sendable {
 
 @Generable
 struct GeneratedSentences {
-    @Guide(description: "Example sentences that each use the target word in the requested meaning", .count(2))
+    @Guide(description: "Different example sentences that each use the target word")
     var sentences: [GeneratedSentence]
 }
 
 @Generable
 struct GeneratedSentence {
-    @Guide(description: "One natural Chinese sentence that contains the target word exactly as written")
-    var chinese: String
+    @Guide(description: "One natural sentence in Traditional Chinese that contains the target word")
+    var traditionalSentence: String
 
-    @Guide(description: "A faithful English translation of the Chinese sentence")
-    var english: String
-}
-
-@Generable
-struct SenseJudgement {
-    @Guide(description: "The number of the meaning the word has in the sentence")
-    var meaningNumber: Int
-}
-
-@Generable
-struct GeneratedFreeSentences {
-    @Guide(description: "Different example sentences that each use the target word", .count(4))
-    var sentences: [GeneratedSentence]
+    @Guide(description: "A faithful English translation of the sentence")
+    var englishTranslation: String
 }

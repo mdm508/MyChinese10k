@@ -4,49 +4,45 @@ Generates Chinese example sentences for a word with Apple's on-device
 Foundation Models framework (iOS 26 / macOS 26, Apple Intelligence on).
 
 Input is any `WordRepresentable` (the Core Data `Word` or a `MockWord`),
-wrapped in a `TargetWord`. Output is an `ExampleSentenceResult` with sentences
-for each sense of the word.
+wrapped in a `TargetWord`. Output is an `ExampleSentenceResult` holding
+`ExampleSentence`s, each with:
 
-- **Senses** are the entries of `meanings`, in order. Synonyms separated by
-  `;` inside one entry are one sense. Dictionary notes such as `also pr. …`,
-  `variant of …` and `CL:…` are skipped.
-- The generator makes one model request per sense (a fresh session each time)
-  and asks for two sentences. A sentence counts only if it contains the word,
-  in either script; up to three requests are made per sense to get two.
-- When a word has several senses, a second model call (the sense check) says
-  which meaning each sentence uses. Sentences it agrees with are listed first
-  and the sense gets a ✓; otherwise it gets a ?. The check is only a hint: it
-  is good at catching future 會 or possessive 的 in the wrong sense, but it
-  misreads compounds like 聚會 and near-synonymous senses (say / speak / tell).
-  It roughly triples run time; turn it off with
-  `ExampleSentenceGenerator(checksSense: false)` or `--no-sense-check`.
-
-- **Free mode** (`freeExamples(for:)`, `--free`) skips the per-sense loop: one
-  call writes four sentences and the model picks the meanings. Sentences
-  missing the word are dropped and topped up. It's several times faster and
-  the sentences read more naturally, but they cluster on the most common
-  meaning. The sense check labels each one as a hint (asking the writing call
-  to label its own sentences gave mostly made-up numbers).
+- `traditional` and `simplified` sentences
+- `pinyin` and `zhuyin`: arrays with one syllable per Chinese character
+  (punctuation is skipped), lining up with `characters`
+- `english`
 
 ```swift
 let result = await ExampleSentenceGenerator().generate(for: TargetWord(word))
-result.coversEverySense   // every sense has a sentence that uses the word
-print(result.report)
+for sentence in result.sentences {
+    print(sentence.traditional, sentence.pinyin, sentence.english)
+}
 ```
+
+## How it works
+
+The model writes only the traditional sentence and its English translation
+(`GeneratedSentence`). Everything else is derived in code (`Readings`) with
+the ICU transforms built into Foundation: `Hant-Hans` for the simplified
+sentence, `Han-Latin` for pinyin and `Latin-Bopomofo` for zhuyin. In testing
+the model got per-character pinyin and zhuyin wrong in 12 of 12 sentences,
+and these transforms were right in every case.
+
+- The model often writes simplified characters when asked for traditional,
+  so its sentence is run through `Hans-Hant` first.
+- ICU picks each character's most common reading, which can be wrong for
+  characters with several readings (行, 了, 長). Readings for the target
+  word itself come from its dictionary entry.
+- Sentences that don't contain the word are dropped and topped up, up to
+  three model calls.
 
 ## Checking the output
 
 - **In the app (Debug builds):** Settings → Developer → AI Example Sentences.
-  Pick the current word, one of the next ten, or a sample word, and tap Generate.
 - **Scratch file:** edit the word in `Sources/try-sentences/main.swift`, then
   in Xcode pick the `try-sentences` scheme and My Mac and press ⌘R (or
   `swift run try-sentences`). Output goes to the console.
-- **Command line (Mac):**
-  ```sh
-  cd Packages/ExampleSentences
-  swift run example-sentences                       # sample words
-  swift run example-sentences --data ../../../chineseWordOfTheDayDataSet/output.json 是 學習 17
-  ```
-- **Tests:** `swift test` runs the sense parsing tests everywhere and
-  `LiveGenerationTests` on machines with Apple Intelligence, printing each
-  word's sentences to the log.
+- **Command line:** `swift run example-sentences` for the sample words, or
+  `swift run example-sentences --data <path to output.json> 是 學習 17`.
+- **Tests:** `swift test` runs the readings tests, plus `LiveGenerationTests`
+  on machines with Apple Intelligence, printing each word's sentences.
