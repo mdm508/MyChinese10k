@@ -8,14 +8,18 @@ import SwiftUI
 /// A screen for checking generated example sentences by eye.
 ///
 /// Pick a word, tap Generate, and each sense fills in as the model finishes it.
-/// A green check means at least one sentence for that sense uses the word;
-/// sentences missing the word are shown in red.
+/// A green check means the sense check agreed a sentence uses that sense, an orange
+/// question mark means the word is used but the check read another meaning, and
+/// sentences missing the word are shown in red. Free mode instead asks for four
+/// sentences in one call and lets the model choose the meanings.
 public struct ExampleSentencesDebugView: View {
     private let words: [TargetWord]
     private let generator: ExampleSentenceGenerator
 
     @State private var selectedIndex: Int64?
     @State private var results: [SenseExamples] = []
+    @State private var freeMode = false
+    @State private var freeResult: FreeExamples?
     @State private var isGenerating = false
     @State private var elapsed: Duration?
 
@@ -34,8 +38,12 @@ public struct ExampleSentencesDebugView: View {
             modelSection
             wordSection
             if let word = selectedWord {
-                ForEach(word.senses) { sense in
-                    senseSection(sense, of: word)
+                if freeMode {
+                    freeSection(of: word)
+                } else {
+                    ForEach(word.senses) { sense in
+                        senseSection(sense, of: word)
+                    }
                 }
                 if !word.notes.isEmpty {
                     Section("Skipped dictionary notes") {
@@ -45,10 +53,8 @@ public struct ExampleSentencesDebugView: View {
             }
         }
         .navigationTitle("AI Example Sentences")
-        .onChange(of: selectedIndex) {
-            results = []
-            elapsed = nil
-        }
+        .onChange(of: selectedIndex) { clearResults() }
+        .onChange(of: freeMode) { clearResults() }
     }
 
     // MARK: Sections
@@ -71,6 +77,12 @@ public struct ExampleSentencesDebugView: View {
                     Text("\(word.characters)  \(word.pinyin)").tag(Optional(word.index))
                 }
             }
+            Picker("Mode", selection: $freeMode) {
+                Text("Every sense").tag(false)
+                Text("Free").tag(true)
+            }
+            .pickerStyle(.segmented)
+            .disabled(isGenerating)
             if let word = selectedWord {
                 Text("\(word.senses.count) senses · \(word.script.displayName)")
                     .font(.footnote)
@@ -87,9 +99,46 @@ public struct ExampleSentencesDebugView: View {
                     }
                 }
                 .disabled(isGenerating || !ExampleSentenceGenerator.isModelAvailable)
-                if !results.isEmpty, !isGenerating {
-                    summary(for: word)
+                if !isGenerating {
+                    if freeMode, let freeResult {
+                        freeSummary(freeResult)
+                    } else if !freeMode, !results.isEmpty {
+                        summary(for: word)
+                    }
                 }
+            }
+        }
+    }
+
+    private var elapsedText: String {
+        elapsed.map { " in " + $0.formatted(.units(allowed: [.seconds], fractionalPart: .show(length: 1))) } ?? ""
+    }
+
+    private func freeSummary(_ result: FreeExamples) -> some View {
+        let used = result.sensesUsed.map(String.init).joined(separator: ", ")
+        return Label(
+            "\(result.sentences.count) sentences, meanings used: \(used.isEmpty ? "none" : used)\(elapsedText)",
+            systemImage: "text.bubble"
+        )
+    }
+
+    private func freeSection(of word: TargetWord) -> some View {
+        Section("Sentences") {
+            if let freeResult {
+                if let failure = freeResult.failure {
+                    Text(failure).foregroundStyle(.red)
+                }
+                ForEach(freeResult.sentences) { sentence in
+                    VStack(alignment: .leading, spacing: 4) {
+                        sentenceRow(sentence, sense: nil, word: word)
+                        let meaning = word.senses.first { $0.number == sentence.judgedSense }
+                        Text(meaning.map { "Meaning \($0.number). \($0.definition)" } ?? "Meaning not given")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } else if isGenerating {
+                Text("Waiting…").foregroundStyle(.secondary)
             }
         }
     }
@@ -98,7 +147,7 @@ public struct ExampleSentencesDebugView: View {
         let covered = results.filter(\.isCovered).count
         let verified = results.filter(\.isVerified).count
         let allCovered = covered == word.senses.count
-        let seconds = elapsed.map { " in " + $0.formatted(.units(allowed: [.seconds], fractionalPart: .show(length: 1))) } ?? ""
+        let seconds = elapsedText
         return Label(
             "\(covered)/\(word.senses.count) senses covered, \(verified) passed the sense check\(seconds)",
             systemImage: allCovered ? "checkmark.seal.fill" : "xmark.seal.fill"
@@ -135,7 +184,7 @@ public struct ExampleSentencesDebugView: View {
         }
     }
 
-    private func sentenceRow(_ sentence: ExampleSentence, sense: WordSense, word: TargetWord) -> some View {
+    private func sentenceRow(_ sentence: ExampleSentence, sense: WordSense?, word: TargetWord) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(highlighted(sentence.chinese, word: word))
                 .font(.title3)
@@ -146,7 +195,7 @@ public struct ExampleSentencesDebugView: View {
                 Text("Doesn't contain \(word.characters)")
                     .font(.caption)
                     .foregroundStyle(.red)
-            } else if let judged = sentence.judgedSense, judged != sense.number {
+            } else if let sense, let judged = sentence.judgedSense, judged != sense.number {
                 Text("Sense check reads this as meaning \(judged)")
                     .font(.caption)
                     .foregroundStyle(.orange)
@@ -169,12 +218,26 @@ public struct ExampleSentencesDebugView: View {
 
     // MARK: Generation
 
+    private func clearResults() {
+        results = []
+        freeResult = nil
+        elapsed = nil
+    }
+
     private func generate(for word: TargetWord) async {
         isGenerating = true
-        results = []
-        elapsed = nil
+        clearResults()
         let clock = ContinuousClock()
         let start = clock.now
+        if freeMode {
+            let result = await generator.freeExamples(for: word)
+            if selectedIndex == word.index, freeMode {
+                freeResult = result
+            }
+            elapsed = clock.now - start
+            isGenerating = false
+            return
+        }
         for sense in word.senses {
             let examples = await generator.examples(for: sense, of: word)
             // Drop the result if the user picked another word meanwhile.

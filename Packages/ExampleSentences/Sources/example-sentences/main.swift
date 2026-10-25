@@ -8,6 +8,7 @@
 //  swift run example-sentences --data output.json 是 學習 17
 //  swift run example-sentences --data output.json --simplified 学习
 //  swift run example-sentences --no-sense-check      # skip the second model call per sentence
+//  swift run example-sentences --free                # four sentences per word, any meanings
 //
 //  Words can be given in either script or by their frequency index.
 //  Requires a Mac with Apple Intelligence turned on.
@@ -40,6 +41,7 @@ var dataURL: URL?
 var script = ChineseScript.traditional
 var queries: [String] = []
 var checksSense = true
+var freeMode = false
 
 while !arguments.isEmpty {
     let argument = arguments.removeFirst()
@@ -53,8 +55,10 @@ while !arguments.isEmpty {
         script = .traditional
     case "--no-sense-check":
         checksSense = false
+    case "--free":
+        freeMode = true
     case "-h", "--help":
-        print("usage: example-sentences [--data output.json] [--simplified] [--no-sense-check] [word or index ...]")
+        print("usage: example-sentences [--data output.json] [--simplified] [--no-sense-check] [--free] [word or index ...]")
         exit(0)
     default:
         queries.append(argument)
@@ -88,6 +92,13 @@ if let reason = ExampleSentenceGenerator.unavailableReason {
 let generator = ExampleSentenceGenerator(checksSense: checksSense)
 var allCovered = true
 for word in words {
+    if freeMode {
+        let result = await generator.freeExamples(for: word)
+        allCovered = allCovered && result.sentences.contains(where: \.containsTarget)
+        print(result.report)
+        print()
+        continue
+    }
     let result = await generator.generate(for: word)
     allCovered = allCovered && result.coversEverySense
     print(result.report)

@@ -21,6 +21,11 @@ for each sense of the word.
   It roughly triples run time; turn it off with
   `ExampleSentenceGenerator(checksSense: false)` or `--no-sense-check`.
 
+- **Free mode** (`freeExamples(for:)`, `--free`) skips the per-sense loop: one
+  call writes four sentences and the model picks the meanings, labelling each
+  sentence with the one it used. It's several times faster and the sentences
+  read more naturally, but they cluster on the most common meaning.
+
 ```swift
 let result = await ExampleSentenceGenerator().generate(for: TargetWord(word))
 result.coversEverySense   // every sense has a sentence that uses the word

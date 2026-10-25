@@ -86,6 +86,34 @@ public struct ExampleSentenceResult: Sendable, Hashable {
     }
 }
 
+/// Sentences the model wrote for a word without being asked for particular senses.
+public struct FreeExamples: Sendable, Hashable {
+    public let word: TargetWord
+    /// `judgedSense` is the meaning the model said each sentence uses.
+    public let sentences: [ExampleSentence]
+    public let failure: String?
+
+    /// The sense numbers the sentences were labelled with, in order.
+    public var sensesUsed: [Int] {
+        Array(Set(sentences.compactMap(\.judgedSense))).sorted()
+    }
+
+    public var report: String {
+        var lines = ["\(word.characters) (\(word.pinyin)) — free mode, meanings used: \(sensesUsed.map(String.init).joined(separator: ", "))"]
+        if let failure {
+            lines.append("  ! \(failure)")
+        }
+        for sentence in sentences {
+            let meaning = sentence.judgedSense.flatMap { number in word.senses.first { $0.number == number } }
+            let flag = sentence.containsTarget ? "" : "  [missing \(word.characters)]"
+            lines.append("  \(sentence.chinese)\(flag)")
+            lines.append("  \(sentence.english)")
+            lines.append("    meaning \(meaning.map { "\($0.number). \($0.definition)" } ?? "?")")
+        }
+        return lines.joined(separator: "\n")
+    }
+}
+
 /// Writes example sentences for a word with Apple's on-device foundation model,
 /// one request per sense so every sense is covered.
 public struct ExampleSentenceGenerator: Sendable {
@@ -127,6 +155,34 @@ public struct ExampleSentenceGenerator: Sendable {
     }
 
     // MARK: Generation
+
+    /// Writes a few sentences in one model call, letting the model pick the
+    /// meanings (usually the most common ones). Each sentence is labelled with
+    /// the meaning the model says it used, for information only.
+    public func freeExamples(for word: TargetWord) async -> FreeExamples {
+        do {
+            let session = LanguageModelSession(instructions: Self.instructions(for: word.script))
+            let response = try await session.respond(
+                to: Self.freePrompt(for: word),
+                generating: GeneratedLabelledSentences.self,
+                options: GenerationOptions(temperature: temperature)
+            )
+            var seen = Set<String>()
+            let sentences = response.content.sentences.compactMap { item -> ExampleSentence? in
+                let chinese = Self.clean(item.chinese)
+                guard !chinese.isEmpty, seen.insert(chinese).inserted else { return nil }
+                return ExampleSentence(
+                    chinese: chinese,
+                    english: Self.clean(item.english),
+                    containsTarget: word.isUsed(in: chinese),
+                    judgedSense: word.senses.indices.contains(item.meaningNumber - 1) ? item.meaningNumber : nil
+                )
+            }
+            return FreeExamples(word: word, sentences: sentences, failure: nil)
+        } catch {
+            return FreeExamples(word: word, sentences: [], failure: Self.describe(error))
+        }
+    }
 
     /// Generates sentences for every sense of `word`.
     public func generate(for word: TargetWord) async -> ExampleSentenceResult {
@@ -213,8 +269,6 @@ public struct ExampleSentenceGenerator: Sendable {
         Write short, natural, everyday sentences in \(script.displayName) only.
         Every sentence must contain the target word exactly as it is written. \
         Never replace it with a synonym.
-        Use the target word only in the meaning you are asked for, \
-        so that a reader can tell which meaning it is from the sentence.
         Give a faithful English translation of each sentence.
         """
     }
@@ -231,7 +285,24 @@ public struct ExampleSentenceGenerator: Sendable {
 
         Write two different example sentences that use \(word.characters) \
         in meaning \(sense.number) only: "\(promptDefinition(sense.definition))". \
-        Do not use \(word.characters) in any of its other meanings.
+        Do not use \(word.characters) in any of its other meanings, \
+        so that a reader can tell which meaning it is from the sentence.
+        """
+    }
+
+    static func freePrompt(for word: TargetWord) -> String {
+        let allSenses = word.senses
+            .map { "\($0.number). \(promptDefinition($0.definition))" }
+            .joined(separator: "\n")
+        return """
+        Target word: \(word.characters) (\(word.pinyin))
+
+        Dictionary meanings of \(word.characters):
+        \(allSenses)
+
+        Write four different example sentences that use \(word.characters) \
+        the way people most often use it in everyday Chinese. \
+        For each sentence, give the number of the meaning \(word.characters) has in it.
         """
     }
 
@@ -308,5 +379,23 @@ struct GeneratedSentence {
 @Generable
 struct SenseJudgement {
     @Guide(description: "The number of the meaning the word has in the sentence")
+    var meaningNumber: Int
+}
+
+@Generable
+struct GeneratedLabelledSentences {
+    @Guide(description: "Different example sentences that each use the target word", .count(4))
+    var sentences: [GeneratedLabelledSentence]
+}
+
+@Generable
+struct GeneratedLabelledSentence {
+    @Guide(description: "One natural Chinese sentence that contains the target word exactly as written")
+    var chinese: String
+
+    @Guide(description: "A faithful English translation of the Chinese sentence")
+    var english: String
+
+    @Guide(description: "The number of the dictionary meaning the target word has in this sentence")
     var meaningNumber: Int
 }
