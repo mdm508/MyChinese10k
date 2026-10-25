@@ -17,7 +17,7 @@ import CoreDataModels
     let word = TargetWord(MockWord.placeholder)
     let result = await ExampleSentenceGenerator().generate(for: word)
     print(result.report)
-    let allCovered = result.coversEverySense
+    print("All senses covered:", result.coversEverySense)
 }
 
 // 2. Your own word: edit the meanings and watch which senses get sentences.
