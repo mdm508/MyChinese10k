@@ -91,34 +91,70 @@ enum Readings {
     /// characters with several readings.
     static func segments(of sentence: String, word: TargetWord, dictionary: ReadingDictionary) -> [Segment] {
         wordTexts(of: sentence, keepingTogether: word.traditional).map { text in
-            let characters = text.filter(isChineseCharacter)
-            if characters == word.traditional {
-                return Segment(
-                    traditional: text,
-                    simplified: simplified(text),
-                    pinyin: word.pinyin,
-                    zhuyin: word.zhuyin,
-                    dictionaryIndex: word.index
-                )
-            }
-            if let entry = dictionary[characters] {
-                return Segment(
-                    traditional: text,
-                    simplified: simplified(text),
-                    pinyin: entry.pinyin,
-                    zhuyin: entry.zhuyin,
-                    dictionaryIndex: entry.index
-                )
-            }
-            let syllables = characters.map(pinyin(of:))
+            var segment = rawSegment(text, word: word, dictionary: dictionary)
+            segment.pinyin = normalizedPinyin(segment.pinyin)
+            segment.zhuyin = normalizedZhuyin(segment.zhuyin)
+            return segment
+        }
+    }
+
+    /// Single-character words ICU reads wrong when they stand alone as particles.
+    private static let particles: [String: (pinyin: String, zhuyin: String)] = [
+        "著": ("zhe", "˙ㄓㄜ"),
+    ]
+
+    /// Pinyin syllables of a word run together, as in "wǒmen" (the dataset and
+    /// ICU differ on spacing).
+    static func normalizedPinyin(_ pinyin: String) -> String {
+        pinyin.filter { !$0.isWhitespace }
+    }
+
+    /// Zhuyin syllables separated by single spaces, with the neutral-tone dot
+    /// in front Taiwan-style (˙ㄇㄣ), as in the dataset; ICU puts it after.
+    static func normalizedZhuyin(_ zhuyin: String) -> String {
+        zhuyin.split(whereSeparator: \.isWhitespace).map { syllable in
+            syllable.last == "˙" ? "˙" + String(syllable.dropLast()) : String(syllable)
+        }
+        .joined(separator: " ")
+    }
+
+    private static func rawSegment(_ text: String, word: TargetWord, dictionary: ReadingDictionary) -> Segment {
+        let characters = text.filter(isChineseCharacter)
+        if characters == word.traditional {
             return Segment(
                 traditional: text,
                 simplified: simplified(text),
-                pinyin: syllables.joined(),
-                zhuyin: syllables.map(zhuyin(fromPinyin:)).joined(separator: " "),
+                pinyin: word.pinyin,
+                zhuyin: word.zhuyin,
+                dictionaryIndex: word.index
+            )
+        }
+        if let entry = dictionary[characters] {
+            return Segment(
+                traditional: text,
+                simplified: simplified(text),
+                pinyin: entry.pinyin,
+                zhuyin: entry.zhuyin,
+                dictionaryIndex: entry.index
+            )
+        }
+        if let particle = particles[characters] {
+            return Segment(
+                traditional: text,
+                simplified: simplified(text),
+                pinyin: particle.pinyin,
+                zhuyin: particle.zhuyin,
                 dictionaryIndex: nil
             )
         }
+        let syllables = characters.map(pinyin(of:))
+        return Segment(
+            traditional: text,
+            simplified: simplified(text),
+            pinyin: syllables.joined(),
+            zhuyin: syllables.map(zhuyin(fromPinyin:)).joined(separator: " "),
+            dictionaryIndex: nil
+        )
     }
 
     /// The sentence cut into words, with punctuation attached to the word before it.

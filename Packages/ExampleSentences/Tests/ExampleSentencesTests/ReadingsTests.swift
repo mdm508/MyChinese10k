@@ -78,4 +78,17 @@ struct ReadingsTests {
         #expect(!ExampleSentenceGenerator.isFullSentence("打電話", word: da))
         #expect(ExampleSentenceGenerator.isFullSentence("我晚上打電話給你。", word: da))
     }
+
+    @Test func readingsAreNormalized() {
+        #expect(Readings.normalizedPinyin("jù huì") == "jùhuì")
+        #expect(Readings.normalizedZhuyin("ㄨㄛˇ ㄇㄣ˙") == "ㄨㄛˇ ˙ㄇㄣ")
+        #expect(Readings.normalizedZhuyin("ㄉㄜ˙") == "˙ㄉㄜ")
+    }
+
+    @Test func particleZheIsNeutral() {
+        let sentence = ExampleSentence(traditional: "他笑著學習", english: "", word: xuexi, dictionary: ReadingDictionary())
+        if let position = sentence.traditional.firstIndex(of: "著") {
+            #expect(sentence.pinyin[position] == "zhe")
+        }
+    }
 }

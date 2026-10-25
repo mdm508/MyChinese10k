@@ -17,7 +17,7 @@ public struct ExampleSentence: Sendable, Hashable, Identifiable {
     public let simplified: [String]
     /// Pinyin of each word, syllables run together ("wǒmen").
     public let pinyin: [String]
-    /// Zhuyin of each word, syllables separated by spaces ("ㄨㄛˇ ㄇㄣ˙").
+    /// Zhuyin of each word, syllables separated by spaces, neutral-tone dot first ("ㄨㄛˇ ˙ㄇㄣ").
     public let zhuyin: [String]
     /// Each word's index in the app's word list, when it is in it.
     public let dictionaryIndices: [Int64?]
@@ -140,6 +140,9 @@ public struct ExampleSentenceGenerator: Sendable {
                 for item in response.content.sentences where sentences.count < sentenceCount {
                     // The model often writes simplified characters when asked for traditional.
                     var traditional = Readings.traditional(Self.clean(item.traditionalSentence))
+                    if traditional.last == "." {
+                        traditional.removeLast()
+                    }
                     if let last = traditional.last, Readings.isChineseCharacter(last) {
                         traditional.append("。")
                     }
