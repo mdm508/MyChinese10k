@@ -106,4 +106,19 @@ struct ReadingsTests {
         let isolated = Readings.isolating("學習", in: sentence, tokens: tokens).map { String(sentence[$0]) }
         #expect(isolated == ["我", "在", "學習"])
     }
+
+    @Test func compoundsAreLeftAloneWhenTheTargetAlreadyStandsAlone() {
+        let sentence = "我會參加這個會議"
+        let tokens = ["我", "會", "參加", "這個", "會議"].map { word in sentence.range(of: word)! }
+        let isolated = Readings.isolating("會", in: sentence, tokens: tokens).map { String(sentence[$0]) }
+        #expect(isolated == ["我", "會", "參加", "這個", "會議"])
+    }
+
+    @Test func dictionaryWordsAreCutOnlyAsALastResort() {
+        let sentence = "去聚會再開會"
+        let tokens = ["去", "聚會", "再", "開會"].map { word in sentence.range(of: word)! }
+        let isolated = Readings.isolating("會", in: sentence, tokens: tokens, isWord: { $0 == "聚會" })
+            .map { String(sentence[$0]) }
+        #expect(isolated == ["去", "聚會", "再", "開", "會"])
+    }
 }

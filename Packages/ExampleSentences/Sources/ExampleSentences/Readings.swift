@@ -90,7 +90,7 @@ enum Readings {
     /// and ICU's most common reading of each character, which can be wrong for
     /// characters with several readings.
     static func segments(of sentence: String, word: TargetWord, dictionary: ReadingDictionary) -> [Segment] {
-        wordTexts(of: sentence, keepingTogether: word.traditional).map { text in
+        wordTexts(of: sentence, keepingTogether: word.traditional, dictionary: dictionary).map { text in
             var segment = rawSegment(text, word: word, dictionary: dictionary)
             segment.pinyin = normalizedPinyin(segment.pinyin)
             segment.zhuyin = normalizedZhuyin(segment.zhuyin)
@@ -157,9 +157,19 @@ enum Readings {
         )
     }
 
-    /// Makes every occurrence of `target` exactly one token: tokens that contain it
-    /// (打電話 → 打 | 電話) are cut at its edges, and pieces of it are merged.
-    static func isolating(_ target: String, in sentence: String, tokens: [Range<String.Index>]) -> [Range<String.Index>] {
+    /// Makes sure `target` is one token somewhere in the sentence, without
+    /// breaking up other words more than needed.
+    ///
+    /// Pieces of the target are merged (學 | 習 → 學習). If the target still isn't a
+    /// token on its own, one longer token holding it is cut at its edges
+    /// (打電話 → 打 | 電話), preferring a token that isn't a dictionary word, so
+    /// a second 會 in 會議 or 聚會 stays inside its word.
+    static func isolating(
+        _ target: String,
+        in sentence: String,
+        tokens: [Range<String.Index>],
+        isWord: (String) -> Bool = { _ in false }
+    ) -> [Range<String.Index>] {
         var occurrences: [Range<String.Index>] = []
         var searchStart = sentence.startIndex
         while !target.isEmpty,
@@ -169,45 +179,49 @@ enum Readings {
         }
         guard !occurrences.isEmpty else { return tokens }
 
-        // Cut tokens at the target's edges.
-        let edges = occurrences.flatMap { [$0.lowerBound, $0.upperBound] }
-        var pieces: [Range<String.Index>] = []
-        for token in tokens {
-            var start = token.lowerBound
-            for edge in edges.sorted() where token.lowerBound < edge && edge < token.upperBound {
-                pieces.append(start..<edge)
-                start = edge
-            }
-            pieces.append(start..<token.upperBound)
-        }
-
-        // Merge the pieces that fall inside an occurrence.
-        var result: [Range<String.Index>] = []
+        // Merge pieces that exactly make up an occurrence.
+        var merged: [Range<String.Index>] = []
         var index = 0
-        while index < pieces.count {
-            let piece = pieces[index]
-            if let occurrence = occurrences.first(where: { $0.lowerBound == piece.lowerBound }) {
-                while index < pieces.count, pieces[index].upperBound <= occurrence.upperBound {
-                    index += 1
-                }
-                result.append(occurrence)
+        while index < tokens.count {
+            let token = tokens[index]
+            if let occurrence = occurrences.first(where: { $0.lowerBound == token.lowerBound }),
+               let end = tokens[index...].firstIndex(where: { $0.upperBound == occurrence.upperBound }),
+               tokens[index...end].allSatisfy({ $0.upperBound <= occurrence.upperBound }) {
+                merged.append(occurrence)
+                index = end + 1
             } else {
-                result.append(piece)
+                merged.append(token)
                 index += 1
             }
         }
-        return result
+        if merged.contains(where: { occurrences.contains($0) }) {
+            return merged
+        }
+
+        // Cut one longer token around the target.
+        let containing = occurrences.compactMap { occurrence in
+            merged.firstIndex { $0.lowerBound <= occurrence.lowerBound && occurrence.upperBound <= $0.upperBound }
+                .map { (token: $0, occurrence: occurrence) }
+        }
+        guard let choice = containing.first(where: { !isWord(String(sentence[merged[$0.token]])) }) ?? containing.first else {
+            return merged
+        }
+        let token = merged[choice.token]
+        let pieces = [token.lowerBound..<choice.occurrence.lowerBound, choice.occurrence, choice.occurrence.upperBound..<token.upperBound]
+            .filter { !$0.isEmpty }
+        merged.replaceSubrange(choice.token...choice.token, with: pieces)
+        return merged
     }
 
     /// The sentence cut into words, with punctuation attached to the word before it.
-    static func wordTexts(of sentence: String, keepingTogether target: String) -> [String] {
+    static func wordTexts(of sentence: String, keepingTogether target: String, dictionary: ReadingDictionary = ReadingDictionary()) -> [String] {
         let tokenizer = NLTokenizer(unit: .word)
         tokenizer.string = sentence
         tokenizer.setLanguage(.traditionalChinese)
         var tokens = tokenizer.tokens(for: sentence.startIndex..<sentence.endIndex)
 
         let original = Set(tokens)
-        tokens = isolating(target, in: sentence, tokens: tokens).flatMap { token -> [Range<String.Index>] in
+        tokens = isolating(target, in: sentence, tokens: tokens, isWord: { dictionary[$0] != nil }).flatMap { token -> [Range<String.Index>] in
             // A leftover from cutting the target out (車到 from 開車到) gets tokenized again.
             guard !original.contains(token), sentence[token] != target else { return [token] }
             tokenizer.string = String(sentence[token])
