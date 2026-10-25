@@ -91,4 +91,19 @@ struct ReadingsTests {
             #expect(sentence.pinyin[position] == "zhe")
         }
     }
+
+    @Test func targetIsCutOutOfLongerWords() {
+        // If the tokenizer keeps 打電話 together, 打 is still its own segment.
+        let sentence = "我打電話給她。"
+        let tokens = [sentence.range(of: "我")!, sentence.range(of: "打電話")!, sentence.range(of: "給")!, sentence.range(of: "她")!]
+        let isolated = Readings.isolating("打", in: sentence, tokens: tokens).map { String(sentence[$0]) }
+        #expect(isolated == ["我", "打", "電話", "給", "她"])
+    }
+
+    @Test func targetPiecesAreMerged() {
+        let sentence = "我在學習"
+        let tokens = [sentence.range(of: "我")!, sentence.range(of: "在")!, sentence.range(of: "學")!, sentence.range(of: "習")!]
+        let isolated = Readings.isolating("學習", in: sentence, tokens: tokens).map { String(sentence[$0]) }
+        #expect(isolated == ["我", "在", "學習"])
+    }
 }

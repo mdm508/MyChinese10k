@@ -177,8 +177,9 @@ public struct ExampleSentenceGenerator: Sendable {
         Write short, natural, everyday sentences in Traditional Chinese. \
         Each one must be a complete sentence with a subject and a verb, \
         not a phrase or a single word.
-        Every sentence must contain the target word exactly as it is written. \
-        Never replace it with a synonym.
+        Every sentence must contain the target word exactly as it is written, \
+        used as a word on its own in one of its listed meanings, \
+        not as part of a longer word. Never replace it with a synonym.
         Give a faithful English translation of each sentence.
         """
 
@@ -190,7 +191,8 @@ public struct ExampleSentenceGenerator: Sendable {
         Meanings:
         \(definitions)
 
-        Write \(count) different example sentences that use \(word.traditional). \
+        Write \(count) different example sentences that use \(word.traditional) \
+        as a word on its own, with one of the meanings above. \
         Start each sentence differently and give each one a different topic.
         """
     }

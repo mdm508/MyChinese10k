@@ -157,6 +157,48 @@ enum Readings {
         )
     }
 
+    /// Makes every occurrence of `target` exactly one token: tokens that contain it
+    /// (打電話 → 打 | 電話) are cut at its edges, and pieces of it are merged.
+    static func isolating(_ target: String, in sentence: String, tokens: [Range<String.Index>]) -> [Range<String.Index>] {
+        var occurrences: [Range<String.Index>] = []
+        var searchStart = sentence.startIndex
+        while !target.isEmpty,
+              let occurrence = sentence.range(of: target, range: searchStart..<sentence.endIndex) {
+            occurrences.append(occurrence)
+            searchStart = occurrence.upperBound
+        }
+        guard !occurrences.isEmpty else { return tokens }
+
+        // Cut tokens at the target's edges.
+        let edges = occurrences.flatMap { [$0.lowerBound, $0.upperBound] }
+        var pieces: [Range<String.Index>] = []
+        for token in tokens {
+            var start = token.lowerBound
+            for edge in edges.sorted() where token.lowerBound < edge && edge < token.upperBound {
+                pieces.append(start..<edge)
+                start = edge
+            }
+            pieces.append(start..<token.upperBound)
+        }
+
+        // Merge the pieces that fall inside an occurrence.
+        var result: [Range<String.Index>] = []
+        var index = 0
+        while index < pieces.count {
+            let piece = pieces[index]
+            if let occurrence = occurrences.first(where: { $0.lowerBound == piece.lowerBound }) {
+                while index < pieces.count, pieces[index].upperBound <= occurrence.upperBound {
+                    index += 1
+                }
+                result.append(occurrence)
+            } else {
+                result.append(piece)
+                index += 1
+            }
+        }
+        return result
+    }
+
     /// The sentence cut into words, with punctuation attached to the word before it.
     static func wordTexts(of sentence: String, keepingTogether target: String) -> [String] {
         let tokenizer = NLTokenizer(unit: .word)
@@ -164,18 +206,7 @@ enum Readings {
         tokenizer.setLanguage(.traditionalChinese)
         var tokens = tokenizer.tokens(for: sentence.startIndex..<sentence.endIndex)
 
-        // Merge the tokens that make up the target word, if the tokenizer split it.
-        var searchStart = sentence.startIndex
-        while !target.isEmpty,
-              let occurrence = sentence.range(of: target, range: searchStart..<sentence.endIndex) {
-            let inside = tokens.indices.filter { occurrence.contains(tokens[$0].lowerBound) }
-            if let first = inside.first, let last = inside.last, inside.count > 1,
-               tokens[first].lowerBound == occurrence.lowerBound,
-               tokens[last].upperBound == occurrence.upperBound {
-                tokens.replaceSubrange(first...last, with: [occurrence])
-            }
-            searchStart = occurrence.upperBound
-        }
+        tokens = isolating(target, in: sentence, tokens: tokens)
 
         guard !tokens.isEmpty else {
             return sentence.isEmpty ? [] : [sentence]
