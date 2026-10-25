@@ -117,7 +117,7 @@ public struct ExampleSentencesDebugView: View {
     private func freeSummary(_ result: FreeExamples) -> some View {
         let used = result.sensesUsed.map(String.init).joined(separator: ", ")
         return Label(
-            "\(result.sentences.count) sentences, meanings used: \(used.isEmpty ? "none" : used)\(elapsedText)",
+            "\(result.sentences.count) sentences, sense check readings: \(used.isEmpty ? "none" : used)\(elapsedText)",
             systemImage: "text.bubble"
         )
     }
@@ -132,7 +132,7 @@ public struct ExampleSentencesDebugView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         sentenceRow(sentence, sense: nil, word: word)
                         let meaning = word.senses.first { $0.number == sentence.judgedSense }
-                        Text(meaning.map { "Meaning \($0.number). \($0.definition)" } ?? "Meaning not given")
+                        Text(meaning.map { "Sense check: meaning \($0.number). \($0.definition)" } ?? "Not sense-checked")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

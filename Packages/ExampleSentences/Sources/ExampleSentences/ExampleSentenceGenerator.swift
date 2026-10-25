@@ -89,7 +89,8 @@ public struct ExampleSentenceResult: Sendable, Hashable {
 /// Sentences the model wrote for a word without being asked for particular senses.
 public struct FreeExamples: Sendable, Hashable {
     public let word: TargetWord
-    /// `judgedSense` is the meaning the model said each sentence uses.
+    /// Every sentence contains the word. `judgedSense` is the sense check's
+    /// reading, when it ran.
     public let sentences: [ExampleSentence]
     public let failure: String?
 
@@ -99,16 +100,17 @@ public struct FreeExamples: Sendable, Hashable {
     }
 
     public var report: String {
-        var lines = ["\(word.characters) (\(word.pinyin)) — free mode, meanings used: \(sensesUsed.map(String.init).joined(separator: ", "))"]
+        var lines = ["\(word.characters) (\(word.pinyin)) — free mode, sense check readings: \(sensesUsed.map(String.init).joined(separator: ", "))"]
         if let failure {
             lines.append("  ! \(failure)")
         }
         for sentence in sentences {
             let meaning = sentence.judgedSense.flatMap { number in word.senses.first { $0.number == number } }
-            let flag = sentence.containsTarget ? "" : "  [missing \(word.characters)]"
-            lines.append("  \(sentence.chinese)\(flag)")
+            lines.append("  \(sentence.chinese)")
             lines.append("  \(sentence.english)")
-            lines.append("    meaning \(meaning.map { "\($0.number). \($0.definition)" } ?? "?")")
+            if let meaning {
+                lines.append("    sense check: meaning \(meaning.number). \(meaning.definition)")
+            }
         }
         return lines.joined(separator: "\n")
     }
@@ -156,32 +158,40 @@ public struct ExampleSentenceGenerator: Sendable {
 
     // MARK: Generation
 
-    /// Writes a few sentences in one model call, letting the model pick the
-    /// meanings (usually the most common ones). Each sentence is labelled with
-    /// the meaning the model says it used, for information only.
+    /// Writes four sentences letting the model pick the meanings (usually the
+    /// most common ones). Sentences missing the word are dropped and topped up,
+    /// up to `maxAttemptsPerSense` calls. With `checksSense` on, each sentence is
+    /// then labelled by the sense check, as a hint.
     public func freeExamples(for word: TargetWord) async -> FreeExamples {
-        do {
-            let session = LanguageModelSession(instructions: Self.instructions(for: word.script))
-            let response = try await session.respond(
-                to: Self.freePrompt(for: word),
-                generating: GeneratedLabelledSentences.self,
-                options: GenerationOptions(temperature: temperature)
-            )
-            var seen = Set<String>()
-            let sentences = response.content.sentences.compactMap { item -> ExampleSentence? in
-                let chinese = Self.clean(item.chinese)
-                guard !chinese.isEmpty, seen.insert(chinese).inserted else { return nil }
-                return ExampleSentence(
-                    chinese: chinese,
-                    english: Self.clean(item.english),
-                    containsTarget: word.isUsed(in: chinese),
-                    judgedSense: word.senses.indices.contains(item.meaningNumber - 1) ? item.meaningNumber : nil
+        let wanted = 4
+        var sentences: [ExampleSentence] = []
+        var failure: String?
+        var attempts = 0
+        while sentences.count < wanted, attempts < maxAttemptsPerSense {
+            attempts += 1
+            do {
+                let session = LanguageModelSession(instructions: Self.instructions(for: word.script))
+                let response = try await session.respond(
+                    to: Self.freePrompt(for: word),
+                    generating: GeneratedFreeSentences.self,
+                    options: GenerationOptions(temperature: temperature)
                 )
+                failure = nil
+                for item in response.content.sentences where sentences.count < wanted {
+                    let chinese = Self.clean(item.chinese)
+                    guard word.isUsed(in: chinese),
+                          !sentences.contains(where: { $0.chinese == chinese }) else { continue }
+                    var sentence = ExampleSentence(chinese: chinese, english: Self.clean(item.english), containsTarget: true)
+                    if checksSense, word.senses.count > 1 {
+                        sentence.judgedSense = try? await judgeSense(of: chinese, for: word)
+                    }
+                    sentences.append(sentence)
+                }
+            } catch {
+                failure = Self.describe(error)
             }
-            return FreeExamples(word: word, sentences: sentences, failure: nil)
-        } catch {
-            return FreeExamples(word: word, sentences: [], failure: Self.describe(error))
         }
+        return FreeExamples(word: word, sentences: sentences, failure: sentences.isEmpty ? failure : nil)
     }
 
     /// Generates sentences for every sense of `word`.
@@ -302,7 +312,7 @@ public struct ExampleSentenceGenerator: Sendable {
 
         Write four different example sentences that use \(word.characters) \
         the way people most often use it in everyday Chinese. \
-        For each sentence, give the number of the meaning \(word.characters) has in it.
+        Start each sentence differently and give each one a different topic.
         """
     }
 
@@ -383,19 +393,7 @@ struct SenseJudgement {
 }
 
 @Generable
-struct GeneratedLabelledSentences {
+struct GeneratedFreeSentences {
     @Guide(description: "Different example sentences that each use the target word", .count(4))
-    var sentences: [GeneratedLabelledSentence]
-}
-
-@Generable
-struct GeneratedLabelledSentence {
-    @Guide(description: "One natural Chinese sentence that contains the target word exactly as written")
-    var chinese: String
-
-    @Guide(description: "A faithful English translation of the Chinese sentence")
-    var english: String
-
-    @Guide(description: "The number of the dictionary meaning the target word has in this sentence")
-    var meaningNumber: Int
+    var sentences: [GeneratedSentence]
 }

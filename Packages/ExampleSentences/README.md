@@ -22,9 +22,11 @@ for each sense of the word.
   `ExampleSentenceGenerator(checksSense: false)` or `--no-sense-check`.
 
 - **Free mode** (`freeExamples(for:)`, `--free`) skips the per-sense loop: one
-  call writes four sentences and the model picks the meanings, labelling each
-  sentence with the one it used. It's several times faster and the sentences
-  read more naturally, but they cluster on the most common meaning.
+  call writes four sentences and the model picks the meanings. Sentences
+  missing the word are dropped and topped up. It's several times faster and
+  the sentences read more naturally, but they cluster on the most common
+  meaning. The sense check labels each one as a hint (asking the writing call
+  to label its own sentences gave mostly made-up numbers).
 
 ```swift
 let result = await ExampleSentenceGenerator().generate(for: TargetWord(word))
