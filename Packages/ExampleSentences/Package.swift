@@ -33,11 +33,15 @@ let package = Package(
         ),
         .executableTarget(
             name: "example-sentences",
-            dependencies: ["ExampleSentences", "CoreDataModels"]
+            dependencies: ["ExampleSentences", "CoreDataModels"],
+            // Swift 5 mode so the scripts can touch C's `stdout` to set line buffering.
+            swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .executableTarget(
             name: "try-sentences",
-            dependencies: ["ExampleSentences", "CoreDataModels"]
+            dependencies: ["ExampleSentences", "CoreDataModels"],
+            // Swift 5 mode so the scripts can touch C's `stdout` to set line buffering.
+            swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .testTarget(
             name: "ExampleSentencesTests",
