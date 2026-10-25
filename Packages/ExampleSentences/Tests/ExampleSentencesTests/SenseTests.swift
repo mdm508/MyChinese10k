@@ -60,4 +60,15 @@ struct SenseTests {
         #expect(ExampleSentenceGenerator.clean("我們要參加一個新的公司 **會**。") == "我們要參加一個新的公司會。")
         #expect(ExampleSentenceGenerator.clean("We attended two **meetings**.") == "We attended two meetings.")
     }
+
+    @Test func senseCheckMarksButDoesNotDropSentences() {
+        let sense = WordSense(number: 2, definition: "to emulate")
+        let other = ExampleSentence(chinese: "我在學習中文。", english: "I'm studying Chinese.", containsTarget: true, judgedSense: 1)
+        let examples = SenseExamples(sense: sense, sentences: [other], attempts: 1, failure: nil)
+        #expect(examples.isCovered)
+        #expect(!examples.isVerified)
+
+        let agreed = ExampleSentence(chinese: "我們要學習他的精神。", english: "We should learn from his spirit.", containsTarget: true, judgedSense: 2)
+        #expect(SenseExamples(sense: sense, sentences: [agreed], attempts: 1, failure: nil).isVerified)
+    }
 }
