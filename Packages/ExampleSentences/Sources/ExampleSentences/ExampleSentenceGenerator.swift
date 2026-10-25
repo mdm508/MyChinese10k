@@ -130,7 +130,10 @@ public struct ExampleSentenceGenerator: Sendable {
                 failure = nil
                 for item in response.content.sentences where sentences.count < sentenceCount {
                     // The model often writes simplified characters when asked for traditional.
-                    let traditional = Readings.traditional(Self.clean(item.traditionalSentence))
+                    var traditional = Readings.traditional(Self.clean(item.traditionalSentence))
+                    if let last = traditional.last, Readings.isChineseCharacter(last) {
+                        traditional.append("。")
+                    }
                     guard traditional.contains(word.traditional),
                           Self.isFullSentence(traditional, word: word),
                           !sentences.contains(where: { $0.traditional == traditional }) else { continue }
