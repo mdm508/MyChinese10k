@@ -96,10 +96,11 @@ public struct ExampleSentencesDebugView: View {
 
     private func summary(for word: TargetWord) -> some View {
         let covered = results.filter(\.isCovered).count
+        let verified = results.filter(\.isVerified).count
         let allCovered = covered == word.senses.count
         let seconds = elapsed.map { " in " + $0.formatted(.units(allowed: [.seconds], fractionalPart: .show(length: 1))) } ?? ""
         return Label(
-            "\(covered)/\(word.senses.count) senses covered\(seconds)",
+            "\(covered)/\(word.senses.count) senses covered, \(verified) passed the sense check\(seconds)",
             systemImage: allCovered ? "checkmark.seal.fill" : "xmark.seal.fill"
         )
         .foregroundStyle(allCovered ? .green : .red)
@@ -124,8 +125,9 @@ public struct ExampleSentencesDebugView: View {
         } header: {
             HStack(alignment: .firstTextBaseline) {
                 if let examples {
-                    Image(systemName: examples.isCovered ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .foregroundStyle(examples.isCovered ? .green : .red)
+                    Image(systemName: examples.isVerified ? "checkmark.circle.fill"
+                          : examples.isCovered ? "questionmark.circle.fill" : "xmark.circle.fill")
+                        .foregroundStyle(examples.isVerified ? .green : examples.isCovered ? .orange : .red)
                 }
                 Text("\(sense.number). \(sense.definition)")
                     .textCase(nil)
@@ -145,9 +147,9 @@ public struct ExampleSentencesDebugView: View {
                     .font(.caption)
                     .foregroundStyle(.red)
             } else if let judged = sentence.judgedSense, judged != sense.number {
-                Text("Reads as meaning \(judged)")
+                Text("Sense check reads this as meaning \(judged)")
                     .font(.caption)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(.orange)
             }
         }
         .textSelection(.enabled)

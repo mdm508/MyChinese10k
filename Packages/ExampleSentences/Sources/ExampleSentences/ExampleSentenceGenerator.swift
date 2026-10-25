@@ -18,9 +18,9 @@ public struct ExampleSentence: Sendable, Hashable, Identifiable {
     /// or `nil` when it wasn't checked.
     public var judgedSense: Int? = nil
 
-    /// Uses the target word, and in `sense` when the sense was checked.
-    public func isUsable(for sense: WordSense) -> Bool {
-        containsTarget && (judgedSense ?? sense.number) == sense.number
+    /// The sense check agreed the word is used in `sense`.
+    public func isVerified(for sense: WordSense) -> Bool {
+        containsTarget && judgedSense == sense.number
     }
 }
 
@@ -35,9 +35,15 @@ public struct SenseExamples: Sendable, Hashable, Identifiable {
 
     public var id: Int { sense.id }
 
-    /// At least one sentence uses the target word, in this sense when it was checked.
+    /// At least one sentence uses the target word.
     public var isCovered: Bool {
-        sentences.contains { $0.isUsable(for: sense) }
+        sentences.contains(where: \.containsTarget)
+    }
+
+    /// At least one sentence passed the sense check. The check is a hint, not a
+    /// verdict: it often misreads compounds and near-synonymous senses.
+    public var isVerified: Bool {
+        sentences.contains { $0.isVerified(for: sense) }
     }
 }
 
@@ -53,9 +59,13 @@ public struct ExampleSentenceResult: Sendable, Hashable {
 
     /// A plain-text summary for logs, the command line tool and tests.
     public var report: String {
-        var lines = ["\(word.characters) (\(word.pinyin)) — \(senses.filter(\.isCovered).count)/\(senses.count) senses covered"]
+        var title = "\(word.characters) (\(word.pinyin)) — \(senses.filter(\.isCovered).count)/\(senses.count) senses covered"
+        if senses.contains(where: { $0.sentences.contains { $0.judgedSense != nil } }) {
+            title += ", \(senses.filter(\.isVerified).count) passed the sense check"
+        }
+        var lines = [title]
         for examples in senses {
-            let mark = examples.isCovered ? "✓" : "✗"
+            let mark = examples.isVerified ? "✓" : examples.isCovered ? "?" : "✗"
             lines.append("  \(mark) \(examples.sense.number). \(examples.sense.definition)")
             if let failure = examples.failure {
                 lines.append("      ! \(failure)")
@@ -63,7 +73,7 @@ public struct ExampleSentenceResult: Sendable, Hashable {
             for sentence in examples.sentences {
                 var flag = sentence.containsTarget ? "" : "  [missing \(word.characters)]"
                 if let judged = sentence.judgedSense, judged != examples.sense.number {
-                    flag += "  [reads as meaning \(judged)]"
+                    flag += "  [sense check: meaning \(judged)]"
                 }
                 lines.append("      \(sentence.chinese)\(flag)")
                 lines.append("      \(sentence.english)")
@@ -84,8 +94,8 @@ public struct ExampleSentenceGenerator: Sendable {
     /// Model calls per sense before giving up on getting a sentence that uses the word.
     public var maxAttemptsPerSense: Int
     public var temperature: Double
-    /// Ask the model, in a separate call, which meaning each sentence uses
-    /// and drop sentences that use another one.
+    /// Ask the model, in a separate call, which meaning each sentence uses,
+    /// and list sentences it agrees with first. Mismatches are flagged, not dropped.
     public var checksSense: Bool
 
     public init(
@@ -127,8 +137,7 @@ public struct ExampleSentenceGenerator: Sendable {
         return ExampleSentenceResult(word: word, senses: senses)
     }
 
-    /// Generates sentences for one sense, retrying while no sentence uses the word
-    /// (in that sense, when `checksSense` is on).
+    /// Generates sentences for one sense, retrying while too few sentences use the word.
     public func examples(for sense: WordSense, of word: TargetWord) async -> SenseExamples {
         var kept: [ExampleSentence] = []
         var rejected: [ExampleSentence] = []
@@ -152,7 +161,7 @@ public struct ExampleSentenceGenerator: Sendable {
                     if sentence.containsTarget, checksSense, word.senses.count > 1 {
                         sentence.judgedSense = try? await judgeSense(of: chinese, for: word)
                     }
-                    if sentence.isUsable(for: sense) {
+                    if sentence.containsTarget {
                         kept.append(sentence)
                     } else {
                         rejected.append(sentence)
@@ -163,7 +172,9 @@ public struct ExampleSentenceGenerator: Sendable {
             }
         }
 
-        let sentences = kept.isEmpty ? rejected : Array(kept.prefix(sentencesPerSense))
+        // Sentences that passed the sense check come first.
+        let ordered = kept.filter { $0.isVerified(for: sense) } + kept.filter { !$0.isVerified(for: sense) }
+        let sentences = kept.isEmpty ? rejected : Array(ordered.prefix(sentencesPerSense))
         return SenseExamples(sense: sense, sentences: sentences, attempts: attempts, failure: failure)
     }
 

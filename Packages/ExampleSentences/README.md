@@ -12,10 +12,14 @@ for each sense of the word.
   `variant of …` and `CL:…` are skipped.
 - The generator makes one model request per sense (a fresh session each time)
   and asks for two sentences. A sentence counts only if it contains the word,
-  in either script, and, when the word has several senses, a second model
-  call (the sense check) agrees it uses the requested sense. Up to three
-  requests are made per sense to get one. Turn the check off with
-  `ExampleSentenceGenerator(checksSense: false)`.
+  in either script; up to three requests are made per sense to get two.
+- When a word has several senses, a second model call (the sense check) says
+  which meaning each sentence uses. Sentences it agrees with are listed first
+  and the sense gets a ✓; otherwise it gets a ?. The check is only a hint: it
+  is good at catching future 會 or possessive 的 in the wrong sense, but it
+  misreads compounds like 聚會 and near-synonymous senses (say / speak / tell).
+  It roughly triples run time; turn it off with
+  `ExampleSentenceGenerator(checksSense: false)` or `--no-sense-check`.
 
 ```swift
 let result = await ExampleSentenceGenerator().generate(for: TargetWord(word))
