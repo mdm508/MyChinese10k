@@ -148,6 +148,8 @@ public struct ExampleSentenceGenerator: Sendable {
                     }
                     guard traditional.contains(word.traditional),
                           Self.isFullSentence(traditional, word: word),
+                          // Drop sentences that only use the word inside a longer one (打開 for 打).
+                          Readings.standsAlone(word.traditional, in: traditional, dictionary: dictionary),
                           !sentences.contains(where: { $0.traditionalText == traditional }) else { continue }
                     sentences.append(ExampleSentence(
                         traditional: traditional,

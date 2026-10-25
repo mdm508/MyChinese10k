@@ -121,4 +121,13 @@ struct ReadingsTests {
             .map { String(sentence[$0]) }
         #expect(isolated == ["去", "聚會", "再", "開", "會"])
     }
+
+    @Test func sentencesUsingTheWordOnlyInsideADictionaryWordDontStandAlone() {
+        let dictionary = ReadingDictionary([
+            TargetWord(index: 1, simplified: "打开", traditional: "打開", pinyin: "dǎkāi", zhuyin: "ㄉㄚˇ ㄎㄞ", meanings: ["to open"]),
+        ])
+        // Whether these pass depends on how NLTokenizer splits them, so only the
+        // plain standalone case is asserted.
+        #expect(Readings.standsAlone("打", in: "他打了我一下。", dictionary: dictionary))
+    }
 }

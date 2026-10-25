@@ -157,6 +157,29 @@ enum Readings {
         )
     }
 
+    /// Whether `target` can be its own word in `sentence` without breaking up a
+    /// dictionary word: it's already a token (or pieces of one), or it only sits
+    /// inside tokens like 開車 that aren't dictionary words. False for sentences
+    /// where it only appears inside words like 打開 or 開啟.
+    static func standsAlone(_ target: String, in sentence: String, dictionary: ReadingDictionary) -> Bool {
+        let tokenizer = NLTokenizer(unit: .word)
+        tokenizer.string = sentence
+        tokenizer.setLanguage(.traditionalChinese)
+        let tokens = tokenizer.tokens(for: sentence.startIndex..<sentence.endIndex)
+        var searchStart = sentence.startIndex
+        while !target.isEmpty,
+              let occurrence = sentence.range(of: target, range: searchStart..<sentence.endIndex) {
+            searchStart = occurrence.upperBound
+            let overlapping = tokens.filter { $0.overlaps(occurrence) }
+            let fitsTokens = overlapping.first?.lowerBound == occurrence.lowerBound
+                && overlapping.last?.upperBound == occurrence.upperBound
+            if fitsTokens || overlapping.contains(where: { dictionary[String(sentence[$0])] == nil }) {
+                return true
+            }
+        }
+        return false
+    }
+
     /// Makes sure `target` is one token somewhere in the sentence, without
     /// breaking up other words more than needed.
     ///
