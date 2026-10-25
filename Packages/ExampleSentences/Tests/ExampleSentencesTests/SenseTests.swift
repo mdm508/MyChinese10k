@@ -57,5 +57,7 @@ struct SenseTests {
         #expect(ExampleSentenceGenerator.clean("這位老師會在下課後給我們解釋。」,") == "這位老師會在下課後給我們解釋。")
         #expect(ExampleSentenceGenerator.clean("「我會去。」") == "我會去。")
         #expect(ExampleSentenceGenerator.clean("He said, \"OK.\"") == "He said, \"OK.")
+        #expect(ExampleSentenceGenerator.clean("我們要參加一個新的公司 **會**。") == "我們要參加一個新的公司會。")
+        #expect(ExampleSentenceGenerator.clean("We attended two **meetings**.") == "We attended two meetings.")
     }
 }

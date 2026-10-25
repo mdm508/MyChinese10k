@@ -194,9 +194,13 @@ public struct ExampleSentenceGenerator: Sendable {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// The model sometimes leaves stray quote marks or commas around a sentence.
+    /// The model sometimes leaves markdown bold inside a sentence
+    /// or stray quote marks and commas around it.
     static func clean(_ text: String) -> String {
-        var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        var text = text
+            .replacingOccurrences(of: "**", with: "")
+            .replacingOccurrences(of: #"\s+(?=\p{Han}|[。，！？])|(?<=\p{Han})\s+"#, with: "", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         let stray: Set<Character> = ["「", "」", "『", "』", "\"", "“", "”", ",", "，"]
         while let last = text.last, stray.contains(last) { text.removeLast() }
         while let first = text.first, stray.contains(first) { text.removeFirst() }
