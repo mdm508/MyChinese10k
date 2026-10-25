@@ -46,4 +46,16 @@ struct SenseTests {
         #expect(word.isUsed(in: "我每天学习中文。"))
         #expect(!word.isUsed(in: "我每天讀書。"))
     }
+
+    @Test func promptDropsPronunciationMarkup() {
+        #expect(ExampleSentenceGenerator.promptDefinition("a moment (Taiwan pr. for this sense is [hui3])") == "a moment")
+        #expect(ExampleSentenceGenerator.promptDefinition("(often followed by 著|着[zhe5]) taking advantage of") == "(often followed by 著|着) taking advantage of")
+        #expect(ExampleSentenceGenerator.promptDefinition("correct; right; true") == "correct; right; true")
+    }
+
+    @Test func strayQuotesAreTrimmedFromSentences() {
+        #expect(ExampleSentenceGenerator.clean("這位老師會在下課後給我們解釋。」,") == "這位老師會在下課後給我們解釋。")
+        #expect(ExampleSentenceGenerator.clean("「我會去。」") == "我會去。")
+        #expect(ExampleSentenceGenerator.clean("He said, \"OK.\"") == "He said, \"OK.")
+    }
 }

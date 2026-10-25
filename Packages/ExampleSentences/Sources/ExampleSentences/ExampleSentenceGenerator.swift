@@ -120,12 +120,12 @@ public struct ExampleSentenceGenerator: Sendable {
                 let generated = try await requestSentences(for: sense, of: word)
                 failure = nil
                 for item in generated.sentences {
-                    let chinese = item.chinese.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let chinese = Self.clean(item.chinese)
                     guard !chinese.isEmpty,
                           !kept.contains(where: { $0.chinese == chinese }) else { continue }
                     let sentence = ExampleSentence(
                         chinese: chinese,
-                        english: item.english.trimmingCharacters(in: .whitespacesAndNewlines),
+                        english: Self.clean(item.english),
                         containsTarget: word.isUsed(in: chinese)
                     )
                     if sentence.containsTarget {
@@ -161,15 +161,17 @@ public struct ExampleSentenceGenerator: Sendable {
         You are a Chinese teacher writing example sentences for a learner \
         at an intermediate level.
         Write short, natural, everyday sentences in \(script.displayName) only.
-        Every sentence must contain the target word exactly as it is written.
-        Use the target word only in the meaning you are asked for.
+        Every sentence must contain the target word exactly as it is written. \
+        Never replace it with a synonym.
+        Use the target word only in the meaning you are asked for, \
+        so that a reader can tell which meaning it is from the sentence.
         Give a faithful English translation of each sentence.
         """
     }
 
     static func prompt(for sense: WordSense, of word: TargetWord) -> String {
         let allSenses = word.senses
-            .map { "\($0.number). \($0.definition)" }
+            .map { "\($0.number). \(promptDefinition($0.definition))" }
             .joined(separator: "\n")
         return """
         Target word: \(word.characters) (\(word.pinyin))
@@ -178,8 +180,27 @@ public struct ExampleSentenceGenerator: Sendable {
         \(allSenses)
 
         Write two different example sentences that use \(word.characters) \
-        in meaning \(sense.number) only: "\(sense.definition)".
+        in meaning \(sense.number) only: "\(promptDefinition(sense.definition))". \
+        Do not use \(word.characters) in any of its other meanings.
         """
+    }
+
+    /// Drops dictionary markup the model doesn't need, such as pinyin like `[hui3]`
+    /// and pronunciation notes like `(Taiwan pr. for this sense is …)`.
+    static func promptDefinition(_ definition: String) -> String {
+        definition
+            .replacingOccurrences(of: #"\s*\([^)]*\bpr\.[^)]*\)"#, with: "", options: .regularExpression)
+            .replacingOccurrences(of: #"\[[a-zA-Z0-9 ]+\]"#, with: "", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// The model sometimes leaves stray quote marks or commas around a sentence.
+    static func clean(_ text: String) -> String {
+        var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let stray: Set<Character> = ["「", "」", "『", "』", "\"", "“", "”", ",", "，"]
+        while let last = text.last, stray.contains(last) { text.removeLast() }
+        while let first = text.first, stray.contains(first) { text.removeFirst() }
+        return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     static func describe(_ error: Error) -> String {
