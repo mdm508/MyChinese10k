@@ -51,4 +51,10 @@ struct ReadingsTests {
         #expect(ExampleSentenceGenerator.clean("這位老師會在下課後給我們解釋。」,") == "這位老師會在下課後給我們解釋。")
         #expect(ExampleSentenceGenerator.clean("我們要參加一個新的公司 **會**。") == "我們要參加一個新的公司會。")
     }
+
+    @Test func barePhrasesAreRejected() {
+        let da = TargetWord(index: 0, simplified: "打", traditional: "打", pinyin: "dǎ", zhuyin: "ㄉㄚˇ", meanings: ["to hit"])
+        #expect(!ExampleSentenceGenerator.isFullSentence("打電話", word: da))
+        #expect(ExampleSentenceGenerator.isFullSentence("我晚上打電話給你。", word: da))
+    }
 }

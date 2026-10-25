@@ -132,6 +132,7 @@ public struct ExampleSentenceGenerator: Sendable {
                     // The model often writes simplified characters when asked for traditional.
                     let traditional = Readings.traditional(Self.clean(item.traditionalSentence))
                     guard traditional.contains(word.traditional),
+                          Self.isFullSentence(traditional, word: word),
                           !sentences.contains(where: { $0.traditional == traditional }) else { continue }
                     sentences.append(ExampleSentence(
                         traditional: traditional,
@@ -157,7 +158,9 @@ public struct ExampleSentenceGenerator: Sendable {
     static let instructions = """
         You are a Chinese teacher writing example sentences for a learner \
         at an intermediate level.
-        Write short, natural, everyday sentences in Traditional Chinese.
+        Write short, natural, everyday sentences in Traditional Chinese. \
+        Each one must be a complete sentence with a subject and a verb, \
+        not a phrase or a single word.
         Every sentence must contain the target word exactly as it is written. \
         Never replace it with a synonym.
         Give a faithful English translation of each sentence.
@@ -174,6 +177,12 @@ public struct ExampleSentenceGenerator: Sendable {
         Write \(count) different example sentences that use \(word.traditional). \
         Start each sentence differently and give each one a different topic.
         """
+    }
+
+    /// Rejects bare phrases like 打電話: a sentence needs a few characters besides the word.
+    static func isFullSentence(_ sentence: String, word: TargetWord) -> Bool {
+        let count = sentence.filter(Readings.isChineseCharacter).count
+        return count >= word.traditional.count + 3
     }
 
     /// Drops dictionary markup the model doesn't need, such as pinyin like `[hui3]`
