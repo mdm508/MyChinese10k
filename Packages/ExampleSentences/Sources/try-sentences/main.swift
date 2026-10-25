@@ -12,6 +12,10 @@ import Foundation
 import CoreDataModels
 import ExampleSentences
 
+// Xcode's console is a pipe, so print output would otherwise wait until exit.
+setvbuf(stdout, nil, _IOLBF, 0)
+print("Generating… the on-device model takes a few seconds per meaning.")
+
 if let reason = ExampleSentenceGenerator.unavailableReason {
     print(reason)
     exit(1)

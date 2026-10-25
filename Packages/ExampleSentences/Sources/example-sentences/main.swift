@@ -36,6 +36,10 @@ func fail(_ message: String) -> Never {
     exit(1)
 }
 
+// Xcode's console is a pipe, so print output would otherwise wait until exit.
+setvbuf(stdout, nil, _IOLBF, 0)
+print("Generating… the on-device model takes a few seconds per meaning.")
+
 var arguments = Array(CommandLine.arguments.dropFirst())
 var dataURL: URL?
 var script = ChineseScript.traditional
