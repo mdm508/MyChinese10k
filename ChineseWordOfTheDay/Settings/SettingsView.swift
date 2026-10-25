@@ -8,6 +8,10 @@
 import SwiftUI
 import Persistence
 import CoreDataModels
+#if DEBUG
+import CoreData
+import ExampleSentences
+#endif
 
 /**
 A view that allows users to adjust app settings related to phonetic notation and Chinese writing system.
@@ -27,6 +31,7 @@ struct SettingsView: View {
     @State private var notificationTime: Date = Date()
     @State private var remindersEnabled: Bool = false
     @EnvironmentObject private var ws: WordService
+    @Environment(\.managedObjectContext) private var context
 }
 extension SettingsView {
     // MARK: - Preference View
@@ -87,6 +92,17 @@ extension SettingsView {
                             }
                     }
                 }
+                #if DEBUG
+                // MARK: - Developer Section
+                Section(header: Text("Developer")) {
+                    NavigationLink("AI Example Sentences") {
+                        ExampleSentencesDebugView(
+                            words: self.exampleSentenceWords(),
+                            loadDictionary: self.readingDictionary
+                        )
+                    }
+                }
+                #endif
             }
             .navigationTitle("Settings").toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -159,6 +175,24 @@ extension SettingsView {
 extension Notification.Name {
     static let settingDidChange = Notification.Name("settingDidChange")
 }
+#if DEBUG
+// MARK: - Developer Helpers
+private extension SettingsView {
+    /// The current word and the next few in the deck, followed by the built-in samples.
+    func exampleSentenceWords() -> [TargetWord] {
+        let start = self.ws.currentIndex ?? 1
+        let upcoming = (start..<start + 10).compactMap { Word.fetchWord(at: $0, context: self.context) }
+        let samples = TargetWord.samples.filter { sample in !upcoming.contains { $0.index == sample.index } }
+        return upcoming.map { TargetWord($0) } + samples
+    }
+
+    /// Every word in the store, so sentence words get their dictionary readings.
+    func readingDictionary() -> ReadingDictionary {
+        let request: NSFetchRequest<Word> = Word.fetchRequest()
+        return ReadingDictionary((try? self.context.fetch(request)) ?? [])
+    }
+}
+#endif
 // MARK: - Notification Logic
 private extension SettingsView {
     func requestNotificationPermission() {

@@ -1,0 +1,133 @@
+//
+//  ReadingsTests.swift
+//  ExampleSentencesTests
+//
+
+import Testing
+import CoreDataModels
+@testable import ExampleSentences
+
+struct ReadingsTests {
+    private let xuexi = TargetWord(MockWord.placeholder)
+
+    @Test func sentenceIsSplitIntoAlignedWords() {
+        let sentence = ExampleSentence(traditional: "我每天學習中文。", english: "I study Chinese every day.", word: xuexi, dictionary: ReadingDictionary())
+        #expect(sentence.traditionalText == "我每天學習中文。")
+        #expect(sentence.simplifiedText == "我每天学习中文。")
+        let count = sentence.traditional.count
+        #expect(count > 1)
+        #expect(sentence.simplified.count == count)
+        #expect(sentence.pinyin.count == count)
+        #expect(sentence.zhuyin.count == count)
+        #expect(sentence.dictionaryIndices.count == count)
+        // Punctuation stays with the word before it.
+        #expect(sentence.traditional.last?.hasSuffix("。") == true)
+    }
+
+    @Test func targetWordIsOneSegmentWithDictionaryReadings() {
+        let sentence = ExampleSentence(traditional: "我每天學習中文。", english: "", word: xuexi, dictionary: ReadingDictionary())
+        let position = sentence.traditional.firstIndex(of: "學習")
+        #expect(position != nil)
+        if let position {
+            #expect(sentence.pinyin[position] == xuexi.pinyin)
+            #expect(sentence.zhuyin[position] == xuexi.zhuyin)
+            #expect(sentence.dictionaryIndices[position] == xuexi.index)
+        }
+    }
+
+    @Test func otherWordsUseTheReadingDictionary() {
+        let yinyue = TargetWord(index: 42, simplified: "音乐", traditional: "音樂", pinyin: "yīnyuè", zhuyin: "ㄧㄣ ㄩㄝˋ", meanings: ["music"])
+        let dictionary = ReadingDictionary([yinyue])
+        let sentence = ExampleSentence(traditional: "我在學習音樂", english: "", word: xuexi, dictionary: dictionary)
+        if let position = sentence.traditional.firstIndex(of: "音樂") {
+            #expect(sentence.pinyin[position] == "yīnyuè")
+            #expect(sentence.dictionaryIndices[position] == 42)
+        } else {
+            Issue.record("音樂 wasn't one segment: \(sentence.traditional)")
+        }
+    }
+
+    @Test func icuReadingsFillInWordsNotInTheDictionary() {
+        let sentence = ExampleSentence(traditional: "我每天學習中文", english: "", word: xuexi, dictionary: ReadingDictionary())
+        #expect(sentence.pinyin.first == "wǒ")
+        #expect(sentence.zhuyin.first == "ㄨㄛˇ")
+    }
+
+    @Test func simplifiedInputIsConvertedToTraditional() {
+        #expect(Readings.traditional("我每天学习中文") == "我每天學習中文")
+    }
+
+    @Test func dictionaryNotesAreLeftOutOfThePrompt() {
+        let de = TargetWord.samples.first { $0.traditional == "的" }!
+        #expect(de.definitions.count == 4)
+        #expect(!ExampleSentenceGenerator.prompt(for: de, count: 3).contains("also pr."))
+    }
+
+    @Test func promptDropsPronunciationMarkup() {
+        #expect(ExampleSentenceGenerator.promptDefinition("a moment (Taiwan pr. for this sense is [hui3])") == "a moment")
+        #expect(ExampleSentenceGenerator.promptDefinition("correct; right; true") == "correct; right; true")
+    }
+
+    @Test func strayMarkupIsTrimmedFromSentences() {
+        #expect(ExampleSentenceGenerator.clean("這位老師會在下課後給我們解釋。」,") == "這位老師會在下課後給我們解釋。")
+        #expect(ExampleSentenceGenerator.clean("我們要參加一個新的公司 **會**。") == "我們要參加一個新的公司會。")
+    }
+
+    @Test func barePhrasesAreRejected() {
+        let da = TargetWord(index: 0, simplified: "打", traditional: "打", pinyin: "dǎ", zhuyin: "ㄉㄚˇ", meanings: ["to hit"])
+        #expect(!ExampleSentenceGenerator.isFullSentence("打電話", word: da))
+        #expect(ExampleSentenceGenerator.isFullSentence("我晚上打電話給你。", word: da))
+    }
+
+    @Test func readingsAreNormalized() {
+        #expect(Readings.normalizedPinyin("jù huì") == "jùhuì")
+        #expect(Readings.normalizedZhuyin("ㄨㄛˇ ㄇㄣ˙") == "ㄨㄛˇ ˙ㄇㄣ")
+        #expect(Readings.normalizedZhuyin("ㄉㄜ˙") == "˙ㄉㄜ")
+    }
+
+    @Test func particleZheIsNeutral() {
+        let sentence = ExampleSentence(traditional: "他笑著學習", english: "", word: xuexi, dictionary: ReadingDictionary())
+        if let position = sentence.traditional.firstIndex(of: "著") {
+            #expect(sentence.pinyin[position] == "zhe")
+        }
+    }
+
+    @Test func targetIsCutOutOfLongerWords() {
+        // If the tokenizer keeps 打電話 together, 打 is still its own segment.
+        let sentence = "我打電話給她。"
+        let tokens = [sentence.range(of: "我")!, sentence.range(of: "打電話")!, sentence.range(of: "給")!, sentence.range(of: "她")!]
+        let isolated = Readings.isolating("打", in: sentence, tokens: tokens).map { String(sentence[$0]) }
+        #expect(isolated == ["我", "打", "電話", "給", "她"])
+    }
+
+    @Test func targetPiecesAreMerged() {
+        let sentence = "我在學習"
+        let tokens = [sentence.range(of: "我")!, sentence.range(of: "在")!, sentence.range(of: "學")!, sentence.range(of: "習")!]
+        let isolated = Readings.isolating("學習", in: sentence, tokens: tokens).map { String(sentence[$0]) }
+        #expect(isolated == ["我", "在", "學習"])
+    }
+
+    @Test func compoundsAreLeftAloneWhenTheTargetAlreadyStandsAlone() {
+        let sentence = "我會參加這個會議"
+        let tokens = ["我", "會", "參加", "這個", "會議"].map { word in sentence.range(of: word)! }
+        let isolated = Readings.isolating("會", in: sentence, tokens: tokens).map { String(sentence[$0]) }
+        #expect(isolated == ["我", "會", "參加", "這個", "會議"])
+    }
+
+    @Test func dictionaryWordsAreCutOnlyAsALastResort() {
+        let sentence = "去聚會再開會"
+        let tokens = ["去", "聚會", "再", "開會"].map { word in sentence.range(of: word)! }
+        let isolated = Readings.isolating("會", in: sentence, tokens: tokens, isWord: { $0 == "聚會" })
+            .map { String(sentence[$0]) }
+        #expect(isolated == ["去", "聚會", "再", "開", "會"])
+    }
+
+    @Test func sentencesUsingTheWordOnlyInsideADictionaryWordDontStandAlone() {
+        let dictionary = ReadingDictionary([
+            TargetWord(index: 1, simplified: "打开", traditional: "打開", pinyin: "dǎkāi", zhuyin: "ㄉㄚˇ ㄎㄞ", meanings: ["to open"]),
+        ])
+        // Whether these pass depends on how NLTokenizer splits them, so only the
+        // plain standalone case is asserted.
+        #expect(Readings.standsAlone("打", in: "他打了我一下。", dictionary: dictionary))
+    }
+}

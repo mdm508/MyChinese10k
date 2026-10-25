@@ -1,0 +1,277 @@
+//
+//  Readings.swift
+//  ExampleSentences
+//
+
+import Foundation
+import NaturalLanguage
+import CoreDataModels
+
+/// Readings for words, looked up by their traditional form.
+///
+/// Build one from the app's word list so sentence words get dictionary readings
+/// (音樂 yīnyuè rather than ICU's yīn lè) and a link back to their entry.
+public struct ReadingDictionary: Sendable {
+    public struct Entry: Sendable, Hashable {
+        public let index: Int64
+        public let pinyin: String
+        public let zhuyin: String
+    }
+
+    private var entries: [String: Entry] = [:]
+
+    public init() {}
+
+    public init<Words: Sequence>(_ words: Words) where Words.Element: WordRepresentable {
+        for word in words where entries[word.traditional] == nil {
+            entries[word.traditional] = Entry(
+                index: word.index,
+                pinyin: word.pinyin.trimmingCharacters(in: .whitespaces),
+                zhuyin: word.zhuyin.trimmingCharacters(in: .whitespaces)
+            )
+        }
+    }
+
+    public var count: Int { entries.count }
+
+    public subscript(traditional: String) -> Entry? {
+        entries[traditional]
+    }
+}
+
+/// Word segmentation, script conversion and readings, all with frameworks built
+/// into the OS: NaturalLanguage's tokenizer for words and Foundation's ICU
+/// transforms for scripts and readings.
+///
+/// The on-device model is unreliable at these: asked for per-character pinyin
+/// and zhuyin it got 12 of 12 test sentences wrong, and it can't line its output
+/// up with the characters.
+enum Readings {
+    /// One word of a sentence, with any punctuation that follows it.
+    struct Segment: Hashable {
+        var traditional: String
+        var simplified: String
+        var pinyin: String
+        var zhuyin: String
+        /// The word's index in the dictionary, when it was found there.
+        var dictionaryIndex: Int64?
+    }
+
+    static func isChineseCharacter(_ character: Character) -> Bool {
+        character.unicodeScalars.allSatisfy(\.properties.isIdeographic)
+    }
+
+    static func traditional(_ text: String) -> String {
+        text.applyingTransform(StringTransform("Hans-Hant"), reverse: false) ?? text
+    }
+
+    static func simplified(_ text: String) -> String {
+        text.applyingTransform(StringTransform("Hant-Hans"), reverse: false) ?? text
+    }
+
+    /// The most common pinyin reading of one character, with tone marks.
+    static func pinyin(of character: Character) -> String {
+        String(character).applyingTransform(.mandarinToLatin, reverse: false)?
+            .trimmingCharacters(in: .whitespaces) ?? ""
+    }
+
+    /// Converts one pinyin syllable with tone marks to zhuyin.
+    static func zhuyin(fromPinyin syllable: String) -> String {
+        syllable.applyingTransform(StringTransform("Latin-Bopomofo"), reverse: false)?
+            .trimmingCharacters(in: .whitespaces) ?? ""
+    }
+
+    /// Splits a traditional sentence into words, each with its simplified form,
+    /// pinyin (syllables run together, as in "wǒmen") and zhuyin (syllables
+    /// separated by spaces). Punctuation stays with the word before it, so the
+    /// segments joined together give back the sentence.
+    ///
+    /// Readings come from, in order: the target word's own entry, `dictionary`,
+    /// and ICU's most common reading of each character, which can be wrong for
+    /// characters with several readings.
+    static func segments(of sentence: String, word: TargetWord, dictionary: ReadingDictionary) -> [Segment] {
+        wordTexts(of: sentence, keepingTogether: word.traditional, dictionary: dictionary).map { text in
+            var segment = rawSegment(text, word: word, dictionary: dictionary)
+            segment.pinyin = normalizedPinyin(segment.pinyin)
+            segment.zhuyin = normalizedZhuyin(segment.zhuyin)
+            return segment
+        }
+    }
+
+    /// Single-character words ICU reads wrong when they stand alone as particles.
+    private static let particles: [String: (pinyin: String, zhuyin: String)] = [
+        "著": ("zhe", "˙ㄓㄜ"),
+    ]
+
+    /// Pinyin syllables of a word run together, as in "wǒmen" (the dataset and
+    /// ICU differ on spacing).
+    static func normalizedPinyin(_ pinyin: String) -> String {
+        pinyin.filter { !$0.isWhitespace }
+    }
+
+    /// Zhuyin syllables separated by single spaces, with the neutral-tone dot
+    /// in front Taiwan-style (˙ㄇㄣ), as in the dataset; ICU puts it after.
+    static func normalizedZhuyin(_ zhuyin: String) -> String {
+        zhuyin.split(whereSeparator: \.isWhitespace).map { syllable in
+            syllable.last == "˙" ? "˙" + String(syllable.dropLast()) : String(syllable)
+        }
+        .joined(separator: " ")
+    }
+
+    private static func rawSegment(_ text: String, word: TargetWord, dictionary: ReadingDictionary) -> Segment {
+        let characters = text.filter(isChineseCharacter)
+        if characters == word.traditional {
+            return Segment(
+                traditional: text,
+                simplified: simplified(text),
+                pinyin: word.pinyin,
+                zhuyin: word.zhuyin,
+                dictionaryIndex: word.index
+            )
+        }
+        if let entry = dictionary[characters] {
+            return Segment(
+                traditional: text,
+                simplified: simplified(text),
+                pinyin: entry.pinyin,
+                zhuyin: entry.zhuyin,
+                dictionaryIndex: entry.index
+            )
+        }
+        if let particle = particles[characters] {
+            return Segment(
+                traditional: text,
+                simplified: simplified(text),
+                pinyin: particle.pinyin,
+                zhuyin: particle.zhuyin,
+                dictionaryIndex: nil
+            )
+        }
+        let syllables = characters.map(pinyin(of:))
+        return Segment(
+            traditional: text,
+            simplified: simplified(text),
+            pinyin: syllables.joined(),
+            zhuyin: syllables.map(zhuyin(fromPinyin:)).joined(separator: " "),
+            dictionaryIndex: nil
+        )
+    }
+
+    /// Whether `target` can be its own word in `sentence` without breaking up a
+    /// dictionary word: it's already a token (or pieces of one), or it only sits
+    /// inside tokens like 開車 that aren't dictionary words. False for sentences
+    /// where it only appears inside words like 打開 or 開啟.
+    static func standsAlone(_ target: String, in sentence: String, dictionary: ReadingDictionary) -> Bool {
+        let tokenizer = NLTokenizer(unit: .word)
+        tokenizer.string = sentence
+        tokenizer.setLanguage(.traditionalChinese)
+        let tokens = tokenizer.tokens(for: sentence.startIndex..<sentence.endIndex)
+        var searchStart = sentence.startIndex
+        while !target.isEmpty,
+              let occurrence = sentence.range(of: target, range: searchStart..<sentence.endIndex) {
+            searchStart = occurrence.upperBound
+            let overlapping = tokens.filter { $0.overlaps(occurrence) }
+            let fitsTokens = overlapping.first?.lowerBound == occurrence.lowerBound
+                && overlapping.last?.upperBound == occurrence.upperBound
+            if fitsTokens || overlapping.contains(where: { dictionary[String(sentence[$0])] == nil }) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /// Makes sure `target` is one token somewhere in the sentence, without
+    /// breaking up other words more than needed.
+    ///
+    /// Pieces of the target are merged (學 | 習 → 學習). If the target still isn't a
+    /// token on its own, one longer token holding it is cut at its edges
+    /// (打電話 → 打 | 電話), preferring a token that isn't a dictionary word, so
+    /// a second 會 in 會議 or 聚會 stays inside its word.
+    static func isolating(
+        _ target: String,
+        in sentence: String,
+        tokens: [Range<String.Index>],
+        isWord: (String) -> Bool = { _ in false }
+    ) -> [Range<String.Index>] {
+        var occurrences: [Range<String.Index>] = []
+        var searchStart = sentence.startIndex
+        while !target.isEmpty,
+              let occurrence = sentence.range(of: target, range: searchStart..<sentence.endIndex) {
+            occurrences.append(occurrence)
+            searchStart = occurrence.upperBound
+        }
+        guard !occurrences.isEmpty else { return tokens }
+
+        // Merge pieces that exactly make up an occurrence.
+        var merged: [Range<String.Index>] = []
+        var index = 0
+        while index < tokens.count {
+            let token = tokens[index]
+            if let occurrence = occurrences.first(where: { $0.lowerBound == token.lowerBound }),
+               let end = tokens[index...].firstIndex(where: { $0.upperBound == occurrence.upperBound }),
+               tokens[index...end].allSatisfy({ $0.upperBound <= occurrence.upperBound }) {
+                merged.append(occurrence)
+                index = end + 1
+            } else {
+                merged.append(token)
+                index += 1
+            }
+        }
+        if merged.contains(where: { occurrences.contains($0) }) {
+            return merged
+        }
+
+        // Cut one longer token around the target.
+        let containing = occurrences.compactMap { occurrence in
+            merged.firstIndex { $0.lowerBound <= occurrence.lowerBound && occurrence.upperBound <= $0.upperBound }
+                .map { (token: $0, occurrence: occurrence) }
+        }
+        guard let choice = containing.first(where: { !isWord(String(sentence[merged[$0.token]])) }) ?? containing.first else {
+            return merged
+        }
+        let token = merged[choice.token]
+        let pieces = [token.lowerBound..<choice.occurrence.lowerBound, choice.occurrence, choice.occurrence.upperBound..<token.upperBound]
+            .filter { !$0.isEmpty }
+        merged.replaceSubrange(choice.token...choice.token, with: pieces)
+        return merged
+    }
+
+    /// The sentence cut into words, with punctuation attached to the word before it.
+    static func wordTexts(of sentence: String, keepingTogether target: String, dictionary: ReadingDictionary = ReadingDictionary()) -> [String] {
+        let tokenizer = NLTokenizer(unit: .word)
+        tokenizer.string = sentence
+        tokenizer.setLanguage(.traditionalChinese)
+        var tokens = tokenizer.tokens(for: sentence.startIndex..<sentence.endIndex)
+
+        let original = Set(tokens)
+        tokens = isolating(target, in: sentence, tokens: tokens, isWord: { dictionary[$0] != nil }).flatMap { token -> [Range<String.Index>] in
+            // A leftover from cutting the target out (車到 from 開車到) gets tokenized again.
+            guard !original.contains(token), sentence[token] != target else { return [token] }
+            tokenizer.string = String(sentence[token])
+            let offset = sentence.distance(from: sentence.startIndex, to: token.lowerBound)
+            let text = tokenizer.string ?? ""
+            let retokenized = tokenizer.tokens(for: text.startIndex..<text.endIndex).map { range in
+                let lower = sentence.index(sentence.startIndex, offsetBy: offset + text.distance(from: text.startIndex, to: range.lowerBound))
+                let upper = sentence.index(lower, offsetBy: text.distance(from: range.lowerBound, to: range.upperBound))
+                return lower..<upper
+            }
+            return retokenized.isEmpty ? [token] : retokenized
+        }
+
+        guard !tokens.isEmpty else {
+            return sentence.isEmpty ? [] : [sentence]
+        }
+        // Each word runs to the start of the next one, picking up punctuation.
+        // Anything before the first word goes with the first word.
+        var texts: [String] = []
+        for (offset, token) in tokens.enumerated() {
+            let start = offset == 0 ? sentence.startIndex : token.lowerBound
+            let end = offset + 1 < tokens.count ? tokens[offset + 1].lowerBound : sentence.endIndex
+            let text = sentence[start..<end].filter { !$0.isWhitespace }
+            if !text.isEmpty {
+                texts.append(String(text))
+            }
+        }
+        return texts
+    }
+}
