@@ -206,7 +206,20 @@ enum Readings {
         tokenizer.setLanguage(.traditionalChinese)
         var tokens = tokenizer.tokens(for: sentence.startIndex..<sentence.endIndex)
 
-        tokens = isolating(target, in: sentence, tokens: tokens)
+        let original = Set(tokens)
+        tokens = isolating(target, in: sentence, tokens: tokens).flatMap { token -> [Range<String.Index>] in
+            // A leftover from cutting the target out (車到 from 開車到) gets tokenized again.
+            guard !original.contains(token), sentence[token] != target else { return [token] }
+            tokenizer.string = String(sentence[token])
+            let offset = sentence.distance(from: sentence.startIndex, to: token.lowerBound)
+            let text = tokenizer.string ?? ""
+            let retokenized = tokenizer.tokens(for: text.startIndex..<text.endIndex).map { range in
+                let lower = sentence.index(sentence.startIndex, offsetBy: offset + text.distance(from: text.startIndex, to: range.lowerBound))
+                let upper = sentence.index(lower, offsetBy: text.distance(from: range.lowerBound, to: range.upperBound))
+                return lower..<upper
+            }
+            return retokenized.isEmpty ? [token] : retokenized
+        }
 
         guard !tokens.isEmpty else {
             return sentence.isEmpty ? [] : [sentence]
