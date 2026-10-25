@@ -7,6 +7,7 @@
 //  swift run example-sentences                       # the built-in sample words
 //  swift run example-sentences --data output.json 是 學習 17
 //  swift run example-sentences --data output.json --simplified 学习
+//  swift run example-sentences --no-sense-check      # skip the second model call per sentence
 //
 //  Words can be given in either script or by their frequency index.
 //  Requires a Mac with Apple Intelligence turned on.
@@ -38,6 +39,7 @@ var arguments = Array(CommandLine.arguments.dropFirst())
 var dataURL: URL?
 var script = ChineseScript.traditional
 var queries: [String] = []
+var checksSense = true
 
 while !arguments.isEmpty {
     let argument = arguments.removeFirst()
@@ -49,8 +51,10 @@ while !arguments.isEmpty {
         script = .simplified
     case "--traditional":
         script = .traditional
+    case "--no-sense-check":
+        checksSense = false
     case "-h", "--help":
-        print("usage: example-sentences [--data output.json] [--simplified] [word or index ...]")
+        print("usage: example-sentences [--data output.json] [--simplified] [--no-sense-check] [word or index ...]")
         exit(0)
     default:
         queries.append(argument)
@@ -81,7 +85,7 @@ if let reason = ExampleSentenceGenerator.unavailableReason {
     fail(reason)
 }
 
-let generator = ExampleSentenceGenerator()
+let generator = ExampleSentenceGenerator(checksSense: checksSense)
 var allCovered = true
 for word in words {
     let result = await generator.generate(for: word)
