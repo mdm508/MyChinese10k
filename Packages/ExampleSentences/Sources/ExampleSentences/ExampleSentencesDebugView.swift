@@ -113,7 +113,7 @@ public struct ExampleSentencesDebugView: View {
                     Text(failure).foregroundStyle(.red)
                 }
                 ForEach(examples.sentences) { sentence in
-                    sentenceRow(sentence, word: word)
+                    sentenceRow(sentence, sense: sense, word: word)
                 }
                 Text("\(examples.attempts) model call\(examples.attempts == 1 ? "" : "s")")
                     .font(.caption2)
@@ -133,7 +133,7 @@ public struct ExampleSentencesDebugView: View {
         }
     }
 
-    private func sentenceRow(_ sentence: ExampleSentence, word: TargetWord) -> some View {
+    private func sentenceRow(_ sentence: ExampleSentence, sense: WordSense, word: TargetWord) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(highlighted(sentence.chinese, word: word))
                 .font(.title3)
@@ -142,6 +142,10 @@ public struct ExampleSentencesDebugView: View {
                 .foregroundStyle(.secondary)
             if !sentence.containsTarget {
                 Text("Doesn't contain \(word.characters)")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            } else if let judged = sentence.judgedSense, judged != sense.number {
+                Text("Reads as meaning \(judged)")
                     .font(.caption)
                     .foregroundStyle(.red)
             }

@@ -14,6 +14,14 @@ public struct ExampleSentence: Sendable, Hashable, Identifiable {
     /// Whether the sentence contains the target word. Sentences that don't are
     /// only kept when no attempt produced one that does, so they can be inspected.
     public let containsTarget: Bool
+    /// The meaning the sense check thinks the word has in this sentence,
+    /// or `nil` when it wasn't checked.
+    public var judgedSense: Int? = nil
+
+    /// Uses the target word, and in `sense` when the sense was checked.
+    public func isUsable(for sense: WordSense) -> Bool {
+        containsTarget && (judgedSense ?? sense.number) == sense.number
+    }
 }
 
 /// The sentences generated for one sense of a word.
@@ -27,9 +35,9 @@ public struct SenseExamples: Sendable, Hashable, Identifiable {
 
     public var id: Int { sense.id }
 
-    /// At least one sentence uses the target word for this sense.
+    /// At least one sentence uses the target word, in this sense when it was checked.
     public var isCovered: Bool {
-        sentences.contains { $0.containsTarget }
+        sentences.contains { $0.isUsable(for: sense) }
     }
 }
 
@@ -53,7 +61,10 @@ public struct ExampleSentenceResult: Sendable, Hashable {
                 lines.append("      ! \(failure)")
             }
             for sentence in examples.sentences {
-                let flag = sentence.containsTarget ? "" : "  [missing \(word.characters)]"
+                var flag = sentence.containsTarget ? "" : "  [missing \(word.characters)]"
+                if let judged = sentence.judgedSense, judged != examples.sense.number {
+                    flag += "  [reads as meaning \(judged)]"
+                }
                 lines.append("      \(sentence.chinese)\(flag)")
                 lines.append("      \(sentence.english)")
             }
@@ -73,11 +84,20 @@ public struct ExampleSentenceGenerator: Sendable {
     /// Model calls per sense before giving up on getting a sentence that uses the word.
     public var maxAttemptsPerSense: Int
     public var temperature: Double
+    /// Ask the model, in a separate call, which meaning each sentence uses
+    /// and drop sentences that use another one.
+    public var checksSense: Bool
 
-    public init(sentencesPerSense: Int = 2, maxAttemptsPerSense: Int = 3, temperature: Double = 0.7) {
+    public init(
+        sentencesPerSense: Int = 2,
+        maxAttemptsPerSense: Int = 3,
+        temperature: Double = 0.7,
+        checksSense: Bool = true
+    ) {
         self.sentencesPerSense = sentencesPerSense
         self.maxAttemptsPerSense = maxAttemptsPerSense
         self.temperature = temperature
+        self.checksSense = checksSense
     }
 
     // MARK: Availability
@@ -107,7 +127,8 @@ public struct ExampleSentenceGenerator: Sendable {
         return ExampleSentenceResult(word: word, senses: senses)
     }
 
-    /// Generates sentences for one sense, retrying while no sentence uses the word.
+    /// Generates sentences for one sense, retrying while no sentence uses the word
+    /// (in that sense, when `checksSense` is on).
     public func examples(for sense: WordSense, of word: TargetWord) async -> SenseExamples {
         var kept: [ExampleSentence] = []
         var rejected: [ExampleSentence] = []
@@ -123,12 +144,15 @@ public struct ExampleSentenceGenerator: Sendable {
                     let chinese = Self.clean(item.chinese)
                     guard !chinese.isEmpty,
                           !kept.contains(where: { $0.chinese == chinese }) else { continue }
-                    let sentence = ExampleSentence(
+                    var sentence = ExampleSentence(
                         chinese: chinese,
                         english: Self.clean(item.english),
                         containsTarget: word.isUsed(in: chinese)
                     )
-                    if sentence.containsTarget {
+                    if sentence.containsTarget, checksSense, word.senses.count > 1 {
+                        sentence.judgedSense = try? await judgeSense(of: chinese, for: word)
+                    }
+                    if sentence.isUsable(for: sense) {
                         kept.append(sentence)
                     } else {
                         rejected.append(sentence)
@@ -152,6 +176,21 @@ public struct ExampleSentenceGenerator: Sendable {
             options: GenerationOptions(temperature: temperature)
         )
         return response.content
+    }
+
+    /// Asks which of the word's meanings `sentence` uses.
+    private func judgeSense(of sentence: String, for word: TargetWord) async throws -> Int? {
+        let session = LanguageModelSession(instructions: """
+            You are a Chinese dictionary editor. You decide which dictionary meaning \
+            a word has in a sentence.
+            """)
+        let response = try await session.respond(
+            to: Self.judgePrompt(for: sentence, of: word),
+            generating: SenseJudgement.self,
+            options: GenerationOptions(sampling: .greedy)
+        )
+        let number = response.content.meaningNumber
+        return word.senses.indices.contains(number - 1) ? number : nil
     }
 
     // MARK: Prompting
@@ -182,6 +221,20 @@ public struct ExampleSentenceGenerator: Sendable {
         Write two different example sentences that use \(word.characters) \
         in meaning \(sense.number) only: "\(promptDefinition(sense.definition))". \
         Do not use \(word.characters) in any of its other meanings.
+        """
+    }
+
+    static func judgePrompt(for sentence: String, of word: TargetWord) -> String {
+        let allSenses = word.senses
+            .map { "\($0.number). \(promptDefinition($0.definition))" }
+            .joined(separator: "\n")
+        return """
+        Sentence: \(sentence)
+
+        Meanings of \(word.characters):
+        \(allSenses)
+
+        Which meaning does \(word.characters) have in this sentence? Answer with its number.
         """
     }
 
@@ -239,4 +292,10 @@ struct GeneratedSentence {
 
     @Guide(description: "A faithful English translation of the Chinese sentence")
     var english: String
+}
+
+@Generable
+struct SenseJudgement {
+    @Guide(description: "The number of the meaning the word has in the sentence")
+    var meaningNumber: Int
 }

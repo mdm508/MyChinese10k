@@ -12,7 +12,10 @@ for each sense of the word.
   `variant of …` and `CL:…` are skipped.
 - The generator makes one model request per sense (a fresh session each time)
   and asks for two sentences. A sentence counts only if it contains the word,
-  in either script; up to three requests are made per sense to get one.
+  in either script, and, when the word has several senses, a second model
+  call (the sense check) agrees it uses the requested sense. Up to three
+  requests are made per sense to get one. Turn the check off with
+  `ExampleSentenceGenerator(checksSense: false)`.
 
 ```swift
 let result = await ExampleSentenceGenerator().generate(for: TargetWord(word))
